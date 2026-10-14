@@ -10,6 +10,7 @@ from app.services.atomize import AtomicRequirement
 from app.services.condition import check_condition, stated_by_tender
 from app.services.evidence import Evidence
 from app.services.measure import convert, unit_in
+from app.services.roles import load_roles
 from app.services.scales import scale_verdict
 from app.services.search import tokenize
 
@@ -21,12 +22,14 @@ FAMILY_ONLY = 50  # the statement names the kind of thing (grey cast iron) but n
 CLASS_UNITS = ("class", "#", "lb")  # what a pressure class number is printed with
 BARE_NUMBER = re.compile(r"^(?:class\s*)?#?\s*(\d+(?:\.\d+)?)\s*#?$", re.IGNORECASE)  # "1500#", "Class 1500", "1500"
 FILLER = {"valve", "type", "body", "end", "ends", "connection"}  # words that say nothing about which kind it is
+LINKING = {"a", "an", "and", "as", "by", "for", "in", "is", "of", "on", "or", "per", "the", "to", "with", "equivalent"}  # words that never say which kind it is
 
 
 UNCLEAR_VALUE = "unclear tender value"
 UNITS = "units"
 UNIT_READING = "unit read the other way"
 REFERENCE_ONLY = "reference only"
+PART_STATED = "only part stated"
 EQUIVALENT = "equivalent grade"
 GRADE_NOT_STATED = "grade not stated"
 CONDITION = "only under a condition"
@@ -111,24 +114,45 @@ def normal_identifier(text: str) -> str:
     return re.sub(r"[^a-z0-9]", "", re.sub(r":\s*\d{4}\b", "", text.lower()))  # "IS 13095:2008" -> "is13095"
 
 
+def singular(word: str) -> str:
+    return word[:-1] if word.endswith("s") and len(word) > 3 else word
+
+
 def kind_words(text: str) -> set[str]:
-    words = {w[:-1] if w.endswith("s") and len(w) > 3 else w for w in tokenize(canonical(text))}
-    return words - FILLER
+    return {singular(w) for w in tokenize(canonical(text))} - FILLER - LINKING
 
 
-def closeness(kind: str, wanted: str, stated: str) -> int:
-    """100 when the stated thing is the wanted one, FAMILY_ONLY when it is only the same kind of thing, else 0."""
+def is_stated(word: str, have: set[str]) -> bool:
+    """True when the word is among the stated ones, or is part of a longer stated word ("line" in "inline", "seal" in "sealing")."""
+    return word in have or (len(word) >= 4 and any(h.startswith(word) or h.endswith(word) for h in have))
+
+
+def closeness(kind: str, wanted: str, stated: str, ignore: set[str] | None = None) -> tuple[int, list[str]]:
+    """How close the stated thing is to the wanted one, and the wanted words it does not say.
+
+    100 when it says all of them, FAMILY_ONLY when it is the same kind of thing but not the grade or number asked for,
+    or says only some of the words, else 0. Words in ignore need not be stated: the attribute's own name ("handle" for handle_type)
+    and the tender's boilerplate ("shall be supplied").
+    """
     if kind == "standard":
-        return 100 if normal_identifier(wanted) == normal_identifier(stated) else 0
+        return (100 if normal_identifier(wanted) == normal_identifier(stated) else 0), []
     want, have = kind_words(wanted), kind_words(stated)
+    want = want - (ignore or set()) or want
     want_numbers, have_numbers = {w for w in want if w[0].isdigit()}, {w for w in have if w[0].isdigit()}
     if want_numbers and have_numbers and not want_numbers & have_numbers:
-        return 0  # "Class 125" is not "Class 150", however many words they share
-    if not want & have:
-        return 0
+        return 0, []  # "Class 125" is not "Class 150", however many words they share
+    missing = sorted(w for w in want if not is_stated(w, have))
+    if not want or len(missing) == len(want):
+        return 0, []
     if any(len(n) > 1 for n in want_numbers) and not have_numbers:
-        return FAMILY_ONLY  # "grey cast iron" does not say it is "IS 210 FG 260"
-    return 100
+        return FAMILY_ONLY, []  # "grey cast iron" does not say it is "IS 210 FG 260"
+    as_written = {singular(w): w for w in tokenize(canonical(wanted))}
+    return (FAMILY_ONLY, [as_written[w] for w in missing]) if missing else (100, [])
+
+
+def best_closeness(req: AtomicRequirement, wanted: str, heard: list[str]) -> tuple[int, list[str]]:
+    ignore = kind_words(req.attribute) | {singular(w) for w in load_roles()["generic"]}
+    return max((closeness(req.kind, wanted, i, ignore) for i in heard), key=lambda c: (c[0], -len(c[1])))
 
 
 def names_a_reference(req: AtomicRequirement, items: list[str]) -> bool:
@@ -145,12 +169,16 @@ def items_verdict(req: AtomicRequirement, ev: Evidence) -> Verdict:
     ranked = scale_verdict(req, heard)
     if ranked:
         return Verdict(score=ranked[0], reason=ranked[1])
-    scores = [max(closeness(req.kind, w, i) for i in heard) for w in req.values]
+    closest = [best_closeness(req, w, heard) for w in req.values]
+    scores = [score for score, _ in closest]
     score = combine(scores, req.operator)
     if not score and names_a_reference(req, items):
         return Verdict(score=CANNOT_COMPARE, reason=f"states {', '.join(items)}, which names a reference but not the thing asked for", flags=[REFERENCE_ONLY])
     if not score and "equivalent" in req.source_value.lower() and any(kind_words(w) & kind_words(i) for w in req.values for i in heard):
         return Verdict(score=CANNOT_COMPARE, reason=f"states {', '.join(items)}; the tender accepts an equivalent, and whether this is one needs a person", flags=[EQUIVALENT])
+    left_out = sorted({w for _, words in closest for w in words})
+    if FAMILY_ONLY in scores and score < 100 and left_out:
+        return Verdict(score=score, reason=f"states {', '.join(items)}: only part of what is asked; not stated: {', '.join(left_out)}", flags=[PART_STATED])
     if FAMILY_ONLY in scores and score < 100:
         return Verdict(score=score, reason=f"states {', '.join(items)}: the kind of thing, but not the grade or number asked for", flags=[GRADE_NOT_STATED])
     return Verdict(score=score, reason=f"states {', '.join(items)}")

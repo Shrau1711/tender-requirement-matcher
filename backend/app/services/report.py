@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from app.services.atomize import AtomicRequirement
 from app.services.evidence import Evidence
 from app.services.match import Outcome, Status
-from app.services.roles import key_of, load_roles, set_aside
+from app.services.roles import key_of, set_aside, wrong_type
 from app.services.tender import Item
 
 STATUSES: list[Status] = ["fully matched", "partially matched", "missing capability", "unsupported requirement"]
@@ -126,12 +126,6 @@ def row_of(o: Outcome) -> Row:
         review=o.review, flags=o.flags, reason=o.reason, product=e.product if e else None, document=e.file if e else None,
         page=e.pdf_page if e else None, quote=e.quote if e else None,
     )
-
-
-def wrong_type(outcomes: list[Outcome]) -> str | None:
-    """Why the judged product is not the kind of product the tender asks for, when the requirement that names the kind is stated and not met."""
-    defining = set(load_roles()["defining"])
-    return next((o.reason for o in outcomes if o.requirement.attribute in defining and o.status == "missing capability" and o.found), None)
 
 
 def item_result(item: Item, product: str | None, outcomes: list[Outcome], reasons: dict[tuple, str], assessed: bool) -> ItemResult:

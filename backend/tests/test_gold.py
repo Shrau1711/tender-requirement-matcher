@@ -38,9 +38,19 @@ def test_only_labelled_rows_of_readable_manufacturers_are_compared():
 def test_share_handles_an_empty_total():
     assert share(1, 4) == "1/4 (25%)" and share(0, 0) == "none"
 
+
 def test_a_label_may_list_several_pages_and_our_page_agrees_if_it_is_any_of_them():
     sheet = blank_gold([SIZE], ["a"])
     sheet["nominal_size"]["a"] = Label(status="fully matched", page=[2, 5])
     outcome = match_requirement(SIZE, "a", [ev("50 NB to 350 NB", "range", [50, 350], "NB")], ALIASES)
     (row,) = compare([outcome], sheet)
     assert row.gold_pages == [2, 5] and row.page_agrees and Label(page=4).pages == [4] and Label().pages == []
+
+
+def test_the_same_product_listed_twice_with_different_quantities_is_one_item_for_labelling_and_compared_once():
+    first, second = SIZE, SIZE.model_copy(update={"item": SIZE.item.model_copy(update={"quantity": 30})})
+    assert [k for k in blank_gold([first, second], ["a"])] == ["nominal_size"]
+    sheet = blank_gold([first], ["a"])
+    sheet["nominal_size"]["a"] = Label(status="fully matched", page=2)
+    outcomes = [match_requirement(r, "a", [ev("50 NB to 350 NB", "range", [50, 350], "NB")], ALIASES) for r in (first, second)]
+    assert len(compare(outcomes, sheet)) == 1

@@ -4,6 +4,7 @@ from app.services.atomize import AtomicRequirement
 from app.services.evidence import Evidence
 from app.services.match import Outcome, match_all, summarize
 from app.services.products import is_named
+from app.services.roles import wrong_type
 from app.services.tender import Item, distinct_items
 
 
@@ -37,9 +38,11 @@ def best_product(
         own = {key: evidence_for(found, product, files) for key, found in table.items() if key[1] == maker}
         return match_all(atoms, [maker], own, aliases, {maker} if readable else set())
 
-    def rank(product: str) -> tuple[float, float]:
-        summary = summarize(maker, outcomes_for(product))
-        return (summary.compatibility or 0, summary.coverage or 0)
+    def rank(product: str) -> tuple[bool, float, float]:
+        """A product that is not the kind the tender asks for is zeroed in the report, so it must not win here either."""
+        outcomes = outcomes_for(product)
+        summary = summarize(maker, outcomes)
+        return (wrong_type(outcomes) is None, summary.compatibility or 0, summary.coverage or 0)
 
     chosen = max(candidates, key=rank)
     return chosen, outcomes_for(chosen)

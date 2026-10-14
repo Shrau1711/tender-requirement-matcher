@@ -74,3 +74,14 @@ def test_a_statement_naming_no_product_in_the_products_own_document_is_kept():
     table = {(0, "m"): [same], (1, "m"): [handle_of("A")]}
     _, outcomes = best_product([SIZE, HANDLE], "m", table, ALIASES, True)
     assert outcomes[0].score == 75
+
+
+def test_a_product_of_the_wrong_type_does_not_win_even_when_it_scores_higher_elsewhere():
+    kind = req("pump_type", "text", ["vertical multistage"])
+    table = {
+        (0, "m"): [ev("pump type ETNE", items=["ETNE"], name="End-suction"), ev("vertical multistage", items=["vertical multistage"], name="In-line")],
+        (1, "m"): [size_of("End-suction")],
+        (2, "m"): [handle_of("End-suction")],
+    }
+    product, _ = best_product([kind, SIZE, HANDLE], "m", table, ALIASES, True)
+    assert product == "In-line"

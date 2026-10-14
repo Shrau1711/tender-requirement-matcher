@@ -4,7 +4,12 @@ import json
 from functools import lru_cache
 from pathlib import Path
 
+from typing import TYPE_CHECKING
+
 from app.services.atomize import AtomicRequirement
+
+if TYPE_CHECKING:
+    from app.services.match import Outcome
 
 ROLES_FILE = Path(__file__).resolve().parents[2] / "config" / "requirement_roles.json"
 
@@ -17,6 +22,12 @@ NOT_COVERED = "none of the collected documents says anything about it for any ma
 def load_roles(path: Path = ROLES_FILE) -> dict[str, list[str]]:
     """Attribute names that are information rather than capability (tag numbers, the place of use), written as data."""
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def wrong_type(outcomes: list[Outcome]) -> str | None:
+    """Why the judged product is not the kind of product the tender asks for, when the requirement that names the kind is stated and not met."""
+    defining = set(load_roles()["defining"])
+    return next((o.reason for o in outcomes if o.requirement.attribute in defining and o.status == "missing capability" and o.found), None)
 
 
 def key_of(r: AtomicRequirement) -> tuple:

@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 from app.services.atomize import AtomicRequirement
 from app.services.match import Outcome, Status
-from app.services.tender import Item, distinct_items
+from app.services.tender import Item
 
 GOLD_DIR = Path(__file__).resolve().parents[3] / "data" / "eval" / "gold"
 
@@ -51,9 +51,14 @@ def key_for(item: Item, attribute: str, several_items: bool) -> str:
     return f"{item.title} | {attribute}" if several_items else attribute
 
 
+def has_several(items: list[Item]) -> bool:
+    """True when the tender names more than one product. The same product listed twice with different quantities is still one."""
+    return len({item.title for item in items}) > 1
+
+
 def blank_gold(atoms: list[AtomicRequirement], makers: list[str]) -> Gold:
     """An empty label sheet: one entry for every requirement a catalogue could answer, for every manufacturer."""
-    several = len(distinct_items(a.item for a in atoms)) > 1
+    several = has_several([a.item for a in atoms])
     return {key_for(a.item, a.attribute, several): {m: Label() for m in makers} for a in atoms if a.evidence == "product"}
 
 
@@ -70,12 +75,13 @@ def load_gold(path: Path) -> Gold:
 
 def compare(outcomes: list[Outcome], gold: Gold) -> list[Row]:
     """Our outcome next to the person's label, for every labelled row of a manufacturer we could read."""
-    rows = []
-    several = len(distinct_items(o.requirement.item for o in outcomes)) > 1
+    rows, seen = [], set()
+    several = has_several([o.requirement.item for o in outcomes])
     for o in outcomes:
         key = key_for(o.requirement.item, o.requirement.attribute, several)
         label = gold.get(key, {}).get(o.manufacturer)
-        if label and label.status and o.assessed and o.status != "unsupported requirement":
+        if label and label.status and o.assessed and o.status != "unsupported requirement" and (key, o.manufacturer) not in seen:
+            seen.add((key, o.manufacturer))  # a label is compared once, even if the same product is listed twice
             rows.append(Row(
                 attribute=key, manufacturer=o.manufacturer, gold=label.status, ours=o.status, score=o.score,
                 gold_pages=label.pages, our_page=o.evidence.pdf_page if o.evidence else None, reason=o.reason,

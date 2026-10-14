@@ -64,7 +64,14 @@ def test_a_standard_must_match_exactly_but_not_the_year():
     assert verdict(wanted, ev("x", items=["API 609", "IS 3095"]), ALIASES).score == 0
 
 
-def test_a_word_in_common_is_enough_for_a_kind_of_connection():
+def test_naming_only_part_of_the_connection_asked_for_is_a_flagged_partial():
+    wanted = req("valve_end_connection", "choice", ["Double flanged short pattern"])
+    found = verdict(wanted, ev("x", items=["Double Flanged"]), ALIASES)
+    assert (found.score, found.review) == (50, True) and "short" in found.reason and "pattern" in found.reason
+    assert verdict(wanted, ev("x", items=["Double Flanged Short Pattern"]), ALIASES).score == 100
+
+
+def test_a_word_every_product_of_that_kind_has_anyway_need_not_be_stated():
     wanted = req("valve_end_connection", "choice", ["Flangeless Wafer Valve"])
     assert verdict(wanted, ev("x", items=["Wafer", "Lugged"]), ALIASES).score == 100
     assert verdict(wanted, ev("x", items=["Double Flanged"]), ALIASES).score == 0
@@ -225,7 +232,7 @@ def test_only_the_kind_of_material_is_a_flagged_partial_when_a_grade_is_asked_fo
     wanted = req("body_material", "choice", ["Grey cast iron IS 210 FG 260"])
     found = verdict(wanted, ev("Grey cast iron", items=["Grey cast iron"]), ALIASES)
     assert (found.score, found.review) == (50, True)
-    assert verdict(wanted, ev("Cast iron IS 210 FG 260", items=["Cast iron IS 210 FG 260"]), ALIASES).score == 100
+    assert verdict(wanted, ev("Grey cast iron IS 210 FG 260", items=["Grey cast iron IS 210 FG 260"]), ALIASES).score == 100
 
 
 def test_a_condition_the_tender_itself_states_does_not_cap_the_score():
@@ -254,3 +261,27 @@ def test_a_flag_says_why_a_person_should_look():
     assert scanned.flags == [SCANNED]
     assert verdict(wanted, ev("Lever", items=["Lever"]), ALIASES).flags == []
     assert verdict(PRESSURE, ev("16", "single", [16], None), ALIASES).flags == [UNITS]
+
+
+PUMP_TYPE = req("pump_type", "text", ["vertical multistage, in-line type"])
+
+
+def test_a_pump_type_that_names_only_one_of_the_words_asked_is_a_flagged_partial_that_says_what_is_missing():
+    found = verdict(PUMP_TYPE, ev("MULTISTAGE DIFFUSER PUMP", items=["MULTISTAGE DIFFUSER PUMP"]), ALIASES)
+    assert (found.score, found.review) == (50, True)
+    assert "vertical" in found.reason and "multistage" not in found.reason.split("not stated:")[1]
+
+
+def test_a_pump_type_that_names_all_the_words_is_met_even_when_written_differently():
+    for said in ("Vertical Multistage Inline pumps", "Vertical, multistage, in-line pump"):
+        assert verdict(PUMP_TYPE, ev(said, items=[said]), ALIASES).score == 100
+
+
+def test_a_pump_type_that_names_none_of_the_words_is_a_miss():
+    assert verdict(PUMP_TYPE, ev("pump type ETNE", items=["ETNE"]), ALIASES).score == 0
+
+
+def test_the_attributes_own_name_and_the_tenders_boilerplate_need_not_be_stated():
+    wanted = req("handle_type", "text", ["Operating handle (lever) assembly shall be supplied complete"])
+    assert verdict(wanted, ev("Lever, Gear", items=["Lever", "Gear"]), ALIASES).score == 100
+    assert verdict(wanted, ev("Wheel", items=["Wheel"]), ALIASES).score == 0

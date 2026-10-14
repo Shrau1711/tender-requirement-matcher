@@ -18,5 +18,22 @@
     "pump_type",
     "valve_type",
     "product_type"
+  ],
+  "generic": [
+    "shall",
+    "should",
+    "will",
+    "must",
+    "be",
+    "been",
+    "supplied",
+    "provided",
+    "required",
+    "complete",
+    "operating",
+    "assembly",
+    "suitable",
+    "fitted",
+    "flangeless"
   ]
 }
