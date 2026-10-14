@@ -16,6 +16,8 @@ docker run -d --name tm-backend -p 8000:8000 -e GEMINI_API_KEY=YOUR_KEY -v tende
 docker run -d --name tm-frontend -p 3000:80 -e API_URL=http://localhost:8000 shravani1711/tender-matcher-frontend:latest
 ```
 
+**How the two images connect:** the frontend is a static site served by nginx. The page you open on port 3000 runs in your browser, and your browser calls the backend directly at `API_URL` (default `http://localhost:8000`). The containers do not talk to each other, so no shared network is needed. Start the backend first and keep both ports published. If you run the images on another machine, set `API_URL` on the frontend to the address your browser should use to reach the backend (for example `http://my-server:8000`).
+
 Open http://localhost:3000, choose a category, upload the tender PDF(s) and start the run. The first run on a new tender makes live Gemini calls and takes several minutes; results are cached in the `tender-data` volume, so repeating a run is fast.
 
 Or with Docker Compose (from a clone of this repo, with a `.env` file next to `docker-compose.yml`):
