@@ -1,0 +1,661 @@
+﻿Consider using the pymupdf_layout package for a greatly improved page layout analysis.
+
+==== 1600677219 VALVE GATE 250 1500# BW A217 WC  x10
+
+### valve_type: GATE    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states Gate, Globe, Swing Check Valves
+  king        fully matched             100 p1   states Gate Valve
+  ksb         fully matched             100 p1   states Gate Valve
+  l_and_t     fully matched             100 p4   states Gate Valves
+  leader      missing capability          0      no evidence found in the documents
+
+### size: 250 mm   [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   stated 50NB to 1000NB
+  king        fully matched             100 p1   stated 50mm to 600mm
+  ksb         fully matched             100 p4   stated NPS 2 - 48
+  l_and_t     partially matched          25 p18  REVIEW stated with no unit, which cannot be converted to mm
+  leader      missing capability          0      no evidence found in the documents
+
+### pressure_rating: 1500#    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states ASME Class #150 to Class #2500
+  king        fully matched             100 p1   states ASA 800# I 1500# I 2500#
+  ksb         fully matched             100 p4   states Class 150 - 2500
+  l_and_t     fully matched             100 p28  states #150 to 4500
+  leader      missing capability          0      no evidence found in the documents
+
+### end_connection: BW    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states Flanged, Butt Weld
+  king        fully matched             100 p1   states Screwed to BSP, BSPT, NPT, Socket Weld, Butt Weld Ends, Flanged Ends, Ring Type Joints (RTJ)
+  ksb         fully matched             100 p13  states butt weld end
+  l_and_t     fully matched             100 p17  states Butt-weld, Flanged RF, Flanged RTJ
+  leader      missing capability          0      no evidence found in the documents
+
+### body_material: A217 WC9    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        fully matched             100 p1   states CI, CS, SS, WCB, WC6, Wc9
+  ksb         fully matched             100 p8   states A216 WCB, A217 WC6, A217 WC9, A351 CF8, A351 CF8M, A351 CF3, A351 CF3M, A352 LCC, A352 LCB
+  l_and_t     fully matched             100 p18  states ASTM A216 Gr. WCB, ASTM A217 Gr. WC6, ASTM A217 Gr. WC9
+  leader      missing capability          0      no evidence found in the documents
+
+### trim_type: 5    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states 1, 5, 8, 12, 16
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p9   states 5
+  leader      missing capability          0      no evidence found in the documents
+
+### ibr_certification: IBR    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### design_standard: ASME B16.34    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0 p6   found, but does not meet it: states ASME B16.34 Standard Class
+  l_and_t     fully matched             100 p3   REVIEW states ASME B16.34; read from a scanned page
+  leader      missing capability          0      no evidence found in the documents
+
+### testing_standard: API 598    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states API 598
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p7   states API 598
+  l_and_t     fully matched             100 p3   states API 598
+  leader      missing capability          0      no evidence found in the documents
+
+### end_connection_standard: ASME B16.25    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p15  states ASME B16.25
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### end_to_end_dimensions_standard: ASME B16.10    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states ASME B16.10
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p15  states ASME B16.10
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### bypass_arrangement: WITH MANUAL BYPASS ARRANGEMENT    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p11  states Bypass
+  l_and_t     fully matched             100 p23  states bypass arrangement
+  leader      missing capability          0      no evidence found in the documents
+
+### actuator_type: INCHING TYPE ACTUATOR    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0 p1   found, but does not meet it: states Manual, Gear
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p23  states Electrical Actuators
+  leader      missing capability          0      no evidence found in the documents
+
+### packing: Standard Packing    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### warranty: 18 months from the date of dispatch or 12 months from the date of installation for manufacturing Defect    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documentation: IBR Form III C Certificates, GA Drawing, Technical Data sheet, Actuator Data Sheet to be provided along with the materials    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+==== 1600677218 VALVE MOTORISE 300 1500# BW A217 WC  x4
+
+### valve_type: MOTORISED GATE    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p1   states Gate Valve
+  l_and_t     fully matched             100 p23  states Gate
+  leader      missing capability          0      no evidence found in the documents
+
+### size: 300 mm   [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      fully matched             100 p11  stated DN: 300
+  intervalve  fully matched             100 p8   stated 50NB to 1000NB
+  king        fully matched             100 p1   stated 15mm to 600mm
+  ksb         partially matched          25 p12  REVIEW stated with no unit, which cannot be converted to mm
+  l_and_t     partially matched          25 p18  REVIEW stated with no unit, which cannot be converted to mm
+  leader      missing capability          0 p1   found, but does not meet it: stated 15mm to 50mm
+
+### pressure_rating: 1500#    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states ASME Class #150 to Class #2500
+  king        fully matched             100 p1   states ASA 800# I 1500# I 2500#
+  ksb         fully matched             100 p4   states Class 150 - 2500
+  l_and_t     fully matched             100 p28  states #150 to 4500
+  leader      missing capability          0      no evidence found in the documents
+
+### end_connection: BW    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states Flanged, Butt Weld
+  king        fully matched             100 p1   states Screwed to BSP, BSPT, NPT, Socket Weld, Butt Weld Ends, Flanged Ends, Ring Type Joints (RTJ)
+  ksb         fully matched             100 p13  states butt weld end
+  l_and_t     fully matched             100 p17  states Butt-weld, Flanged RF, Flanged RTJ
+  leader      missing capability          0      no evidence found in the documents
+
+### body_material: A217 WC9    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        fully matched             100 p1   states CI, CS, SS, WCB, WC6, Wc9
+  ksb         fully matched             100 p8   states A216 WCB, A217 WC6, A217 WC9, A351 CF8, A351 CF8M, A351 CF3, A351 CF3M, A352 LCC, A352 LCB
+  l_and_t     fully matched             100 p18  states ASTM A216 Gr. WCB, ASTM A217 Gr. WC6, ASTM A217 Gr. WC9
+  leader      missing capability          0      no evidence found in the documents
+
+### trim_type: 5    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states 1, 5, 8, 12, 16
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p9   states 5
+  leader      missing capability          0      no evidence found in the documents
+
+### ibr_certification: IBR    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### design_standard: ASME B16.34    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0 p6   found, but does not meet it: states ASME B16.34 Standard Class
+  l_and_t     fully matched             100 p3   REVIEW states ASME B16.34; read from a scanned page
+  leader      missing capability          0      no evidence found in the documents
+
+### testing_standard: API 598    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states API 598
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p7   states API 598
+  l_and_t     fully matched             100 p3   states API 598
+  leader      missing capability          0      no evidence found in the documents
+
+### end_connection_standard: ASME B16.25    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p15  states ASME B16.25
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### end_to_end_dimensions_standard: ASME B16.10    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states ASME B16.10
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p15  states ASME B16.10
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### bypass_arrangement: WITH MANUAL BYPASS ARRANGEMENT    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p23  states bypass arrangement
+  leader      missing capability          0      no evidence found in the documents
+
+### actuator_type: INCHING TYPE ACTUATOR    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0 p1   found, but does not meet it: states Manual, Gear
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p23  states Electrical Actuators
+  leader      missing capability          0      no evidence found in the documents
+
+### packing: Standard Packing    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### warranty: 18 months from the date of dispatch or 12 months from the date of installation for manufacturing Defect    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documentation: IBR Form III C Certificates, GA Drawing, Technical Data sheet, Actuator Data Sheet to be provided along with the materials    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+==== 1600677217 VALVE MOTORISE 200 1500# BW A217 WC  x8
+
+### valve_type: MOTORISED GATE    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p1   states Gate Valve
+  l_and_t     fully matched             100 p23  states Gate
+  leader      missing capability          0      no evidence found in the documents
+
+### size: 200 mm   [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  partially matched          75 p8   REVIEW stated 50NB to 1000NB; the product is not named
+  king        fully matched             100 p1   stated 15mm to 600mm
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0 p1   found, but does not meet it: stated 15mm to 50mm
+
+### pressure_rating: 1500#    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states ASME Class #150 to Class #2500
+  king        fully matched             100 p1   states ASA 800# I 1500# I 2500#
+  ksb         fully matched             100 p4   states Class 150 - 2500
+  l_and_t     fully matched             100 p28  states #150 to 4500
+  leader      missing capability          0      no evidence found in the documents
+
+### end_connection: BW    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states Flanged, Butt Weld
+  king        fully matched             100 p1   states Screwed to BSP, BSPT, NPT, Socket Weld, Butt Weld Ends, Flanged Ends, Ring Type Joints (RTJ)
+  ksb         fully matched             100 p13  states butt weld end
+  l_and_t     fully matched             100 p17  states Butt-weld, Flanged RF, Flanged RTJ
+  leader      missing capability          0      no evidence found in the documents
+
+### body_material: A217 WC9    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        fully matched             100 p1   states CI, CS, SS, WCB, WC6, Wc9
+  ksb         fully matched             100 p8   states A216 WCB, A217 WC6, A217 WC9, A351 CF8, A351 CF8M, A351 CF3, A351 CF3M, A352 LCC, A352 LCB
+  l_and_t     fully matched             100 p18  states ASTM A216 Gr. WCB, ASTM A217 Gr. WC6, ASTM A217 Gr. WC9
+  leader      missing capability          0      no evidence found in the documents
+
+### trim_type: 5    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states 1, 5, 8, 12, 16
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p9   states 5
+  leader      missing capability          0      no evidence found in the documents
+
+### ibr_certification: IBR    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### design_standard: ASME B16.34    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0 p6   found, but does not meet it: states ASME B16.34 Standard Class
+  l_and_t     fully matched             100 p3   REVIEW states ASME B16.34; read from a scanned page
+  leader      missing capability          0      no evidence found in the documents
+
+### testing_standard: API 598    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states API 598
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p7   states API 598
+  l_and_t     fully matched             100 p3   states API 598
+  leader      missing capability          0      no evidence found in the documents
+
+### end_connection_standard: ASME B16.25    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p15  states ASME B16.25
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### end_to_end_dimensions_standard: ASME B16.10    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states ASME B16.10
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p15  states ASME B16.10
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### bypass_arrangement: WITH MANUAL BYPASS ARRANGEMENT    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p11  states Bypass
+  l_and_t     fully matched             100 p23  states bypass arrangement
+  leader      missing capability          0      no evidence found in the documents
+
+### actuator_type: INCHING TYPE ACTUATOR    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0 p1   found, but does not meet it: states Manual, Gear
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p23  states Electrical Actuators
+  leader      missing capability          0      no evidence found in the documents
+
+### packing: Standard Packing    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### warranty: 18 months from the date of dispatch or 12 months from the date of installation for manufacturing Defect    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documentation: IBR Form III C Certificates, GA Drawing, Technical Data sheet, Actuator Data Sheet to be provided along with the materials    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+==== 1600677216 VALVE MOTORISE 150 1500# BW A217 WC  x4
+
+### valve_type: MOTORISED GATE    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p1   states Gate Valve
+  l_and_t     fully matched             100 p23  states Gate
+  leader      missing capability          0      no evidence found in the documents
+
+### size: 150 mm   [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      fully matched             100 p7   REVIEW stated 2" to 40"; read from a scanned page
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        partially matched          75 p1   REVIEW stated 15mm to 600mm; the product is not named
+  ksb         partially matched          75 p4   REVIEW stated NPS 2 - 48; the product is not named
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0 p1   found, but does not meet it: stated 15mm to 50mm
+
+### pressure_rating: 1500#    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states ASME Class #150 to Class #2500
+  king        fully matched             100 p1   states ASA 800# I 1500# I 2500#
+  ksb         fully matched             100 p4   states Class 150 - 2500
+  l_and_t     fully matched             100 p28  states #150 to 4500
+  leader      missing capability          0      no evidence found in the documents
+
+### end_connection: BW    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states Flanged, Butt Weld
+  king        fully matched             100 p1   states Screwed to BSP, BSPT, NPT, Socket Weld, Butt Weld Ends, Flanged Ends, Ring Type Joints (RTJ)
+  ksb         fully matched             100 p13  states butt weld end
+  l_and_t     fully matched             100 p17  states Butt-weld, Flanged RF, Flanged RTJ
+  leader      missing capability          0      no evidence found in the documents
+
+### body_material: A217 WC9    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        fully matched             100 p1   states CI, CS, SS, WCB, WC6, Wc9
+  ksb         fully matched             100 p8   states A216 WCB, A217 WC6, A217 WC9, A351 CF8, A351 CF8M, A351 CF3, A351 CF3M, A352 LCC, A352 LCB
+  l_and_t     fully matched             100 p18  states ASTM A216 Gr. WCB, ASTM A217 Gr. WC6, ASTM A217 Gr. WC9
+  leader      missing capability          0      no evidence found in the documents
+
+### trim_type: 5    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states 1, 5, 8, 12, 16
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p9   states 5
+  leader      missing capability          0      no evidence found in the documents
+
+### ibr_certification: IBR    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### design_standard: ASME B16.34    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0 p6   found, but does not meet it: states ASME B16.34 Standard Class
+  l_and_t     fully matched             100 p3   REVIEW states ASME B16.34; read from a scanned page
+  leader      missing capability          0      no evidence found in the documents
+
+### testing_standard: API 598    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states API 598
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p7   states API 598
+  l_and_t     fully matched             100 p3   states API 598
+  leader      missing capability          0      no evidence found in the documents
+
+### end_connection_standard: ASME B16.25    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p15  states ASME B16.25
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### end_to_end_dimensions_standard: ASME B16.10    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p8   states ASME B16.10
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p15  states ASME B16.10
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### bypass_arrangement: WITH MANUAL BYPASS ARRANGEMENT    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         fully matched             100 p11  states Bypass
+  l_and_t     fully matched             100 p23  states bypass arrangement
+  leader      missing capability          0      no evidence found in the documents
+
+### actuator_type: INCHING TYPE ACTUATOR    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0 p1   found, but does not meet it: states Manual, Gear
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p23  states Electrical Actuators
+  leader      missing capability          0      no evidence found in the documents
+
+### packing: Standard Packing    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### warranty: 18 months from the date of dispatch or 12 months from the date of installation for manufacturing Defect    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documentation: IBR Form III C Certificates, GA Drawing, Technical Data sheet, Actuator Data Sheet to be provided along with the materials    [ts_2026-09-02-11-52-41_64c47233c05c536803568e22e956c948.pdf p1]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### overall, taking the best evidence for each requirement on its own
+  delval      overall compatibility   1.9%   coverage   1.9%   (51 requirements)
+      1600677219 VALVE GATE 250 1500# BW A217 WC  x10              compatibility   0.0%   coverage   0.0%   (12 requirements)
+      1600677218 VALVE MOTORISE 300 1500# BW A217 WC  x4           compatibility   0.0%   coverage   0.0%   (13 requirements)
+      1600677217 VALVE MOTORISE 200 1500# BW A217 WC  x8           compatibility   0.0%   coverage   0.0%   (13 requirements)
+      1600677216 VALVE MOTORISE 150 1500# BW A217 WC  x4           compatibility   7.7%   coverage   7.7%   (13 requirements)
+  duncan      overall compatibility   1.9%   coverage   1.9%   (51 requirements)
+      1600677219 VALVE GATE 250 1500# BW A217 WC  x10              compatibility   0.0%   coverage   0.0%   (12 requirements)
+      1600677218 VALVE MOTORISE 300 1500# BW A217 WC  x4           compatibility   7.7%   coverage   7.7%   (13 requirements)
+      1600677217 VALVE MOTORISE 200 1500# BW A217 WC  x8           compatibility   0.0%   coverage   0.0%   (13 requirements)
+      1600677216 VALVE MOTORISE 150 1500# BW A217 WC  x4           compatibility   0.0%   coverage   0.0%   (13 requirements)
+  intervalve  overall compatibility  46.8%   coverage  47.3%   (51 requirements)
+      1600677219 VALVE GATE 250 1500# BW A217 WC  x10              compatibility  58.3%   coverage  58.3%   (12 requirements)
+      1600677218 VALVE MOTORISE 300 1500# BW A217 WC  x4           compatibility  46.2%   coverage  46.2%   (13 requirements)
+      1600677217 VALVE MOTORISE 200 1500# BW A217 WC  x8           compatibility  44.2%   coverage  46.2%   (13 requirements)
+      1600677216 VALVE MOTORISE 150 1500# BW A217 WC  x4           compatibility  38.5%   coverage  38.5%   (13 requirements)
+  king        overall compatibility  33.0%   coverage  41.3%   (51 requirements)
+      1600677219 VALVE GATE 250 1500# BW A217 WC  x10              compatibility  41.7%   coverage  50.0%   (12 requirements)
+      1600677218 VALVE MOTORISE 300 1500# BW A217 WC  x4           compatibility  30.8%   coverage  38.5%   (13 requirements)
+      1600677217 VALVE MOTORISE 200 1500# BW A217 WC  x8           compatibility  30.8%   coverage  38.5%   (13 requirements)
+      1600677216 VALVE MOTORISE 150 1500# BW A217 WC  x4           compatibility  28.8%   coverage  38.5%   (13 requirements)
+  ksb         overall compatibility  64.9%   coverage  74.7%   (51 requirements)
+      1600677219 VALVE GATE 250 1500# BW A217 WC  x10              compatibility  75.0%   coverage  83.3%   (12 requirements)
+      1600677218 VALVE MOTORISE 300 1500# BW A217 WC  x4           compatibility  55.8%   coverage  69.2%   (13 requirements)
+      1600677217 VALVE MOTORISE 200 1500# BW A217 WC  x8           compatibility  61.5%   coverage  69.2%   (13 requirements)
+      1600677216 VALVE MOTORISE 150 1500# BW A217 WC  x4           compatibility  67.3%   coverage  76.9%   (13 requirements)
+  l_and_t     overall compatibility  71.7%   coverage  74.7%   (51 requirements)
+      1600677219 VALVE GATE 250 1500# BW A217 WC  x10              compatibility  77.1%   coverage  83.3%   (12 requirements)
+      1600677218 VALVE MOTORISE 300 1500# BW A217 WC  x4           compatibility  71.2%   coverage  76.9%   (13 requirements)
+      1600677217 VALVE MOTORISE 200 1500# BW A217 WC  x8           compatibility  69.2%   coverage  69.2%   (13 requirements)
+      1600677216 VALVE MOTORISE 150 1500# BW A217 WC  x4           compatibility  69.2%   coverage  69.2%   (13 requirements)
+  leader      overall compatibility   0.0%   coverage   5.8%   (51 requirements)
+      1600677219 VALVE GATE 250 1500# BW A217 WC  x10              compatibility   0.0%   coverage   0.0%   (12 requirements)
+      1600677218 VALVE MOTORISE 300 1500# BW A217 WC  x4           compatibility   0.0%   coverage   7.7%   (13 requirements)
+      1600677217 VALVE MOTORISE 200 1500# BW A217 WC  x8           compatibility   0.0%   coverage   7.7%   (13 requirements)
+      1600677216 VALVE MOTORISE 150 1500# BW A217 WC  x4           compatibility   0.0%   coverage   7.7%   (13 requirements)
+
+### overall, scoring one product at a time (the best single product for each item)
+  delval      overall compatibility   1.9%   coverage   1.9%   (51 requirements)
+      1600677219 VALVE GATE 250 1500# BW A217 WC  x10              compatibility   0.0%   coverage   0.0%   (12 requirements)   product: none named
+      1600677218 VALVE MOTORISE 300 1500# BW A217 WC  x4           compatibility   0.0%   coverage   0.0%   (13 requirements)   product: none named
+      1600677217 VALVE MOTORISE 200 1500# BW A217 WC  x8           compatibility   0.0%   coverage   0.0%   (13 requirements)   product: none named
+      1600677216 VALVE MOTORISE 150 1500# BW A217 WC  x4           compatibility   7.7%   coverage   7.7%   (13 requirements)   product: Series 50 / 52 Resilient Seated Butterfly Valves
+  duncan      overall compatibility   1.9%   coverage   1.9%   (51 requirements)
+      1600677219 VALVE GATE 250 1500# BW A217 WC  x10              compatibility   0.0%   coverage   0.0%   (12 requirements)   product: none named
+      1600677218 VALVE MOTORISE 300 1500# BW A217 WC  x4           compatibility   7.7%   coverage   7.7%   (13 requirements)   product: CENTRIC BUTTERFLY VALVE
+      1600677217 VALVE MOTORISE 200 1500# BW A217 WC  x8           compatibility   0.0%   coverage   0.0%   (13 requirements)   product: none named
+      1600677216 VALVE MOTORISE 150 1500# BW A217 WC  x4           compatibility   0.0%   coverage   0.0%   (13 requirements)   product: none named
+  intervalve  overall compatibility  38.9%   coverage  47.3%   (51 requirements)
+      1600677219 VALVE GATE 250 1500# BW A217 WC  x10              compatibility  50.0%   coverage  58.3%   (12 requirements)   product: Cast Steel – Gate, Globe & Swing Check Valves
+      1600677218 VALVE MOTORISE 300 1500# BW A217 WC  x4           compatibility  38.5%   coverage  46.2%   (13 requirements)   product: Cast Steel – Gate, Globe & Swing Check Valves
+      1600677217 VALVE MOTORISE 200 1500# BW A217 WC  x8           compatibility  36.5%   coverage  46.2%   (13 requirements)   product: Cast Steel – Gate, Globe & Swing Check Valves
+      1600677216 VALVE MOTORISE 150 1500# BW A217 WC  x4           compatibility  30.8%   coverage  38.5%   (13 requirements)   product: Cast Steel – Gate, Globe & Swing Check Valves
+  king        overall compatibility  25.2%   coverage  41.3%   (51 requirements)
+      1600677219 VALVE GATE 250 1500# BW A217 WC  x10              compatibility  33.3%   coverage  50.0%   (12 requirements)   product: GATE VALVES
+      1600677218 VALVE MOTORISE 300 1500# BW A217 WC  x4           compatibility  23.1%   coverage  38.5%   (13 requirements)   product: GATE VALVES
+      1600677217 VALVE MOTORISE 200 1500# BW A217 WC  x8           compatibility  23.1%   coverage  38.5%   (13 requirements)   product: GATE VALVES
+      1600677216 VALVE MOTORISE 150 1500# BW A217 WC  x4           compatibility  21.2%   coverage  38.5%   (13 requirements)   product: GATE VALVES
+  ksb         overall compatibility  56.6%   coverage  72.8%   (51 requirements)
+      1600677219 VALVE GATE 250 1500# BW A217 WC  x10              compatibility  66.7%   coverage  83.3%   (12 requirements)   product: SICCA 150-600 GTC
+      1600677218 VALVE MOTORISE 300 1500# BW A217 WC  x4           compatibility  46.2%   coverage  61.5%   (13 requirements)   product: SICCA 150-600 GTC
+      1600677217 VALVE MOTORISE 200 1500# BW A217 WC  x8           compatibility  53.8%   coverage  69.2%   (13 requirements)   product: SICCA 150-600 GTC
+      1600677216 VALVE MOTORISE 150 1500# BW A217 WC  x4           compatibility  59.6%   coverage  76.9%   (13 requirements)   product: SICCA 150-600 GTC
+  l_and_t     overall compatibility  61.0%   coverage  64.9%   (51 requirements)
+      1600677219 VALVE GATE 250 1500# BW A217 WC  x10              compatibility  70.8%   coverage  75.0%   (12 requirements)   product: L&T Valves to API 600 / BS 1873 / BS 1868
+      1600677218 VALVE MOTORISE 300 1500# BW A217 WC  x4           compatibility  57.7%   coverage  61.5%   (13 requirements)   product: L&T Valves to API 600 / BS 1873 / BS 1868
+      1600677217 VALVE MOTORISE 200 1500# BW A217 WC  x8           compatibility  57.7%   coverage  61.5%   (13 requirements)   product: L&T Valves to API 600 / BS 1873 / BS 1868
+      1600677216 VALVE MOTORISE 150 1500# BW A217 WC  x4           compatibility  57.7%   coverage  61.5%   (13 requirements)   product: L&T Valves to API 600 / BS 1873 / BS 1868
+  leader      overall compatibility   0.0%   coverage   5.8%   (51 requirements)
+      1600677219 VALVE GATE 250 1500# BW A217 WC  x10              compatibility   0.0%   coverage   0.0%   (12 requirements)   product: none named
+      1600677218 VALVE MOTORISE 300 1500# BW A217 WC  x4           compatibility   0.0%   coverage   7.7%   (13 requirements)   product: FORGED STEEL BALL VALVE
+      1600677217 VALVE MOTORISE 200 1500# BW A217 WC  x8           compatibility   0.0%   coverage   7.7%   (13 requirements)   product: FORGED STEEL BALL VALVE
+      1600677216 VALVE MOTORISE 150 1500# BW A217 WC  x4           compatibility   0.0%   coverage   7.7%   (13 requirements)   product: FORGED STEEL BALL VALVE
+
+model calls 0, from cache 161, tokens in 0 / out 0

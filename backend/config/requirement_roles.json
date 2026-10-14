@@ -1,0 +1,22 @@
+{
+  "information": [
+    "tag_number",
+    "tag_no",
+    "tag",
+    "item_number",
+    "item_no",
+    "serial_number",
+    "sr_no",
+    "application",
+    "location",
+    "site",
+    "installation_site",
+    "project",
+    "plant"
+  ],
+  "defining": [
+    "pump_type",
+    "valve_type",
+    "product_type"
+  ]
+}

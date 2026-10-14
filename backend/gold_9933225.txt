@@ -1,0 +1,5 @@
+﻿Consider using the pymupdf_layout package for a greatly improved page layout analysis.
+
+labelled rows 0
+status agrees none
+page agrees where both found something none

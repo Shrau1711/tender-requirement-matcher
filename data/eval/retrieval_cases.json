@@ -1,0 +1,9 @@
+[
+  {"query": "IS 13095", "manufacturer": "intervalve", "pages": [4, 5]},
+  {"query": "nominal pressure PN 16", "manufacturer": "ksb", "pages": [2]},
+  {"query": "can the valve be used at 16 bar", "manufacturer": "ksb", "pages": [2]},
+  {"query": "pressure rating PN 16", "manufacturer": "duncan", "pages": [6, 12, 21]},
+  {"query": "can the valve be used at 16 bar", "manufacturer": "duncan", "pages": [6, 12, 21]},
+  {"query": "wafer type end connection", "manufacturer": "intervalve", "pages": [4, 5, 6, 8]},
+  {"query": "pressure rating PN 16", "manufacturer": "king", "pages": [1]}
+]

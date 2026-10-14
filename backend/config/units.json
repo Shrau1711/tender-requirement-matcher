@@ -1,0 +1,78 @@
+{
+  "[pressure]": [
+    {
+      "unit": "bar",
+      "templates": [
+        "{n} bar"
+      ]
+    },
+    {
+      "unit": "bar",
+      "templates": [
+        "PN {n}"
+      ],
+      "attribute_contains": [
+        "nominal_pressure"
+      ]
+    },
+    {
+      "unit": "MPa",
+      "templates": [
+        "{n} MPa"
+      ]
+    }
+  ],
+  "[length]": [
+    {
+      "unit": "mm",
+      "templates": [
+        "{n} mm"
+      ],
+      "attribute_contains": [
+        "size",
+        "diameter",
+        "length",
+        "width",
+        "thickness",
+        "dimension",
+        "distance",
+        "height"
+      ]
+    },
+    {
+      "unit": "mm",
+      "templates": [
+        "DN {n}"
+      ],
+      "attribute_contains": [
+        "size"
+      ]
+    },
+    {
+      "unit": "inch",
+      "templates": [
+        "NPS {n}",
+        "{n} inch"
+      ],
+      "attribute_contains": [
+        "size"
+      ],
+      "round": true
+    }
+  ],
+  "[length] ** 3 / [time]": [
+    {
+      "unit": "m**3/h",
+      "templates": [
+        "{n} m³/h",
+        "{n} m3/h"
+      ]
+    },
+    {
+      "unit": "l/s",
+      "templates": [
+        "{n} l/s"
+      ]
+    }
+  ]
+}

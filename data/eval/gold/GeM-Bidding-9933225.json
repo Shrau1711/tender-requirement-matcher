@@ -1,0 +1,258 @@
+{
+  "governing_specification": {
+    "delval": {
+      "status": "missing capability",
+      "page": null,
+      "note": "Design: 'Full compliance to BS EN 593, general compliance to API 609 & MSS SP 67' (p7). No IS 13095 anywhere. (read by OCR)"
+    },
+    "duncan": {
+      "status": "missing capability",
+      "page": null,
+      "note": "Design: API 609, BS EN593, MSS SP 67 (p5, p9). IS 13095 not mentioned."
+    },
+    "intervalve": {
+      "status": "fully matched",
+      "page": [
+        4,
+        5
+      ],
+      "note": "'Design Standard: API 609, EN593, IS 13095' on Replaceable, Bonded, Rubber Encapsulated, Cartridge (p4) and PTFE Seated (p5)."
+    },
+    "king": {
+      "status": "missing capability",
+      "page": null,
+      "note": "Butterfly column says only 'API 609 | BS-5155 | BS EN 593'. No IS 13095."
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "BOAX-B datasheet names no design standard."
+    }
+  },
+  "application": {
+    "delval": {
+      "status": "missing capability",
+      "page": null,
+      "note": "No 'tight shut-off' statement; only 'Testing: BS EN 12266-1, API 598, MSS SP 67' (p7). A test standard implies leak-testing but is not a stated capability, so it counts as missing. (OCR)"
+    },
+    "duncan": {
+      "status": "fully matched",
+      "page": [
+        16,
+        5
+      ],
+      "note": "p16 triple offset: 'zero leakage, bi directional sealing'; p5 'designed to provide a tight shut-off' (soft-seat valves, stated for vacuum up to 1 mbar). Judgement call: zero leakage = tight shut-off."
+    },
+    "intervalve": {
+      "status": "missing capability",
+      "page": null,
+      "note": "Only test standards (API 598 / ANSI-FCI 70-2 / EN 12266-1, Class IV on metal seat). No explicit tight shut-off statement."
+    },
+    "king": {
+      "status": "missing capability",
+      "page": null,
+      "note": "Nothing about leakage or shut-off for the butterfly valve."
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "'Tight shut-off' under Benefits; liner gives 'perfectly tight sealing'."
+    }
+  },
+  "valve_end_connection": {
+    "delval": {
+      "status": "fully matched",
+      "page": [
+        1,
+        3
+      ],
+      "note": "Series 50/52 'Wafer, Lug Body'; dimensions table WAFER/LUG (p3). (OCR)"
+    },
+    "duncan": {
+      "status": "fully matched",
+      "page": [
+        4,
+        5,
+        18
+      ],
+      "note": "'Wafer Type | Lug Type | Double Flange' (p5); 'one piece wafer, lug, or double flanged body' (p4)."
+    },
+    "intervalve": {
+      "status": "fully matched",
+      "page": [
+        4,
+        5,
+        6
+      ],
+      "note": "End Connection: Wafer on PTFE Seated, Seat Less Damper (p5); Wafer / Lugged on Replaceable etc. (p4)."
+    },
+    "king": {
+      "status": "fully matched",
+      "page": [
+        1
+      ],
+      "note": "'End Connections: Wafer | Lug Ends' in the butterfly valve column."
+    },
+    "ksb": {
+      "status": "partially matched",
+      "page": [
+        2
+      ],
+      "note": "Wafer-type body T1 only for DN 650-1000; for DN 125 only semi-lug T2 / full-lug T4 (DN 40-600). Lug bodies are flangeless but not plain wafer. Judgement call."
+    }
+  },
+  "face_to_face_dimension": {
+    "delval": {
+      "status": "partially matched",
+      "page": [
+        3,
+        7
+      ],
+      "note": "Face to Face: BS EN 558-1 Series 20, API 609 Cat A, ISO 5752 Series 20 (p7). Series 20 is the short pattern but 'short', PN 2.5, Class 125/150 are not printed. (OCR)"
+    },
+    "duncan": {
+      "status": "partially matched",
+      "page": [
+        5
+      ],
+      "note": "Face to Face: API 609 Category-A, BS EN558 Series 20, ISO 5752 Series 20 (p5). Same as Delval: standard named, 'short'/PN 2.5/Class not stated."
+    },
+    "intervalve": {
+      "status": "partially matched",
+      "page": [
+        4,
+        5
+      ],
+      "note": "Face to Face: API 609 Cat-A / ISO 5752 Tab 5 / BS EN558 (p4, p5). Standard named only."
+    },
+    "king": {
+      "status": "missing capability",
+      "page": null,
+      "note": "No face-to-face information."
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "No face-to-face information."
+    }
+  },
+  "nominal_size": {
+    "delval": {
+      "status": "fully matched",
+      "page": [
+        3,
+        7
+      ],
+      "note": "Size range 2 to 40 inch; dimensions table has the row '5 inch / 125 mm' (p3). (OCR)"
+    },
+    "duncan": {
+      "status": "fully matched",
+      "page": [
+        5,
+        6,
+        12,
+        18
+      ],
+      "note": "Centric valve 2 to 12 inch (p5); tables list DN 125 (p6, p10, p12)."
+    },
+    "intervalve": {
+      "status": "fully matched",
+      "page": [
+        4,
+        5
+      ],
+      "note": "Many products cover 125: Replaceable 50-600 NB, Bonded 40-1200 NB, Cartridge 50-750 NB (p4), PTFE Seated 50-350 NB (p5)."
+    },
+    "king": {
+      "status": "fully matched",
+      "page": [
+        1
+      ],
+      "note": "Size Range: 40mm to 500mm."
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "Nominal size DN 40 - 1000."
+    }
+  },
+  "nominal_pressure": {
+    "delval": {
+      "status": "fully matched",
+      "page": [
+        7
+      ],
+      "note": "Pressure rating table: EPDM seat, DN 50-600, 230 PSIG = 16 BARG = PN16 (p7). (OCR)"
+    },
+    "duncan": {
+      "status": "partially matched",
+      "page": [
+        4,
+        5
+      ],
+      "note": "Rated by ASME Class 150 / 300 (p4) and 175 PSIG / 20 BARG for 2-12 inch EPDM (p5). Above 16 bar but given in Class / PSIG, not PN16."
+    },
+    "intervalve": {
+      "status": "fully matched",
+      "page": [
+        5
+      ],
+      "note": "Rubber Seated Double Offset: '65 NB to 1200 NB - Upto PN16' (p5), but that product is double flanged only. Wafer products are PN10 or ASME Class 150 (p4)."
+    },
+    "king": {
+      "status": "partially matched",
+      "page": [
+        1
+      ],
+      "note": "Pressure Rating: ASA 125# | 150# | PN 1.0 | PN 1.6 | PN 20 | PN 2.5. PN 1.6 is probably the MPa style for 16 bar, but the units are ambiguous."
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "Nominal pressure PN 10/16; 16 bar for DN 40-600 (p2). 125 is inside DN 40-600."
+    }
+  },
+  "handle_type": {
+    "delval": {
+      "status": "fully matched",
+      "page": [
+        7,
+        2
+      ],
+      "note": "'Valves up to size 12 inch can be supplied with lever handles for manual operation' (p7). 125 mm = 5 inch. (OCR)"
+    },
+    "duncan": {
+      "status": "partially matched",
+      "page": [
+        23,
+        4
+      ],
+      "note": "Only 'manual operators' (p4, p8) and an aside 'with the exception of the hand lever' on the actuator page (p23). No clear statement that the valve comes with a lever."
+    },
+    "intervalve": {
+      "status": "missing capability",
+      "page": null,
+      "note": "Only actuators and gear manual override for actuators (p9, p10). No lever handle for butterfly valves."
+    },
+    "king": {
+      "status": "fully matched",
+      "page": [
+        1
+      ],
+      "note": "'Operation: Lever | Gear' in the butterfly valve column."
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "'Levers: SR+, SP+, S+, CR+, CM+' under Versions available; 'Lever' under Combination options."
+    }
+  }
+}

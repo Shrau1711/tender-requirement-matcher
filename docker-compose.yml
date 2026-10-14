@@ -1,0 +1,28 @@
+# Runs both images together:  docker compose up
+# Put your key in a file called .env next to this one:  GEMINI_API_KEY=...
+services:
+  backend:
+    image: ${DOCKERHUB_USER:-your-dockerhub-user}/tender-matcher-backend:latest
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      LLM_MAX_CALLS: ${LLM_MAX_CALLS:-300}
+      LLM_WORKERS: ${LLM_WORKERS:-4}
+    ports:
+      - "8000:8000"
+    volumes:
+      - tender-data:/data
+  frontend:
+    image: ${DOCKERHUB_USER:-your-dockerhub-user}/tender-matcher-frontend:latest
+    build:
+      context: frontend
+    environment:
+      API_URL: ${API_URL:-http://localhost:8000}
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+volumes:
+  tender-data:

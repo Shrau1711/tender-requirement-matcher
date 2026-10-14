@@ -1,0 +1,1271 @@
+﻿Consider using the pymupdf_layout package for a greatly improved page layout analysis.
+
+==== BA9754015023-BALL VALVE  x11
+
+### itc_on_gst: जीएसट उपकर कर JेAडट /ITC on GST Cess    [GeM-Bidding-9995708.pdf p5]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### 100%: NA    [GeM-Bidding-9995708.pdf p5]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### size: 1/2"    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p4]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0 p7   found, but does not meet it: states 15 NB to 250 NB
+  king        missing capability          0 p1   found, but does not meet it: states 6mm to 750mm
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0 p1   found, but does not meet it: states 15mm to 50mm
+
+### specification_number: BA54015    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p4]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### specification_revision: 03    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p4]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### gross_weight_per_unit: 1.700 KG   [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p4]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### end_connection: SW    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p4]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p7   states Socket Weld, Screwed, Butt Weld
+  king        fully matched             100 p1   states Screwed to BSPT, NPT, Socket Weld, Butt Weld with extended Nipple, Flanged Ends, Butt Weld Ends
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p13  states Socket-weld end, Screwed
+  leader      fully matched             100 p1   REVIEW states Socket-weld, Butt Welded; read from a scanned page
+
+### description: BALL VALVE SW SIZE 1/2"    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p5]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### specification: BA54015,03    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p9]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        partially matched          25 p1   REVIEW states BS-5351, BS-5159, which names a reference but not the thing asked for
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### type_and_size: BALL VALVE SW SIZE 1/2"    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p9]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  partially matched          25 p7   REVIEW states 15 NB to 250 NB, which names a reference but not the thing asked for
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      partially matched          25 p1   REVIEW states 15mm to 50mm, which names a reference but not the thing asked for; read from a scanned page
+
+### hsn_no: 84818030    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p9]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### standard_specification: BA54015 Rev 03    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p11]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  partially matched          25 p7   REVIEW states ISO 17292, API 608, API 6D, which names a reference but not the thing asked for
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### service_medium: Lube oil –460 cst grade Viscosity 460 cst at40°C/ SP 320    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      fully matched             100 p1   REVIEW states Water, Oil, Air, Gases; read from a scanned page
+
+### maximum_pressure: 12 kg/cm²   [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  partially matched          25 p7   REVIEW stated in Class, which cannot be converted to kg/cm²
+  king        partially matched          25 p1   REVIEW stated in #, which cannot be converted to kg/cm²
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      partially matched          25 p1   REVIEW stated in Bar, which cannot be converted to kg/cm²; only @ 38°C; read from a scanned page
+
+### maximum_temperature: 90 °C   [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     partially matched          75 p10  REVIEW stated up to a maximum temperature of 160°C; only for class 300
+  leader      fully matched             100 p1   REVIEW stated 175°C; read from a scanned page
+
+### body_material: Forged carbon steel – A105 or equivalent    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        fully matched             100 p1   states CI, CS, SS, A 105, F304, F316, CF3
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     partially matched          75 p6   REVIEW states ASTM A105; only Three-piece
+  leader      fully matched             100 p2   REVIEW states FORGED STEEL ASTM A105; read from a scanned page
+
+### ball_material: Stainless Steel - AISI 316/F –304    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p6   states ASTM A351 Gr. CF8M, ASTM A182 Gr. F316, ASTM A182 Gr. F304
+  leader      fully matched             100 p2   REVIEW states ASTM A276 TYPE 304, ASTM A351 Gr. CF8; read from a scanned page
+
+### stem_material: AISI 316/F304    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p6   states ASTM A479 Type 316
+  leader      fully matched             100 p2   REVIEW states STAINLESS STEEL, ASTM A276 TYPE 316; read from a scanned page
+
+### seat_material: PTFE (Teflon)    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p7   states PTFE, MPTFE, TFM 1600, RPTFE, DEVLON, PEEK, CRYO PEEK, PCTFE, METAL (CRC /TCC /ST)
+  king        fully matched             100 p1   states PTFE, Reinforced PTFE, Buna-N, Graphoil, Graphite
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p6   states PTFE, RPTFE, Special filled PTFE, PEEK, Devlon®, NXT-70, SS316 + ST
+  leader      fully matched             100 p2   REVIEW states PTFE; read from a scanned page
+
+### valve_type: quarter turn type    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      fully matched             100 p1   REVIEW states quarter turn ball valve; read from a scanned page
+
+### end_connection_standard: ANSI B16.11    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### hydraulic_testing: Valve bodies shall be hydraulically tested for 1.5 times the design pressure and seats shall be tested to the rated pressure as per API 598.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### applicable_standard: API 6D    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p7   states ISO 17292, API 608, API 6D
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p1   states API 6D
+  leader      missing capability          0      no evidence found in the documents
+
+### dimensions_standard: API 6D    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p1   states API 6D
+  leader      missing capability          0      no evidence found in the documents
+
+### guarantee_period: 12 months from the date of commissioning or 18 months from the date of supply whichever is earlier    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p13]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### preservation: Each valve must be preserved with a suitable preservative compatible with mineral oil grades ISO VG 320 to 680. The preservative should be selected such that removal of preservative is not necessary before the valve is put on operation.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p13]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### material_dispatch_clearance_certificate: MDCC shall be issued by BHEL. No material shall be dispatched by supplier unless and until Material Dispatch Clearance Certificate (MDCC) issued by BHEL Site.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p19]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### inspection_and_testing: BHEL reserves the right to inspect the material during manufacturing and also to get tested the material under dispatch from third party. The test results of third party test shall be final and binding on the Supplier/Vendor.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p19]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### inspection_testing_location_and_replacement: BHEL will reserve the right to inspect/test the material during/after manufacturing at suppliers’ works, and/or at BHEL Site. In case of rejection at any stage, Supplier/Vendor shall be liable to replace the materials at his own cost.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p19]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documents_required_along_with_dispatch_packing_list: Packing list -Clearly showing number of packages, gross weight and net weight.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p21]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documents_required_along_with_dispatch_certificates: Test/Warranty/Guarantee certificates, O&M Manual (if specified in ANNEXURE)    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p21]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documents_required_along_with_dispatch_inspection: Pre-dispatch Inspection report/Third party Inspection certificates.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p21]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### standard_compliance: ISO-9001, ISO14001 and OHSAS 18001 shall be complied    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### packaging_and_dispatch: suitably protected against loss, damage, corrosion in transit and the effect or tropical salt laden atmosphere    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### package_fixtures: provided with fixtures/hooks and sling marks as may be required for easy and safe handling by mechanical means    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### package_marking: Each package must be marked with consignee name, address, P.O. number, Package Number, gross weight & net weight, dimensions (Lx B x H) and bidder’s name    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### packing_list: Packing list for goods inside each package with P.O. item No. & quantity must also be fixed securely outside the box to indicate the contents    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### inspection_agency: BHEL/TPIA    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p72]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+==== BA9754015031-BALL VALVE  x66
+
+### itc_on_gst: जीएसट उपकर कर JेAडट /ITC on GST Cess    [GeM-Bidding-9995708.pdf p5]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### 100%: NA    [GeM-Bidding-9995708.pdf p5]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### specification: Download    [GeM-Bidding-9995708.pdf p6]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### size: 1"    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p4]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0 p7   found, but does not meet it: states 15 NB to 250 NB
+  king        missing capability          0 p1   found, but does not meet it: states 6mm to 750mm
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p11  states 1
+  leader      missing capability          0 p1   found, but does not meet it: states 15mm to 50mm
+
+### specification_number: BA54015    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p4]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### specification_revision: 03    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p4]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### gross_weight_per_unit: 1.900 KG   [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p4]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### end_connection: SW    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p4]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p7   states Socket Weld, Screwed, Butt Weld
+  king        fully matched             100 p1   states Screwed to BSPT, NPT, Socket Weld, Butt Weld with extended Nipple, Flanged Ends, Butt Weld Ends
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p13  states Socket-weld end, Screwed
+  leader      fully matched             100 p1   REVIEW states Socket-weld, Butt Welded; read from a scanned page
+
+### description: BALL VALVE SW SIZE 1"    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p5]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### specification: BA54015,03    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p9]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### type_and_size: BALL VALVE SW SIZE 1"    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p9]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      partially matched          25 p1   REVIEW states 15mm to 50mm, which names a reference but not the thing asked for; read from a scanned page
+
+### hsn_no: 84818030    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p9]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### standard_specification: BA54015 Rev 03    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p11]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### service_medium: Lube oil –460 cst grade Viscosity 460 cst at40°C/ SP 320    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      fully matched             100 p1   REVIEW states Water, Oil, Air, Gases; read from a scanned page
+
+### maximum_pressure: 12 kg/cm²   [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  partially matched          25 p7   REVIEW stated in Class, which cannot be converted to kg/cm²
+  king        partially matched          25 p1   REVIEW stated in #, which cannot be converted to kg/cm²
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      partially matched          25 p1   REVIEW stated in Bar, which cannot be converted to kg/cm²; only @ 38°C; read from a scanned page
+
+### maximum_temperature: 90 °C   [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     partially matched          75 p10  REVIEW stated up to a maximum temperature of 160°C; only for class 300
+  leader      fully matched             100 p1   REVIEW stated 175°C; read from a scanned page
+
+### body_material: Forged carbon steel – A105 or equivalent    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        fully matched             100 p1   states CI, CS, SS, A 105, F304, F316, CF3
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     partially matched          75 p6   REVIEW states ASTM A105; only Three-piece
+  leader      fully matched             100 p2   REVIEW states FORGED STEEL ASTM A105; read from a scanned page
+
+### ball_material: Stainless Steel - AISI 316/F –304    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p6   states ASTM A351 Gr. CF8M, ASTM A182 Gr. F316, ASTM A182 Gr. F304
+  leader      fully matched             100 p2   REVIEW states ASTM A276 TYPE 304, ASTM A351 Gr. CF8; read from a scanned page
+
+### stem_material: AISI 316/F304    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p6   states ASTM A479 Type 316
+  leader      fully matched             100 p2   REVIEW states STAINLESS STEEL ASTM A276 TYPE 316; read from a scanned page
+
+### seat_material: PTFE (Teflon)    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p7   states PTFE, MPTFE, TFM 1600, RPTFE, DEVLON, PEEK, CRYO PEEK, PCTFE, METAL (CRC /TCC /ST)
+  king        fully matched             100 p1   states PTFE, Reinforced PTFE, Buna-N, Graphoil, Graphite
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p6   states PTFE, RPTFE, Special filled PTFE, PEEK, Devlon®, NXT-70, SS316 + ST
+  leader      fully matched             100 p2   REVIEW states PTFE; read from a scanned page
+
+### valve_type: quarter turn type    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      fully matched             100 p1   REVIEW states quarter turn ball valve; read from a scanned page
+
+### end_connection_standard: ANSI B16.11    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### hydraulic_testing: Valve bodies shall be hydraulically tested for 1.5 times the design pressure and seats shall be tested to the rated pressure as per API 598.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### applicable_standard: API 6D    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  fully matched             100 p7   states ISO 17292, API 608, API 6D
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p1   states API 6D
+  leader      missing capability          0      no evidence found in the documents
+
+### dimensions_standard: API 6D    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p12]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     fully matched             100 p1   states API 6D
+  leader      missing capability          0      no evidence found in the documents
+
+### guarantee_period: 12 months from the date of commissioning or 18 months from the date of supply whichever is earlier    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p13]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### preservation: Each valve must be preserved with a suitable preservative compatible with mineral oil grades ISO VG 320 to 680. The preservative should be selected such that removal of preservative is not necessary before the valve is put on operation.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p13]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### material_dispatch_clearance_certificate: MDCC shall be issued by BHEL. No material shall be dispatched by supplier unless and until Material Dispatch Clearance Certificate (MDCC) issued by BHEL Site.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p19]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### inspection_and_testing: BHEL reserves the right to inspect the material during manufacturing and also to get tested the material under dispatch from third party. The test results of third party test shall be final and binding on the Supplier/Vendor.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p19]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### inspection_testing_location_and_replacement: BHEL will reserve the right to inspect/test the material during/after manufacturing at suppliers’ works, and/or at BHEL Site. In case of rejection at any stage, Supplier/Vendor shall be liable to replace the materials at his own cost.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p19]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documents_required_along_with_dispatch_packing_list: Packing list -Clearly showing number of packages, gross weight and net weight.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p21]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documents_required_along_with_dispatch_certificates: Test/Warranty/Guarantee certificates, O&M Manual (if specified in ANNEXURE)    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p21]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documents_required_along_with_dispatch_inspection: Pre-dispatch Inspection report/Third party Inspection certificates.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p21]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### standard_compliance: ISO-9001, ISO14001 and OHSAS 18001 shall be complied    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### packaging_and_dispatch: suitably protected against loss, damage, corrosion in transit and the effect or tropical salt laden atmosphere    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### package_fixtures: provided with fixtures/hooks and sling marks as may be required for easy and safe handling by mechanical means    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### package_marking: Each package must be marked with consignee name, address, P.O. number, Package Number, gross weight & net weight, dimensions (Lx B x H) and bidder’s name    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### packing_list: Packing list for goods inside each package with P.O. item No. & quantity must also be fixed securely outside the box to indicate the contents    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### inspection_agency: BHEL/TPIA    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p72]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+==== BABW94357001  x14
+
+### gross_weight_per_unit: 0.750 KG   [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p6]
+  delval      missing capability          0 p3   found, but does not meet it: stated 59.20 kg
+  duncan      missing capability          0 p11  found, but does not meet it: stated 11.0 kg
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0 p11  found, but does not meet it: stated 35,0 kg
+  l_and_t     missing capability          0 p11  found, but does not meet it: stated 2.5 kg
+  leader      missing capability          0      no evidence found in the documents
+
+### description: 1"BSP CS BALL VALVE, PRESSURE CL 300    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p6]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### type_and_size: 1"BSP    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p8]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### body_material: CS    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p8]
+  delval      partially matched          75 p5   REVIEW states ASTM A216 WCB, ASTM A351 CF8/C8M/CF3M; the product is not named; read from a scanned page
+  duncan      fully matched             100 p3   states carbon steel, stainless steel
+  intervalve  partially matched          75 p9   REVIEW states Aluminium, Carbon Steel, Stainless Steel; the product is not named
+  king        partially matched          75 p1   REVIEW states CI, DI, CS, SS; the product is not named
+  ksb         missing capability          0 p4   found, but does not meet it: states Cast steel
+  l_and_t     partially matched          75 p5   REVIEW states Carbon Steel; the product is not named
+  leader      missing capability          0 p2   found, but does not meet it: states CAST STEEL
+
+### maximum_pressure: CL 300    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p8]
+  delval      partially matched          25 p7   REVIEW states 175 PSIG, which names a reference but not the thing asked for; only 2” to 12” / DN 50-300; the product is not named; read from a scanned page
+  duncan      fully matched             100 p17  states Class 150 / 300
+  intervalve  partially matched          75 p8   REVIEW states ASME Class #150, #300, #600; the product is not named
+  king        partially matched          75 p1   REVIEW states 300 Psig; the product is not named
+  ksb         partially matched          25 p4   REVIEW states PN 63 - 160, which names a reference but not the thing asked for; the product is not named
+  l_and_t     partially matched          75 p12  REVIEW states Class 150, 300 & 600; the product is not named
+  leader      partially matched          25 p1   REVIEW states 69 Bar, which names a reference but not the thing asked for; only @ 38°C; the product is not named; read from a scanned page
+
+### standard_specification: SQP. HYQA/BM/SQP/264, R00, DTD 03.03.2025    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p11]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### material_dispatch_clearance_certificate: MDCC shall be issued by BHEL. No material shall be dispatched by supplier unless and until Material Dispatch Clearance Certificate (MDCC) issued by BHEL Site.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p19]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### inspection_and_testing: BHEL reserves the right to inspect the material during manufacturing and also to get tested the material under dispatch from third party. The test results of third party test shall be final and binding on the Supplier/Vendor.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p19]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### inspection_testing_location_and_replacement: BHEL will reserve the right to inspect/test the material during/after manufacturing at suppliers’ works, and/or at BHEL Site. In case of rejection at any stage, Supplier/Vendor shall be liable to replace the materials at his own cost.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p19]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documents_required_along_with_dispatch_packing_list: Packing list -Clearly showing number of packages, gross weight and net weight.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p21]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documents_required_along_with_dispatch_certificates: Test/Warranty/Guarantee certificates, O&M Manual (if specified in ANNEXURE)    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p21]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documents_required_along_with_dispatch_inspection: Pre-dispatch Inspection report/Third party Inspection certificates.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p21]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### standard_compliance: ISO-9001 | ISO14001 | OHSAS 18001    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### packaging_and_dispatch: suitably protected against loss, damage, corrosion in transit and the effect or tropical salt laden atmosphere    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### package_fixtures: provided with fixtures/hooks and sling marks as may be required for easy and safe handling by mechanical means    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### package_marking: Each package must be marked with consignee name, address, P.O. number, Package Number, gross weight & net weight, dimensions (Lx B x H) and bidder’s name    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### packing_list: Packing list for goods inside each package with P.O. item No. & quantity must also be fixed securely outside the box to indicate the contents    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### guarantee_period: 12 months from the date of commissioning or 18 months from the date of supply whichever is earlier    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p72]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### inspection_agency: BHEL/TPIA    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p72]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+==== SEAL RING SEGMENT  x?
+
+### standard_specification: IS: 9890    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p15]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### drawing_number: 26111003090-S00-R03; 26131003074-S00-R03; 46181003411- S00-R00    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p15]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### identification_and_marking: CNC or Laser engraving shall be done    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p16]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### preservation: Packing, wooden crates etc.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p16]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### material_dispatch_clearance_certificate: MDCC shall be issued by BHEL. No material shall be dispatched by supplier unless and until Material Dispatch Clearance Certificate (MDCC) issued by BHEL Site.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p19]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### inspection_and_testing: BHEL reserves the right to inspect the material during manufacturing and also to get tested the material under dispatch from third party. The test results of third party test shall be final and binding on the Supplier/Vendor.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p19]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### inspection_testing_location_and_replacement: BHEL will reserve the right to inspect/test the material during/after manufacturing at suppliers’ works, and/or at BHEL Site. In case of rejection at any stage, Supplier/Vendor shall be liable to replace the materials at his own cost.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p19]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documents_required_along_with_dispatch_packing_list: Packing list -Clearly showing number of packages, gross weight and net weight.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p21]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documents_required_along_with_dispatch_certificates: Test/Warranty/Guarantee certificates, O&M Manual (if specified in ANNEXURE)    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p21]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documents_required_along_with_dispatch_inspection: Pre-dispatch Inspection report/Third party Inspection certificates.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p21]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### standard_compliance: ISO-9001, ISO14001 and OHSAS 18001 shall be complied    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### packaging_and_dispatch: suitably protected against loss, damage, corrosion in transit and the effect or tropical salt laden atmosphere    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### package_fixtures: provided with fixtures/hooks and sling marks as may be required for easy and safe handling by mechanical means    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### package_marking: Each package must be marked with consignee name, address, P.O. number, Package Number, gross weight & net weight, dimensions (Lx B x H) and bidder’s name    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### packing_list: Packing list for goods inside each package with P.O. item No. & quantity must also be fixed securely outside the box to indicate the contents    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### guarantee_period: 12 months from the date of commissioning or 18 months from the date of supply whichever is earlier    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p72]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### inspection_agency: BHEL/TPIA    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p72]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+==== STOP BOLT KEEPER PLATE  x?
+
+### applicable_standard: IS: 9890    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p15]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### drawing_number: 26111003090-S00-R03; 26131003074-S00-R03; 46181003411- S00-R00    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p15]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### identification_and_marking: CNC or Laser engraving shall be done    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p16]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### preservation: Packing, wooden crates etc.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p16]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### material_dispatch_clearance_certificate: MDCC shall be issued by BHEL. No material shall be dispatched by supplier unless and until Material Dispatch Clearance Certificate (MDCC) issued by BHEL Site.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p19]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### inspection_and_testing: BHEL reserves the right to inspect the material during manufacturing and also to get tested the material under dispatch from third party. The test results of third party test shall be final and binding on the Supplier/Vendor.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p19]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### inspection_testing_location_and_replacement: BHEL will reserve the right to inspect/test the material during/after manufacturing at suppliers’ works, and/or at BHEL Site. In case of rejection at any stage, Supplier/Vendor shall be liable to replace the materials at his own cost.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p19]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documents_required_along_with_dispatch_packing_list: Packing list -Clearly showing number of packages, gross weight and net weight.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p21]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documents_required_along_with_dispatch_certificates: Test/Warranty/Guarantee certificates, O&M Manual (if specified in ANNEXURE)    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p21]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### documents_required_along_with_dispatch_inspection: Pre-dispatch Inspection report/Third party Inspection certificates.    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p21]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### standard_compliance: ISO-9001 | ISO14001 | OHSAS 18001    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### packaging_and_dispatch: suitably protected against loss, damage, corrosion in transit and the effect or tropical salt laden atmosphere    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### package_fixtures: provided with fixtures/hooks and sling marks as may be required for easy and safe handling by mechanical means    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### package_marking: Each package must be marked with consignee name, address, P.O. number, Package Number, gross weight & net weight, dimensions (Lx B x H) and bidder’s name    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      missing capability          0      no evidence found in the documents
+  duncan      missing capability          0      no evidence found in the documents
+  intervalve  missing capability          0      no evidence found in the documents
+  king        missing capability          0      no evidence found in the documents
+  ksb         missing capability          0      no evidence found in the documents
+  l_and_t     missing capability          0      no evidence found in the documents
+  leader      missing capability          0      no evidence found in the documents
+
+### packing_list: Packing list for goods inside each package with P.O. item No. & quantity must also be fixed securely outside the box to indicate the contents    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p40]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### guarantee_period: 12 months from the date of commissioning or 18 months from the date of supply whichever is earlier    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p72]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### inspection_agency: BHEL/TPIA    [tcb_2026-10-07-10-54-11_3b59185eea505719f96537bb545bd7a4.pdf p72]
+  delval      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  duncan      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  intervalve  unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  king        unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  ksb         unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  l_and_t     unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+  leader      unsupported requirement     0      needs a certificate or document, which a catalogue cannot show
+
+### overall, taking the best evidence for each requirement on its own
+  delval      overall compatibility   2.2%   coverage   6.7%   (67 requirements)
+      BA9754015023-BALL VALVE  x11                                 compatibility   0.0%   coverage   0.0%   (25 requirements)
+      BA9754015031-BALL VALVE  x66                                 compatibility   0.0%   coverage   0.0%   (20 requirements)
+      BABW94357001  x14                                            compatibility  11.1%   coverage  33.3%   (9 requirements)
+      SEAL RING SEGMENT  x?                                        compatibility   0.0%   coverage   0.0%   (7 requirements)
+      STOP BOLT KEEPER PLATE  x?                                   compatibility   0.0%   coverage   0.0%   (6 requirements)
+  duncan      overall compatibility   4.4%   coverage   6.7%   (67 requirements)
+      BA9754015023-BALL VALVE  x11                                 compatibility   0.0%   coverage   0.0%   (25 requirements)
+      BA9754015031-BALL VALVE  x66                                 compatibility   0.0%   coverage   0.0%   (20 requirements)
+      BABW94357001  x14                                            compatibility  22.2%   coverage  33.3%   (9 requirements)
+      SEAL RING SEGMENT  x?                                        compatibility   0.0%   coverage   0.0%   (7 requirements)
+      STOP BOLT KEEPER PLATE  x?                                   compatibility   0.0%   coverage   0.0%   (6 requirements)
+  intervalve  overall compatibility   9.6%   coverage  15.0%   (67 requirements)
+      BA9754015023-BALL VALVE  x11                                 compatibility  15.0%   coverage  28.0%   (25 requirements)
+      BA9754015031-BALL VALVE  x66                                 compatibility  16.2%   coverage  25.0%   (20 requirements)
+      BABW94357001  x14                                            compatibility  16.7%   coverage  22.2%   (9 requirements)
+      SEAL RING SEGMENT  x?                                        compatibility   0.0%   coverage   0.0%   (7 requirements)
+      STOP BOLT KEEPER PLATE  x?                                   compatibility   0.0%   coverage   0.0%   (6 requirements)
+  king        overall compatibility   9.4%   coverage  14.2%   (67 requirements)
+      BA9754015023-BALL VALVE  x11                                 compatibility  14.0%   coverage  24.0%   (25 requirements)
+      BA9754015031-BALL VALVE  x66                                 compatibility  16.2%   coverage  25.0%   (20 requirements)
+      BABW94357001  x14                                            compatibility  16.7%   coverage  22.2%   (9 requirements)
+      SEAL RING SEGMENT  x?                                        compatibility   0.0%   coverage   0.0%   (7 requirements)
+      STOP BOLT KEEPER PLATE  x?                                   compatibility   0.0%   coverage   0.0%   (6 requirements)
+  ksb         overall compatibility   0.6%   coverage   6.7%   (67 requirements)
+      BA9754015023-BALL VALVE  x11                                 compatibility   0.0%   coverage   0.0%   (25 requirements)
+      BA9754015031-BALL VALVE  x66                                 compatibility   0.0%   coverage   0.0%   (20 requirements)
+      BABW94357001  x14                                            compatibility   2.8%   coverage  33.3%   (9 requirements)
+      SEAL RING SEGMENT  x?                                        compatibility   0.0%   coverage   0.0%   (7 requirements)
+      STOP BOLT KEEPER PLATE  x?                                   compatibility   0.0%   coverage   0.0%   (6 requirements)
+  l_and_t     overall compatibility  17.8%   coverage  22.1%   (67 requirements)
+      BA9754015023-BALL VALVE  x11                                 compatibility  30.0%   coverage  32.0%   (25 requirements)
+      BA9754015031-BALL VALVE  x66                                 compatibility  42.5%   coverage  45.0%   (20 requirements)
+      BABW94357001  x14                                            compatibility  16.7%   coverage  33.3%   (9 requirements)
+      SEAL RING SEGMENT  x?                                        compatibility   0.0%   coverage   0.0%   (7 requirements)
+      STOP BOLT KEEPER PLATE  x?                                   compatibility   0.0%   coverage   0.0%   (6 requirements)
+  leader      overall compatibility  15.9%   coverage  24.2%   (67 requirements)
+      BA9754015023-BALL VALVE  x11                                 compatibility  34.0%   coverage  44.0%   (25 requirements)
+      BA9754015031-BALL VALVE  x66                                 compatibility  42.5%   coverage  55.0%   (20 requirements)
+      BABW94357001  x14                                            compatibility   2.8%   coverage  22.2%   (9 requirements)
+      SEAL RING SEGMENT  x?                                        compatibility   0.0%   coverage   0.0%   (7 requirements)
+      STOP BOLT KEEPER PLATE  x?                                   compatibility   0.0%   coverage   0.0%   (6 requirements)
+
+### overall, scoring one product at a time (the best single product for each item)
+  delval      overall compatibility   2.2%   coverage   6.7%   (67 requirements)
+      BA9754015023-BALL VALVE  x11                                 compatibility   0.0%   coverage   0.0%   (25 requirements)   product: none named
+      BA9754015031-BALL VALVE  x66                                 compatibility   0.0%   coverage   0.0%   (20 requirements)   product: none named
+      BABW94357001  x14                                            compatibility  11.1%   coverage  33.3%   (9 requirements)   product: none named
+      SEAL RING SEGMENT  x?                                        compatibility   0.0%   coverage   0.0%   (7 requirements)   product: none named
+      STOP BOLT KEEPER PLATE  x?                                   compatibility   0.0%   coverage   0.0%   (6 requirements)   product: none named
+  duncan      overall compatibility   2.2%   coverage   4.4%   (67 requirements)
+      BA9754015023-BALL VALVE  x11                                 compatibility   0.0%   coverage   0.0%   (25 requirements)   product: none named
+      BA9754015031-BALL VALVE  x66                                 compatibility   0.0%   coverage   0.0%   (20 requirements)   product: none named
+      BABW94357001  x14                                            compatibility  11.1%   coverage  22.2%   (9 requirements)   product: DOUBLE OFFSET BUTTERFLY VALVE
+      SEAL RING SEGMENT  x?                                        compatibility   0.0%   coverage   0.0%   (7 requirements)   product: none named
+      STOP BOLT KEEPER PLATE  x?                                   compatibility   0.0%   coverage   0.0%   (6 requirements)   product: none named
+  intervalve  overall compatibility   7.8%   coverage  13.2%   (67 requirements)
+      BA9754015023-BALL VALVE  x11                                 compatibility  11.0%   coverage  24.0%   (25 requirements)   product: Floating Ball Valve 2 Pcs Design Soft & Metal Seated
+      BA9754015031-BALL VALVE  x66                                 compatibility  11.2%   coverage  20.0%   (20 requirements)   product: Floating Ball Valve 2 Pcs Design Soft & Metal Seated
+      BABW94357001  x14                                            compatibility  16.7%   coverage  22.2%   (9 requirements)   product: none named
+      SEAL RING SEGMENT  x?                                        compatibility   0.0%   coverage   0.0%   (7 requirements)   product: none named
+      STOP BOLT KEEPER PLATE  x?                                   compatibility   0.0%   coverage   0.0%   (6 requirements)   product: none named
+  king        overall compatibility   9.4%   coverage  14.2%   (67 requirements)
+      BA9754015023-BALL VALVE  x11                                 compatibility  14.0%   coverage  24.0%   (25 requirements)   product: BALL VALVES-FLOATING & TRUNNION MOUNTED
+      BA9754015031-BALL VALVE  x66                                 compatibility  16.2%   coverage  25.0%   (20 requirements)   product: BALL VALVES-FLOATING & TRUNNION MOUNTED
+      BABW94357001  x14                                            compatibility  16.7%   coverage  22.2%   (9 requirements)   product: none named
+      SEAL RING SEGMENT  x?                                        compatibility   0.0%   coverage   0.0%   (7 requirements)   product: none named
+      STOP BOLT KEEPER PLATE  x?                                   compatibility   0.0%   coverage   0.0%   (6 requirements)   product: none named
+  ksb         overall compatibility   0.6%   coverage   6.7%   (67 requirements)
+      BA9754015023-BALL VALVE  x11                                 compatibility   0.0%   coverage   0.0%   (25 requirements)   product: none named
+      BA9754015031-BALL VALVE  x66                                 compatibility   0.0%   coverage   0.0%   (20 requirements)   product: none named
+      BABW94357001  x14                                            compatibility   2.8%   coverage  33.3%   (9 requirements)   product: none named
+      SEAL RING SEGMENT  x?                                        compatibility   0.0%   coverage   0.0%   (7 requirements)   product: none named
+      STOP BOLT KEEPER PLATE  x?                                   compatibility   0.0%   coverage   0.0%   (6 requirements)   product: none named
+  l_and_t     overall compatibility  17.8%   coverage  22.1%   (67 requirements)
+      BA9754015023-BALL VALVE  x11                                 compatibility  30.0%   coverage  32.0%   (25 requirements)   product: Trunnion-mounted Ball Valves
+      BA9754015031-BALL VALVE  x66                                 compatibility  42.5%   coverage  45.0%   (20 requirements)   product: Trunnion-mounted Ball Valves
+      BABW94357001  x14                                            compatibility  16.7%   coverage  33.3%   (9 requirements)   product: none named
+      SEAL RING SEGMENT  x?                                        compatibility   0.0%   coverage   0.0%   (7 requirements)   product: none named
+      STOP BOLT KEEPER PLATE  x?                                   compatibility   0.0%   coverage   0.0%   (6 requirements)   product: none named
+  leader      overall compatibility  14.1%   coverage  24.2%   (67 requirements)
+      BA9754015023-BALL VALVE  x11                                 compatibility  30.0%   coverage  44.0%   (25 requirements)   product: INVESTMENT STAINLESS STEEL BALL VALVE (Class-800)
+      BA9754015031-BALL VALVE  x66                                 compatibility  37.5%   coverage  55.0%   (20 requirements)   product: INVESTMENT STAINLESS STEEL BALL VALVE (Class-800)
+      BABW94357001  x14                                            compatibility   2.8%   coverage  22.2%   (9 requirements)   product: none named
+      SEAL RING SEGMENT  x?                                        compatibility   0.0%   coverage   0.0%   (7 requirements)   product: none named
+      STOP BOLT KEEPER PLATE  x?                                   compatibility   0.0%   coverage   0.0%   (6 requirements)   product: none named
+
+model calls 156, from cache 183, tokens in 662874 / out 30176

@@ -1,0 +1,490 @@
+{
+  "tender": "GeM-Bidding-DEMO",
+  "method": "Each requirement a catalogue can show gets a score: 100 fully matched, 75/50/25 partially matched (see the definitions), 0 missing capability. A manufacturer's compatibility for one tender item is the average of those scores, and every requirement of the item weighs the same. Unsupported requirements are left out of the average and listed separately. Each requirement is judged against one single product of the manufacturer (the one that suits the item best), so credit is never combined from different products. A manufacturer with no product of the tender's type in its documents, or whose best product fails the requirement that names the type (for example a horizontal pump against a vertical one), scores 0 for that item. An item that no manufacturer's documents can be judged for is not scored at all. The overall compatibility is the average over the scored items, each item weighing the same whatever its quantity. Coverage is the share of the counted requirements for which the documents state something, whether or not it meets the need. Statements that need a person to look (marked review) still count at their score.",
+  "definitions": {
+    "fully matched": "The manufacturer's document states the requirement, and the stated value meets it (score 100).",
+    "partially matched": "The document says something relevant but not enough to be sure: the value is higher than asked (75), applies only under a condition or to a product that is not named (75), is the same kind of thing but not the grade or number asked for (50), meets the need only if a unit such as PN is read the other way (50), or is in units that cannot be converted (25). These are flagged for review.",
+    "missing capability": "A catalogue could show this requirement and at least one manufacturer's documents speak to it, but this manufacturer's documents state nothing about it, or state something that does not meet it (score 0).",
+    "unsupported requirement": "A requirement about which no manufacturer can be judged from catalogues: it needs a certificate or other document, it only identifies the item or where it is used, or none of the collected documents covers it. It is not scored and not held against anyone; it is listed so the bid manager can confirm it with the manufacturer."
+  },
+  "notes": [
+    "1 requirement(s) dropped: a quote was not found on its page"
+  ],
+  "unscored_items": [],
+  "unsupported": [
+    {
+      "item": "Valves",
+      "wanted": "noise_level: 85 dBA",
+      "tender_file": "",
+      "tender_page": 1,
+      "why": "none of the collected documents says anything about it for any manufacturer, so it cannot be judged"
+    },
+    {
+      "item": "Valves",
+      "wanted": "test_report: Yes",
+      "tender_file": "",
+      "tender_page": 1,
+      "why": "needs a certificate, test report or other document, which a catalogue cannot show"
+    },
+    {
+      "item": "Valves",
+      "wanted": "tag_number: V-101",
+      "tender_file": "",
+      "tender_page": 1,
+      "why": "identifies the item or says where it is used; it is information, not a capability a product has"
+    }
+  ],
+  "makers": [
+    {
+      "manufacturer": "alpha",
+      "rank": 1,
+      "compatibility": 87.5,
+      "coverage": 100.0,
+      "pooled_compatibility": null,
+      "counts": {
+        "fully matched": 3,
+        "partially matched": 1,
+        "missing capability": 0,
+        "unsupported requirement": 3
+      },
+      "by_status": {
+        "fully matched": [
+          "Butterfly valves, wafer type: nominal_size: 125 mm",
+          "Butterfly valves, wafer type: rated_pressure: 16 bar",
+          "Butterfly valves, wafer type: seat_material: EPDM"
+        ],
+        "partially matched": [
+          "Butterfly valves, wafer type: body_material: Grey cast iron IS 210 FG 260"
+        ],
+        "missing capability": [],
+        "unsupported requirement": [
+          "Butterfly valves, wafer type: noise_level: 85 dBA",
+          "Butterfly valves, wafer type: test_report: Yes",
+          "Butterfly valves, wafer type: tag_number: V-101"
+        ]
+      },
+      "review_needed": 1,
+      "items": [
+        {
+          "item": "Butterfly valves, wafer type",
+          "quantity": 50,
+          "product": "AL-200 butterfly valve",
+          "scored": true,
+          "compatibility": 87.5,
+          "coverage": 100.0,
+          "counted": 4,
+          "note": null,
+          "rows": [
+            {
+              "attribute": "nominal_size",
+              "wanted": "125 mm",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "fully matched",
+              "score": 100,
+              "review": false,
+              "reason": "stated 50 NB to 350 NB",
+              "product": "AL-200 butterfly valve",
+              "document": "alpha-catalogue.pdf",
+              "page": 4,
+              "quote": "50 NB to 350 NB",
+              "flags": []
+            },
+            {
+              "attribute": "rated_pressure",
+              "wanted": "16 bar",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "fully matched",
+              "score": 100,
+              "review": false,
+              "reason": "stated PN 10/16",
+              "product": "AL-200 butterfly valve",
+              "document": "alpha-catalogue.pdf",
+              "page": 4,
+              "quote": "PN 10/16",
+              "flags": []
+            },
+            {
+              "attribute": "seat_material",
+              "wanted": "EPDM",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "fully matched",
+              "score": 100,
+              "review": false,
+              "reason": "states EPDM, NBR",
+              "product": "AL-200 butterfly valve",
+              "document": "alpha-catalogue.pdf",
+              "page": 6,
+              "quote": "Seat: EPDM, NBR",
+              "flags": []
+            },
+            {
+              "attribute": "body_material",
+              "wanted": "Grey cast iron IS 210 FG 260",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "partially matched",
+              "score": 50,
+              "review": true,
+              "reason": "states Grey cast iron: the kind of thing, but not the grade or number asked for",
+              "product": "AL-200 butterfly valve",
+              "document": "alpha-catalogue.pdf",
+              "page": 6,
+              "quote": "Grey cast iron",
+              "flags": [
+                "grade not stated"
+              ]
+            },
+            {
+              "attribute": "noise_level",
+              "wanted": "85 dBA",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "unsupported requirement",
+              "score": 0,
+              "review": false,
+              "reason": "none of the collected documents says anything about it for any manufacturer, so it cannot be judged",
+              "product": null,
+              "document": null,
+              "page": null,
+              "quote": null,
+              "flags": []
+            },
+            {
+              "attribute": "test_report",
+              "wanted": "Yes",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "unsupported requirement",
+              "score": 0,
+              "review": false,
+              "reason": "needs a certificate, test report or other document, which a catalogue cannot show",
+              "product": null,
+              "document": null,
+              "page": null,
+              "quote": null,
+              "flags": []
+            },
+            {
+              "attribute": "tag_number",
+              "wanted": "V-101",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "unsupported requirement",
+              "score": 0,
+              "review": false,
+              "reason": "identifies the item or says where it is used; it is information, not a capability a product has",
+              "product": null,
+              "document": null,
+              "page": null,
+              "quote": null,
+              "flags": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "manufacturer": "beta",
+      "rank": 2,
+      "compatibility": 37.5,
+      "coverage": 75.0,
+      "pooled_compatibility": null,
+      "counts": {
+        "fully matched": 1,
+        "partially matched": 1,
+        "missing capability": 2,
+        "unsupported requirement": 3
+      },
+      "by_status": {
+        "fully matched": [
+          "Butterfly valves, wafer type: nominal_size: 125 mm"
+        ],
+        "partially matched": [
+          "Butterfly valves, wafer type: rated_pressure: 16 bar"
+        ],
+        "missing capability": [
+          "Butterfly valves, wafer type: seat_material: EPDM",
+          "Butterfly valves, wafer type: body_material: Grey cast iron IS 210 FG 260"
+        ],
+        "unsupported requirement": [
+          "Butterfly valves, wafer type: noise_level: 85 dBA",
+          "Butterfly valves, wafer type: test_report: Yes",
+          "Butterfly valves, wafer type: tag_number: V-101"
+        ]
+      },
+      "review_needed": 1,
+      "items": [
+        {
+          "item": "Butterfly valves, wafer type",
+          "quantity": 50,
+          "product": "BX butterfly valve",
+          "scored": true,
+          "compatibility": 37.5,
+          "coverage": 75.0,
+          "counted": 4,
+          "note": null,
+          "rows": [
+            {
+              "attribute": "nominal_size",
+              "wanted": "125 mm",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "fully matched",
+              "score": 100,
+              "review": false,
+              "reason": "stated 65 NB to 300 NB",
+              "product": "BX butterfly valve",
+              "document": "beta.pdf",
+              "page": 2,
+              "quote": "65 NB to 300 NB",
+              "flags": []
+            },
+            {
+              "attribute": "rated_pressure",
+              "wanted": "16 bar",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "partially matched",
+              "score": 50,
+              "review": true,
+              "reason": "Upto PN10 matches only if PN is read the other way",
+              "product": "BX butterfly valve",
+              "document": "beta.pdf",
+              "page": 2,
+              "quote": "Upto PN10",
+              "flags": [
+                "grade not stated"
+              ]
+            },
+            {
+              "attribute": "seat_material",
+              "wanted": "EPDM",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "missing capability",
+              "score": 0,
+              "review": false,
+              "reason": "found, but does not meet it: states Viton",
+              "product": "BX butterfly valve",
+              "document": "beta.pdf",
+              "page": 3,
+              "quote": "Seat: Viton",
+              "flags": []
+            },
+            {
+              "attribute": "body_material",
+              "wanted": "Grey cast iron IS 210 FG 260",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "missing capability",
+              "score": 0,
+              "review": false,
+              "reason": "no evidence found in the documents",
+              "product": null,
+              "document": null,
+              "page": null,
+              "quote": null,
+              "flags": []
+            },
+            {
+              "attribute": "noise_level",
+              "wanted": "85 dBA",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "unsupported requirement",
+              "score": 0,
+              "review": false,
+              "reason": "none of the collected documents says anything about it for any manufacturer, so it cannot be judged",
+              "product": null,
+              "document": null,
+              "page": null,
+              "quote": null,
+              "flags": []
+            },
+            {
+              "attribute": "test_report",
+              "wanted": "Yes",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "unsupported requirement",
+              "score": 0,
+              "review": false,
+              "reason": "needs a certificate, test report or other document, which a catalogue cannot show",
+              "product": null,
+              "document": null,
+              "page": null,
+              "quote": null,
+              "flags": []
+            },
+            {
+              "attribute": "tag_number",
+              "wanted": "V-101",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "unsupported requirement",
+              "score": 0,
+              "review": false,
+              "reason": "identifies the item or says where it is used; it is information, not a capability a product has",
+              "product": null,
+              "document": null,
+              "page": null,
+              "quote": null,
+              "flags": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "manufacturer": "gamma",
+      "rank": 3,
+      "compatibility": 0.0,
+      "coverage": 25.0,
+      "pooled_compatibility": null,
+      "counts": {
+        "fully matched": 0,
+        "partially matched": 0,
+        "missing capability": 4,
+        "unsupported requirement": 3
+      },
+      "by_status": {
+        "fully matched": [],
+        "partially matched": [],
+        "missing capability": [
+          "Butterfly valves, wafer type: nominal_size: 125 mm",
+          "Butterfly valves, wafer type: rated_pressure: 16 bar",
+          "Butterfly valves, wafer type: seat_material: EPDM",
+          "Butterfly valves, wafer type: body_material: Grey cast iron IS 210 FG 260"
+        ],
+        "unsupported requirement": [
+          "Butterfly valves, wafer type: noise_level: 85 dBA",
+          "Butterfly valves, wafer type: test_report: Yes",
+          "Butterfly valves, wafer type: tag_number: V-101"
+        ]
+      },
+      "review_needed": 0,
+      "items": [
+        {
+          "item": "Butterfly valves, wafer type",
+          "quantity": 50,
+          "product": "G wafer valve",
+          "scored": true,
+          "compatibility": 0.0,
+          "coverage": 25.0,
+          "counted": 4,
+          "note": null,
+          "rows": [
+            {
+              "attribute": "nominal_size",
+              "wanted": "125 mm",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "missing capability",
+              "score": 0,
+              "review": false,
+              "reason": "found, but does not meet it: stated 40mm to 100mm",
+              "product": "G wafer valve",
+              "document": "gamma.pdf",
+              "page": 1,
+              "quote": "40mm to 100mm",
+              "flags": []
+            },
+            {
+              "attribute": "rated_pressure",
+              "wanted": "16 bar",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "missing capability",
+              "score": 0,
+              "review": false,
+              "reason": "no evidence found in the documents",
+              "product": null,
+              "document": null,
+              "page": null,
+              "quote": null,
+              "flags": []
+            },
+            {
+              "attribute": "seat_material",
+              "wanted": "EPDM",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "missing capability",
+              "score": 0,
+              "review": false,
+              "reason": "no evidence found in the documents",
+              "product": null,
+              "document": null,
+              "page": null,
+              "quote": null,
+              "flags": []
+            },
+            {
+              "attribute": "body_material",
+              "wanted": "Grey cast iron IS 210 FG 260",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "missing capability",
+              "score": 0,
+              "review": false,
+              "reason": "no evidence found in the documents",
+              "product": null,
+              "document": null,
+              "page": null,
+              "quote": null,
+              "flags": []
+            },
+            {
+              "attribute": "noise_level",
+              "wanted": "85 dBA",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "unsupported requirement",
+              "score": 0,
+              "review": false,
+              "reason": "none of the collected documents says anything about it for any manufacturer, so it cannot be judged",
+              "product": null,
+              "document": null,
+              "page": null,
+              "quote": null,
+              "flags": []
+            },
+            {
+              "attribute": "test_report",
+              "wanted": "Yes",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "unsupported requirement",
+              "score": 0,
+              "review": false,
+              "reason": "needs a certificate, test report or other document, which a catalogue cannot show",
+              "product": null,
+              "document": null,
+              "page": null,
+              "quote": null,
+              "flags": []
+            },
+            {
+              "attribute": "tag_number",
+              "wanted": "V-101",
+              "tender_file": "",
+              "tender_page": 1,
+              "status": "unsupported requirement",
+              "score": 0,
+              "review": false,
+              "reason": "identifies the item or says where it is used; it is information, not a capability a product has",
+              "product": null,
+              "document": null,
+              "page": null,
+              "quote": null,
+              "flags": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

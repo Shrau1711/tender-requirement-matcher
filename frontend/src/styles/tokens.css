@@ -1,0 +1,87 @@
+/* Colours measured from the TenderGenie screenshots: brick brand, dark slate secondary, warm light page.
+   Every text/background pair is checked against WCAG AA by src/tokens.test.js. */
+:root {
+  color-scheme: light;
+  --page: #f2f1f1;
+  --surface: #fdfdfd;
+  --surface-2: #f7f6f5;
+  --ink: #1f2330;
+  --ink-soft: #5b5f6e;
+  --line: #e1dfdd;
+  --line-strong: #c9c6c3;
+
+  --brand: #b94830;
+  --brand-hover: #a63f2a;
+  --on-brand: #ffffff;
+  --brand-text: #a63f2a;
+  --brand-tint: #f8e6e1;
+  --on-brand-tint: #7a2a19;
+  --slate: #2b2f3e;
+  --on-slate: #ffffff;
+  --bar: #b94830;
+  --on-bar: #ffffff;
+  --bar-line: #b94830;
+
+  --full: #1f6b3f;
+  --full-soft: #e4f2e9;
+  --partial: #8a5200;
+  --partial-soft: #fbefd6;
+  --missing: #a32020;
+  --missing-soft: #fbe4e1;
+  --unsupported: #4a4f5c;
+  --unsupported-soft: #e8e9ed;
+  --fill-full: #2e8f5a;
+  --fill-partial: #d99a1e;
+  --fill-missing: #c8453a;
+  --fill-unsupported: #9a9ea9;
+
+  --shadow: 0 1px 2px rgb(31 35 48 / 8%);
+  --font: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --text-xs: 0.75rem;
+  --text-s: 0.8125rem;
+  --text: 0.875rem;
+  --text-l: 1rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.625rem;
+  --radius: 6px;
+  --topbar: 52px;
+  --sidebar: 212px;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #131419;
+  --surface: #1c1e26;
+  --surface-2: #232630;
+  --ink: #e9eaee;
+  --ink-soft: #a7abb8;
+  --line: #323643;
+  --line-strong: #484d5d;
+
+  --brand: #ee8a5c;
+  --brand-hover: #f39d74;
+  --on-brand: #1b0f08;
+  --brand-text: #f4a07a;
+  --brand-tint: #3a2620;
+  --on-brand-tint: #f6c3ad;
+  --slate: #3a3f52;
+  --on-slate: #f2f3f6;
+  --bar: #1c1e26;
+  --on-bar: #e9eaee;
+  --bar-line: #ee8a5c;
+
+  --full: #7fd6a2;
+  --full-soft: #1d3328;
+  --partial: #f0c36a;
+  --partial-soft: #3a2e14;
+  --missing: #ff9b8f;
+  --missing-soft: #3d2220;
+  --unsupported: #c3c6d0;
+  --unsupported-soft: #2c2f3a;
+  --fill-full: #3ea56c;
+  --fill-partial: #d9a43a;
+  --fill-missing: #d9574b;
+  --fill-unsupported: #7b8090;
+
+  --shadow: 0 1px 2px rgb(0 0 0 / 40%);
+}

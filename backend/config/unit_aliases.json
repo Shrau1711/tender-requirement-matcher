@@ -1,0 +1,14 @@
+{
+  "PN": {"unit": "bar", "factor": 1, "alternative_factor": 10, "attribute_contains": ["pressure"]},
+  "BARG": {"unit": "bar", "factor": 1, "attribute_contains": ["pressure"]},
+  "PSIG": {"unit": "psi", "factor": 1, "attribute_contains": ["pressure"]},
+  "DN": {"unit": "mm", "factor": 1, "attribute_contains": ["size"]},
+  "NB": {"unit": "mm", "factor": 1, "attribute_contains": ["size"]},
+  "INCH": {"unit": "mm", "factor": 25, "attribute_contains": ["size"]},
+  "NPS": {"unit": "mm", "factor": 25, "attribute_contains": ["size"]},
+  "INCHES": {"unit": "mm", "factor": 25, "attribute_contains": ["size"]},
+  "IN": {"unit": "mm", "factor": 25, "attribute_contains": ["size"]},
+  "\"": {"unit": "mm", "factor": 25, "attribute_contains": ["size"]},
+  "\u201d": {"unit": "mm", "factor": 25, "attribute_contains": ["size"]},
+  "\u2033": {"unit": "mm", "factor": 25, "attribute_contains": ["size"]}
+}

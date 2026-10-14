@@ -1,0 +1,34 @@
+﻿Consider using the pymupdf_layout package for a greatly improved page layout analysis.
+3 tables found
+
+--- table 1
+['CENTRIC BUTTERFLY VALVE\nDIMENSIONS & WEIGHTS\nDimensions (MM)\nValve Size Top Flanged Drilling Lug Bolting Data App. Weight (kg)\n╪A B E L ╪F No. of Sq. H ╪G J Key Size K No. of Threads\nINCH DN PCD Hole Dia. BC Wafer Lug\nHoles Holes UNC/UN - 28\n2 50 96 43 116 80 90 70 4 10 14 - 16 - 32.6 120.6 4 5/8-11 UNC 2.5 3.5\n2.5 65 108 46 126 82 90 70 4 10 14 - 16 - 48.2 139.7 4 5/8-11 UNC 3.3 3.8\n3 80 126 46 132 87 90 70 4 10 14 - 16 - 63.0 152.4 4 5/8-11 UNC 3.6 4.0\n4 100 154 52 153 107 90 70 4 10 14 - 16 - 84.2 190.5 8 5/8-11 UNC 6.0 8.0\n5 125 195 56 166 131 90 70 4 10 17 - 19 - 117.3 215.9 8 3/4-10 UNC 7.0 11.0\n6 150 216 56 182 142 90 70 4 10 17 - 19 - 135.9 241.3 8 3/4-10 UNC 12.0 14.0\n8 200 272 60 236 177 150 102/125 4 12/14 19 - 21 - 186.1 398.4 8 3/4-10 UNC 22.5 24.0\n10 250 327 68 257 218 150 102/125 4 12/14 22 - 24 - 236.4 362.0 12 7/8-9 UNC 24.0 30.0\n12 300 387 78 286 242 150 125 4 14 27 - 29 - 282.6 431.8 12 7/8-9 UNC 37.0. 45.0\nCENTRIC BUTTERFLY VALVE TORQUE DATA (Nm)\nDifferential Pressure (P)\nINCH DN Undercut Disc Standard Disc Oversized Disc\nPN 3.5/50PSI PN 6/87PSI PN 10/150PSI PN 12/175PSI PN 16/230PSI PN 20/285PSI\nNm Nm Nm Nm Nm Nm\n2 50 - 9 10 11 18 32\n2.5 65 - 15 18 18 23 42\n3 80 - 17 22 22 33 60\n4 100 16 30 32 34 47 83\n5 125 22 45 50 52 66 119\n6 150 32 63 68 72 112 134\n8 200 72 112 125 130 212 254\n10 250 88 182 200 210 320 385\n12 300 145 305 339 357 470 565\nNote: Above torque are for clean media and do not contain any safety factor for the actuator sizing of other condition exist, a service\nfactor should be applied. Please consult Duncan for specific service factor.\nDuncan reserve rights to change the content without notice', None]
+['', 'www.duncanengg.com\n6']
+
+--- table 2
+['Valve Size', None, '╪A', 'B', 'E', 'L', '╪F', 'Top Flanged Drilling', None, None, 'Sq. H', '╪G', 'J', 'Key Size', 'K', 'Lug Bolting Data', None, None, 'App. Weight (kg)', None]
+['INCH', 'DN', None, None, None, None, None, 'PCD', 'No. of\nHoles', 'Hole Dia.', None, None, None, None, None, 'BC', 'No. of\nHoles', 'Threads\nUNC/UN - 28', 'Wafer', 'Lug']
+['2', '50', '96', '43', '116', '80', '90', '70', '4', '10', '14', '-', '16', '-', '32.6', '120.6', '4', '5/8-11 UNC', '2.5', '3.5']
+['2.5', '65', '108', '46', '126', '82', '90', '70', '4', '10', '14', '-', '16', '-', '48.2', '139.7', '4', '5/8-11 UNC', '3.3', '3.8']
+['3', '80', '126', '46', '132', '87', '90', '70', '4', '10', '14', '-', '16', '-', '63.0', '152.4', '4', '5/8-11 UNC', '3.6', '4.0']
+['4', '100', '154', '52', '153', '107', '90', '70', '4', '10', '14', '-', '16', '-', '84.2', '190.5', '8', '5/8-11 UNC', '6.0', '8.0']
+['5', '125', '195', '56', '166', '131', '90', '70', '4', '10', '17', '-', '19', '-', '117.3', '215.9', '8', '3/4-10 UNC', '7.0', '11.0']
+['6', '150', '216', '56', '182', '142', '90', '70', '4', '10', '17', '-', '19', '-', '135.9', '241.3', '8', '3/4-10 UNC', '12.0', '14.0']
+['8', '200', '272', '60', '236', '177', '150', '102/125', '4', '12/14', '19', '-', '21', '-', '186.1', '398.4', '8', '3/4-10 UNC', '22.5', '24.0']
+['10', '250', '327', '68', '257', '218', '150', '102/125', '4', '12/14', '22', '-', '24', '-', '236.4', '362.0', '12', '7/8-9 UNC', '24.0', '30.0']
+['12', '300', '387', '78', '286', '242', '150', '125', '4', '14', '27', '-', '29', '-', '282.6', '431.8', '12', '7/8-9 UNC', '37.0.', '45.0']
+
+--- table 3
+['INCH', 'DN', 'Differential Pressure (P)', None, None, None, None, None]
+[None, None, 'Undercut Disc', 'Standard Disc', None, None, 'Oversized Disc', None]
+[None, None, 'PN 3.5/50PSI', 'PN 6/87PSI', 'PN 10/150PSI', 'PN 12/175PSI', 'PN 16/230PSI', 'PN 20/285PSI']
+[None, None, 'Nm', 'Nm', 'Nm', 'Nm', 'Nm', 'Nm']
+['2', '50', '-', '9', '10', '11', '18', '32']
+['2.5', '65', '-', '15', '18', '18', '23', '42']
+['3', '80', '-', '17', '22', '22', '33', '60']
+['4', '100', '16', '30', '32', '34', '47', '83']
+['5', '125', '22', '45', '50', '52', '66', '119']
+['6', '150', '32', '63', '68', '72', '112', '134']
+['8', '200', '72', '112', '125', '130', '212', '254']
+['10', '250', '88', '182', '200', '210', '320', '385']
+['12', '300', '145', '305', '339', '357', '470', '565']

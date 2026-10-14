@@ -1,0 +1,48 @@
+from __future__ import annotations
+
+import os
+import sys
+
+from google import genai
+from google.genai import types
+
+from app.config import gemini_key
+from app.services.llm import Reply
+
+DEFAULT_MODEL = "gemini-3.8-flash"  # override with the LLM_MODEL environment variable
+DEFAULT_THINKING = "LOW"  # override with LLM_THINKING: MINIMAL, LOW, MEDIUM, HIGH, or DEFAULT for the model's own choice
+
+
+class GeminiLLM:
+    def __init__(self) -> None:
+        key_name, key = gemini_key()
+        self.client = genai.Client(api_key=key)
+        self.model = os.environ.get("LLM_MODEL", DEFAULT_MODEL)
+        level = os.environ.get("LLM_THINKING", DEFAULT_THINKING).upper()
+        self.thinking = None if level == "DEFAULT" else types.ThinkingConfig(thinking_level=level)
+        self.settings = f"thinking={level}"  # part of the cache key, because it changes the answers
+        print(f"[llm] key={key_name} model={self.model} thinking={level}", file=sys.stderr)
+
+    def generate(self, system: str, user: str) -> Reply:
+        config = types.GenerateContentConfig(
+            system_instruction=system, response_mime_type="application/json", temperature=0,
+            thinking_config=self.thinking,
+        )
+        response = self.client.models.generate_content(model=self.model, contents=user, config=config)
+        usage = response.usage_metadata
+        return Reply(
+            text=response.text,
+            input_tokens=usage.prompt_token_count or 0,
+            output_tokens=(usage.candidates_token_count or 0) + (usage.thoughts_token_count or 0),
+        )
+
+    def transcribe(self, png: bytes, prompt: str) -> Reply:
+        config = types.GenerateContentConfig(temperature=0, thinking_config=self.thinking)
+        contents = [types.Part.from_bytes(data=png, mime_type="image/png"), prompt]
+        response = self.client.models.generate_content(model=self.model, contents=contents, config=config)
+        usage = response.usage_metadata
+        return Reply(
+            text=response.text or "",
+            input_tokens=usage.prompt_token_count or 0,
+            output_tokens=(usage.candidates_token_count or 0) + (usage.thoughts_token_count or 0),
+        )

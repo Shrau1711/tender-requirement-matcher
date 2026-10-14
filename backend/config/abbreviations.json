@@ -1,0 +1,74 @@
+{
+  "BW": [
+    "butt weld",
+    "buttweld",
+    "butt welded",
+    "butt welding"
+  ],
+  "SW": [
+    "socket weld",
+    "socketweld",
+    "socket welded",
+    "socket welding"
+  ],
+  "RF": [
+    "raised face"
+  ],
+  "FF": [
+    "flat face"
+  ],
+  "RTJ": [
+    "ring type joint",
+    "ring joint"
+  ],
+  "SCRD": [
+    "screwed",
+    "threaded"
+  ],
+  "SS": [
+    "stainless steel"
+  ],
+  "CS": [
+    "carbon steel"
+  ],
+  "CI": [
+    "cast iron"
+  ],
+  "DI": [
+    "ductile iron"
+  ],
+  "NRV": [
+    "non return valve",
+    "check valve"
+  ],
+  "OS&Y": [
+    "outside screw and yoke"
+  ],
+  "IBR": [
+    "indian boiler regulations"
+  ],
+  "MOC": [
+    "material of construction"
+  ],
+  "TEFC": [
+    "totally enclosed fan cooled"
+  ],
+  "VFD": [
+    "variable frequency drive",
+    "variable speed drive"
+  ],
+  "discharge": [
+    "flow rate",
+    "volume flow",
+    "flow",
+    "capacity"
+  ],
+  "NPSHR": [
+    "npsh required",
+    "npsh r",
+    "npsh"
+  ],
+  "specific gravity": [
+    "relative density"
+  ]
+}

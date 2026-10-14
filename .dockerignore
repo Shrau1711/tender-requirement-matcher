@@ -1,0 +1,16 @@
+# Keep the images small and keep secrets, run history and the hold-out tenders out of them.
+.git
+**/node_modules
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.ruff_cache
+**/dist
+backend/.env
+backend/.cache
+backend/runs
+backend/reports
+data/tenders
+data/eval
+data/reference

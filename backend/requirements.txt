@@ -1,0 +1,13 @@
+# Versions the tests were run with. Pinned so the Docker image behaves the same as the tests.
+fastapi==0.143.0
+uvicorn==0.53.0
+python-multipart==0.0.32
+pydantic==2.13.5
+python-dotenv==1.2.3
+pymupdf==1.28.2
+Pint==0.26.1
+rank-bm25==0.2.2
+fastembed==0.8.1
+numpy==2.5.3
+google-genai==2.29.0
+openpyxl==3.1.5

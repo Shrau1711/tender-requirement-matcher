@@ -1,0 +1,16 @@
+# secrets and local state
+.env
+backend/.env
+backend/.cache/
+backend/runs/
+backend/reports/
+# environments and build output
+.venv/
+node_modules/
+dist/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+data/tenders/holdout/
