@@ -37,3 +37,8 @@ def test_mtrs_is_a_metre_and_lps_a_flow():
 
 def test_a_head_asked_for_in_metres_of_water_column_is_compared_in_metres():
     assert convert(160, "m", "m of water column (MWC)", "operating_duty_head", load_aliases()) == 160
+
+
+def test_a_unit_that_is_not_a_unit_cannot_be_converted_instead_of_failing():
+    assert convert(5, "10 mm", "mm", "nominal_size", ALIASES) is None
+    assert convert(5, "x 10^3 rpm", "rpm", "speed", ALIASES) is None

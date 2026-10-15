@@ -34,6 +34,33 @@
     "assembly",
     "suitable",
     "fitted",
-    "flangeless"
+    "flangeless",
+    "better",
+    "higher",
+    "above",
+    "superior",
+    "greater"
+  ],
+  "title_stop": [
+    "with",
+    "along",
+    "including",
+    "complete",
+    "suitable",
+    "for",
+    "alongwith"
+  ],
+  "components": [
+    "motor",
+    "seal",
+    "coupling",
+    "bearing",
+    "impeller",
+    "shaft",
+    "casing",
+    "flange",
+    "drive",
+    "starter",
+    "baseplate"
   ]
 }

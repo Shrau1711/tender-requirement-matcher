@@ -11,8 +11,10 @@ from app.services.llm import LLM, ask
 from app.services.parallel import run_parallel
 from app.services.queries import queries_for
 from app.services.search import Hit, Index
+from app.services.terms import candidates
 
-TOP_K = number_setting("EVIDENCE_TOP_K", 8)  # passages read per requirement and manufacturer: fewer is cheaper, more is thorough
+TOP_K = number_setting("EVIDENCE_TOP_K", 16)  # passages read per requirement and manufacturer: fewer is cheaper, more is thorough
+RESCUED = number_setting("EVIDENCE_RESCUED", 3)  # more passages read because they say the requirement's own words and numbers, wherever the search ranked them
 
 SYSTEM = """You read passages from one manufacturer's documents and report what they state about one attribute.
 Rules:
@@ -138,10 +140,20 @@ def find_evidence(llm: LLM, req: AtomicRequirement, hits: list[Hit]) -> list[Evi
 
 
 def retrieve(
-    index: Index, req: AtomicRequirement, manufacturer: str, views: dict[str, list[dict]]
+    index: Index, req: AtomicRequirement, manufacturer: str, views: dict[str, list[dict]], rescue: bool = True
 ) -> list[Hit]:
-    """The chunks of one manufacturer most likely to state the requirement."""
-    return index.search_many(queries_for(req, views), manufacturer, TOP_K)
+    """The chunks of one manufacturer most likely to state the requirement.
+
+    The search ranks by keyword and meaning together. Then a plain scan adds the passages that say the requirement's own words
+    and numbers but were ranked too low to be read, so a passage worded unexpectedly is not lost.
+    """
+    hits = index.search_many(queries_for(req, views), manufacturer, TOP_K)
+    if not rescue or req.kind == "standard":  # an identifier is found by the keyword search or not at all
+        return hits
+    shown = {(h.chunk.file, h.chunk.pdf_page, h.chunk.text) for h in hits}
+    own = [c for c in index.chunks if c.manufacturer == manufacturer]
+    extra = [c for c in candidates(req, own, RESCUED + len(hits)) if (c.file, c.pdf_page, c.text) not in shown][:RESCUED]
+    return hits + [Hit(score=0.0, keyword=0.0, meaning=0.0, chunk=c) for c in extra]
 
 
 def question(req: AtomicRequirement) -> tuple:

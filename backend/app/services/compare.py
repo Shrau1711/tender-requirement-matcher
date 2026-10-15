@@ -13,6 +13,7 @@ from app.services.measure import convert, unit_in
 from app.services.roles import load_roles
 from app.services.scales import scale_verdict
 from app.services.search import tokenize
+from app.services.words import is_stated, kind_words, shape_of, singular, spoken_numbers
 
 PARTLY = 75  # the most a statement can earn when it only applies under a condition or for an unnamed product
 EXCEEDS = 75  # rated higher than asked
@@ -21,8 +22,6 @@ CANNOT_COMPARE = 25  # a statement exists but is in units that cannot be convert
 FAMILY_ONLY = 50  # the statement names the kind of thing (grey cast iron) but not the grade or number asked for (IS 210 FG 260)
 CLASS_UNITS = ("class", "#", "lb")  # what a pressure class number is printed with
 BARE_NUMBER = re.compile(r"^(?:class\s*)?#?\s*(\d+(?:\.\d+)?)\s*#?$", re.IGNORECASE)  # "1500#", "Class 1500", "1500"
-FILLER = {"valve", "type", "body", "end", "ends", "connection"}  # words that say nothing about which kind it is
-LINKING = {"a", "an", "and", "as", "by", "for", "in", "is", "of", "on", "or", "per", "the", "to", "with", "equivalent"}  # words that never say which kind it is
 
 
 UNCLEAR_VALUE = "unclear tender value"
@@ -77,22 +76,24 @@ def combine(scores: list[int], operator: str) -> int:
 
 def number_verdict(req: AtomicRequirement, ev: Evidence, aliases: dict[str, dict]) -> Verdict:
     said = " ".join(ev.stated.split())
-    if not ev.numbers:
+    numbers = ev.numbers or spoken_numbers(" ".join(ev.items) or ev.stated)
+    if not numbers:
         return Verdict(score=0, reason="no number is stated")
     try:
         wanted = [float(v) for v in req.values]
     except ValueError:
         return Verdict(score=CANNOT_COMPARE, reason="the requirement's value is not a plain number", flags=[UNCLEAR_VALUE])
-    unit = ev.unit or unit_in(ev.stated, req.attribute, aliases)
-    stated = [convert(n, unit, req.unit, req.attribute, aliases) for n in ev.numbers]
+    unit = ev.unit or unit_in(ev.stated, req.attribute, aliases) or (None if ev.numbers else req.unit)  # a number in words has the unit the tender asks in
+    shape = shape_of(ev.shape, f"{ev.stated} {ev.quote}")
+    stated = [convert(n, unit, req.unit, req.attribute, aliases) for n in numbers]
     if None in stated:
         printed = f"stated in {unit}" if unit else "stated with no unit"
         target = f"cannot be converted to {req.unit}" if req.unit else "cannot be compared because the tender gives no unit"
         return Verdict(score=CANNOT_COMPARE, reason=f"{printed}, which {target}", flags=[UNITS])
-    score = combine([reach(w, req.operator, ev.shape, stated) for w in wanted], req.operator)
+    score = combine([reach(w, req.operator, shape, stated) for w in wanted], req.operator)
     if score == 0:
-        other = [convert(n, unit, req.unit, req.attribute, aliases, alternative=True) for n in ev.numbers]
-        if None not in other and combine([reach(w, req.operator, ev.shape, other) for w in wanted], req.operator) == 100:
+        other = [convert(n, unit, req.unit, req.attribute, aliases, alternative=True) for n in numbers]
+        if None not in other and combine([reach(w, req.operator, shape, other) for w in wanted], req.operator) == 100:
             return Verdict(score=DIFFERENT_READING, reason=f"{said} matches only if {unit} is read the other way", flags=[UNIT_READING])
     return Verdict(score=score, reason=f"stated {said}")
 
@@ -112,19 +113,6 @@ def class_verdict(req: AtomicRequirement, ev: Evidence) -> Verdict | None:
 
 def normal_identifier(text: str) -> str:
     return re.sub(r"[^a-z0-9]", "", re.sub(r":\s*\d{4}\b", "", text.lower()))  # "IS 13095:2008" -> "is13095"
-
-
-def singular(word: str) -> str:
-    return word[:-1] if word.endswith("s") and len(word) > 3 else word
-
-
-def kind_words(text: str) -> set[str]:
-    return {singular(w) for w in tokenize(canonical(text))} - FILLER - LINKING
-
-
-def is_stated(word: str, have: set[str]) -> bool:
-    """True when the word is among the stated ones, or is part of a longer stated word ("line" in "inline", "seal" in "sealing")."""
-    return word in have or (len(word) >= 4 and any(h.startswith(word) or h.endswith(word) for h in have))
 
 
 def closeness(kind: str, wanted: str, stated: str, ignore: set[str] | None = None) -> tuple[int, list[str]]:

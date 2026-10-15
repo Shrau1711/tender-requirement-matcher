@@ -54,3 +54,30 @@ def test_the_same_product_listed_twice_with_different_quantities_is_one_item_for
     sheet["nominal_size"]["a"] = Label(status="fully matched", page=2)
     outcomes = [match_requirement(r, "a", [ev("50 NB to 350 NB", "range", [50, 350], "NB")], ALIASES) for r in (first, second)]
     assert len(compare(outcomes, sheet)) == 1
+
+
+def test_a_checked_label_is_copied_to_the_identical_requirement_of_another_item():
+    from app.services.gold import Label, mirror
+    from app.services.tender import Item
+    a, b = req("service", "text", ["Continuous Duty"]), req("service", "text", ["Continuous Duty"])
+    a = a.model_copy(update={"item": Item(title="Type-1", quantity=1)})
+    b = b.model_copy(update={"item": Item(title="Type-2", quantity=1)})
+    gold = {"Type-1 | service": {"ksb": Label(status="missing capability", checked=True)}, "Type-2 | service": {"ksb": Label()}}
+    assert mirror(gold, [a, b]) == [("Type-1 | service", "Type-2 | service", "ksb")]
+    assert gold["Type-2 | service"]["ksb"].status == "missing capability" and gold["Type-2 | service"]["ksb"].checked
+
+
+def test_a_requirement_that_differs_is_not_copied():
+    from app.services.gold import Label, mirror
+    from app.services.tender import Item
+    a = req("head", "number", ["100"], "m").model_copy(update={"item": Item(title="Type-1", quantity=1)})
+    b = req("head", "number", ["35"], "m").model_copy(update={"item": Item(title="Type-2", quantity=1)})
+    gold = {"Type-1 | head": {"ksb": Label(status="fully matched", checked=True)}, "Type-2 | head": {"ksb": Label()}}
+    assert mirror(gold, [a, b]) == []
+
+
+def test_cited_lists_only_found_labels_with_pages_once_per_requirement():
+    from app.services.gold import Label, cited
+    a = req("service", "text", ["Continuous Duty"])
+    gold = {"service": {"ksb": Label(status="fully matched", page=[3, 4]), "cri": Label(status="missing capability", page=2), "grundfos": Label(status="partially matched")}}
+    assert cited(gold, [a, a]) == [(a, "service", "ksb", {3, 4})]

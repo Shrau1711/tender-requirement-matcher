@@ -58,9 +58,11 @@ def convert(
         if factor is None:
             return None
         value, unit = value * factor, entry["unit"]
+        if unit.lower() == target.lower():
+            return value
     elif alternative:
         return None
     try:
         return float(ureg.Quantity(value, unit).to(target).magnitude)
-    except (pint.errors.PintError, TypeError):
+    except (pint.errors.PintError, TypeError, ValueError):  # a unit read as "10 mm" or "x 10^3" is not one we can convert
         return None

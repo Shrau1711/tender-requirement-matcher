@@ -1,0 +1,2260 @@
+{
+  "Type-1 pumpwith motor along with spare mechanical seals | pump_type": {
+    "cri": {
+      "status": "fully matched",
+      "page": [
+        1,
+        10
+      ],
+      "note": "AI-drafted from a full read of ecw-series-catalogue.pdf: \"VERTICAL MULTISTAGE INLINE PUMPS\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        3
+      ],
+      "note": "UNVERIFIED QUOTE, check by hand. AI-drafted from a full read of cr-databooklet-50hz.pdf: \"CR pumps are vertical, multistage centrifugal pumps. The in-line design of the pumps enables installation in a horizontal one-pipe system\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "partially matched",
+      "page": [
+        7
+      ],
+      "note": "AI-drafted from a full read of rkb-rkbf-rkbk-rkbv.pdf: \"Pumps available in vertical execution complete with motor-stool /driving unit.\"",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"High-pressure in-line pump\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | suction_condition": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | operating_duty_head": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "Checked by hand: ecw-series-catalogue.pdf p10, MV / MVNB vertical multistage inline pumps section, states only 'Max. Head: 300 m' for the series. No size table or curve, so a 100 m duty is plausible but not shown.",
+      "checked": true
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        52
+      ],
+      "note": "Checked by hand: p52 CR 20 50 Hz performance curves - at Q = 20 m3/h the CR 20-8 / -10 curves read roughly 100-125 m, so 100 MWC at 20 m3/h is reachable with a CR 20 model. Head is read off a curve family, not stated as a single figure.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "AI-drafted from a full read of rkb-rkbf-rkbk-rkbv.pdf: \"Head : up to 850 metres\"",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Head H [m] \u2264 401 \u2264 249\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | operating_duty_flow": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "Checked by hand: ecw-series-catalogue.pdf p10, MV / MVNB vertical multistage inline pumps section, states only 'Max. Flow: 200 m3/h' for the series. No size table or curve, so a 20 m3/h duty is plausible but not shown.",
+      "checked": true
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        6
+      ],
+      "note": "Checked by hand: p6 product range table - size 20 has rated flow rate 20 m3/h and a flow range of 11-29 m3/h, which covers the 20 m3/h asked for.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "AI-drafted from a full read of rkb-rkbf-rkbk-rkbv.pdf: \"Capacity : up to 850 m 3 /hr\"",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Flow rate Q [m3/h] \u2264 8.6 \u2264 160\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | pumping_efficiency": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "Checked by hand: ecw-series-catalogue.pdf p10, MV / MVNB section, salient features say 'Enhanced hydraulic efficiency' with no figure. The claim is made but a 70 % requirement cannot be compared.",
+      "checked": true
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        6
+      ],
+      "note": "Checked by hand: p6 product range table - 'Max. pump efficiency [%]' is 70 for size 10 and 72 for sizes 15 and 20. Meets the 70 % asked for (maximum efficiency of the size, not at a specific duty point).",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        37
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Eta [%]\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | companion_flange_material": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | companion_flange_standard": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | companion_flange_pressure_rating": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        96
+      ],
+      "note": "UNVERIFIED QUOTE, check by hand. AI-drafted from a full read of cr-databooklet-50hz.pdf: \"16 bar EN 1092-1\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        23,
+        67
+      ],
+      "note": "Checked by hand: p23 Table 15 gives maximum pressure class PN 16 for V/VS connections and PN 40 for the round-flange designs (VF, VSF, VCF); p67 captions show Movitec VF/VSF flanges at PN 16. Meets the PN 16 asked for.",
+      "checked": true
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | noise_level": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "Checked by hand: ecw-series-catalogue.pdf p10, MV / MVNB section, salient features say 'Low noise level and low vibration level' with no dBA figure. The claim is made but 85 dBA cannot be compared.",
+      "checked": true
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | pump_impeller_material": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        1,
+        10
+      ],
+      "note": "AI-drafted from a full read of ecw-series-catalogue.pdf: \"Impeller; Type-C: SS 304; Type-S: SS 304; Type-N: SS 316\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "partially matched",
+      "page": [
+        11
+      ],
+      "note": "AI-drafted from a full read of cr-databooklet-50hz.pdf: \"Impeller Stainless steel EN 10088 1.4301 AISI 304\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "partially matched",
+      "page": [
+        3
+      ],
+      "note": "AI-drafted from a full read of rkb-rkbf-rkbk-rkbv.pdf: \"The enclosed impellers of the radial flow type are provided with balancing holes\"",
+      "checked": false
+    },
+    "ksb": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Impeller12) 1.43019) / 1.430810) 1.44049) / 1.440810)\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | mechanical_seal_type": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        1,
+        10
+      ],
+      "note": "AI-drafted from a full read of ecw-series-catalogue.pdf: \"Strengthened cartridge seals\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        18,
+        21
+      ],
+      "note": "Checked by hand: p21 seal table lists the standard HQQE/V seals as 'O-ring (cartridge) (balanced seal)'; p18 also names 'H Balanced cartridge seal with O-ring'. Both cartridge and balanced are stated.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "partially matched",
+      "page": [
+        4
+      ],
+      "note": "Checked by hand: p4 (RKBX multistage diffuser pump, horizontal axial suction) says 'Sealing: standard mechanical pusher seal, optional: cartridge or packed gland'. Cartridge is only an option and 'balanced' is not stated. Page shows the horizontal RKBX, not the vertical in-line version the tender asks for.",
+      "checked": true
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        6
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Cartridge mechanical seal \u2013 Unbalanced bellows-type design (PN 25) or special balanced design (PN 40)\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | mechanical_seal_operating_temperature_limit": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "Checked by hand: ecw-series-catalogue.pdf p10, MV / MVNB section, states 'Strengthened cartridge seals' and 'Max. Liquid Temp: 120 C' for the pump. That is the liquid limit, not a rating for the seal itself, so the seal's own temperature limit is not stated.",
+      "checked": true
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        21
+      ],
+      "note": "Checked by hand: p21 'Operating range of the shaft seal' - standard HQQE/V cartridge seal, HQQE (balanced, SiC/SiC, EPDM) -40 to +120 C. Covers the 100 C asked for.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "partially matched",
+      "page": [
+        3
+      ],
+      "note": "AI-drafted from a full read of rkb-rkbf-rkbk-rkbv.pdf: \"While pumping high temperature liquids from 90\u00baC to 140\u00baC, cooling jacket is provided for the stuffing box.\"",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | mechanical_seal_operating_pressure_limit": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "partially matched",
+      "page": [
+        21
+      ],
+      "note": "Checked by hand: p21 operating-range graphs show the HQQE/V seals reaching about 40 bar at lower liquid temperatures, with the allowed pressure lower at higher temperature. Not stated as a single limit in bar, and 30 bar at 100 C together is not clearly shown.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "partially matched",
+      "page": [
+        6,
+        19
+      ],
+      "note": "Checked by hand: p19 Table 12 lists seal codes 17 and 19 at PN 40 (-20 to +120 C) and p6 names the special balanced cartridge design (PN 40); the standard seal is PN 25 (PN 16). Rated as a pressure class (PN), not a limit in bar, and the pump's own limit is PN 16/25 (p23), so 30 bar is possible only with the special seal.",
+      "checked": true
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | pump_coupling": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "partially matched",
+      "page": [
+        75
+      ],
+      "note": "Checked by hand: p75 parts list (Table 44) names item 862 'Coupling' only. It shows a coupling exists but does not state its type, so 'rigid' is not confirmed. Searched the booklet for 'rigid'; not stated.",
+      "checked": true
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | liquid_to_be_handled": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        94
+      ],
+      "note": "UNVERIFIED QUOTE, check by hand. AI-drafted from a full read of cr-databooklet-50hz.pdf: \"Completely desalinated water (demineralized water) 120 \u00b0C - HQQE\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | specific_gravity": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        26
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Density: 1.0 kg/dm\u00b3\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | service_temperature": {
+    "cri": {
+      "status": "fully matched",
+      "page": [
+        1,
+        10
+      ],
+      "note": "AI-drafted from a full read of ecw-series-catalogue.pdf: \"Max. Liquid Temp: 120\u00b0 C\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        6
+      ],
+      "note": "Checked by hand: p6 product range table - max liquid temperature 120 C and min -20 C for all CR/CRI/CRN sizes (-40 to +180 C on request). Covers the 60 C asked for.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "partially matched",
+      "page": [
+        3
+      ],
+      "note": "Checked by hand: rkb-rkbf-rkbk-rkbv.pdf p3 gives 90-140 C only for high-temperature liquids (cooling jacket, oil lubrication). No plain maximum temperature is stated, so 60 C is implied but not stated. The pipeline's 'fully matched' came from p11 of another brochure about end-suction process pumps.",
+      "checked": true
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Fluid temperature T [\u00b0C] \u2265 -15 \u2265 -20 \u2264 120 \u2264 1401)\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | viscosity": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        27
+      ],
+      "note": "AI-drafted from a full read of cr-databooklet-50hz.pdf: \"The curves apply to the following kinematic viscosity: \u03c5 = 1 mm2/s (1 cSt).\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        26
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Kinematic viscosity: 1 mm\u00b2/s\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | service": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        1
+      ],
+      "note": "AI-drafted from a full read of mv-vertical-multistage-inline.pdf: \"trouble-free service\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "Checked by hand: 'continuous duty S1' appears only for Etanorm (end-suction, single-stage, p4-5), not for the multistage Movitec. Movitec booklet states no duty type.",
+      "checked": true
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | head_capacity_curve": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "partially matched",
+      "page": [
+        13
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Information about the characteristic curve\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | pump_casing_material": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "AI-drafted from a full read of ecw-series-catalogue.pdf: \"Pump Head; Type-C: CI; Type-S: SS 304; Type-N: SS 316\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        13
+      ],
+      "note": "Checked by hand: p13 'Materials, CRN' table - pump head stainless steel EN 10283 1.4408, 'CF 8M equal to AISI 316'. CF8M is named, matching the grade asked for. Applies to the CRN (stainless) version; standard CR heads are cast iron.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "fully matched",
+      "page": [
+        6
+      ],
+      "note": "AI-drafted from a full read of rkb-rkbf-rkbk-rkbv.pdf: \"Stainless Steel CF8M IS 3444 Gr. 4\"",
+      "checked": false
+    },
+    "ksb": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Pump casing 1.4308 EN-GJL-2507) / 1.4408 EN-GJS-400-158)\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | impeller_material": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        2,
+        10
+      ],
+      "note": "AI-drafted from a full read of ecw-series-catalogue.pdf: \"Impeller; Type-C: SS 304; Type-S: SS 304; Type-N: SS 316\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "partially matched",
+      "page": [
+        13
+      ],
+      "note": "AI-drafted from a full read of cr-databooklet-50hz.pdf: \"Impeller Stainless steel EN 10088 1.4401 AISI 316\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "partially matched",
+      "page": [
+        6
+      ],
+      "note": "AI-drafted from a full read of rkb-rkbf-rkbk-rkbv.pdf: \"Stainless steel 316 IS 1570 (part V) Gr. X04Cr17Ni12Mo2\"",
+      "checked": false
+    },
+    "ksb": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Impeller12) 1.43019) / 1.430810) 1.44049) / 1.440810)\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | shaft_material": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        2,
+        10
+      ],
+      "note": "AI-drafted from a full read of ecw-series-catalogue.pdf: \"Pump Shaft; Type-C: SS 304 / SS 431; Type-S: SS 304 / SS 431; Type-N: SS 316 / SS 329\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        15
+      ],
+      "note": "AI-drafted from a full read of cr-databooklet-50hz.pdf: \"Shaft Stainless steel EN 10088 1.4462\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Shaft 1.4057 1.4460 / 1.440111)\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | motor_type": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "partially matched",
+      "page": [
+        9
+      ],
+      "note": "Checked by hand: p9 states totally enclosed, fan-cooled, 2-pole standard motors with principal dimensions per EN standards and B14/V18 or B5/V1 flange mounting. 'Squirrel cage induction' is not stated, so part of the long description is unconfirmed.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "partially matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Surface-cooled KSB squirrel-cage motor\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | motor_safety_margin": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | motor_loading_type": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | motor_rated_speed": {
+    "cri": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "AI-drafted from a full read of mv-vertical-multistage-inline.pdf: \"Speed: 2900 rpm\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        92
+      ],
+      "note": "AI-drafted from a full read of cr-databooklet-50hz.pdf: \"2900-2900\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "fully matched",
+      "page": [
+        3
+      ],
+      "note": "AI-drafted from a full read of rkb-rkbf-rkbk-rkbv.pdf: \"Various models are available to operate at 1450 rpm and 2900 rpm at 50 Hz power supply frequency.\"",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        22
+      ],
+      "note": "Checked by hand: p22 Table 14 (motor technical data), column n [rpm] - 2-pole motors run 2750-2970 rpm, with 2900 rpm stated for the 1.5 kW and 2.2 kW motors. 4-pole motors are 1425-1460 rpm.",
+      "checked": true
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | motor_efficiency_class": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        9
+      ],
+      "note": "Checked by hand: p9 'Electrical data' table, standard motors CR/CRI/CRN - Efficiency class IE4. Meets 'IE3 or better' (Type-2); for plain 'IE3' (Type-1) it is a higher class than asked, counted as met.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        22
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Efficiency class IE3 to IEC 60034-30 (for three-phase motors \u2265 0.75 kW)\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | rated_voltage": {
+    "cri": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "AI-drafted from a full read of mv-vertical-multistage-inline.pdf: \"Three Phase 415V, 50Hz, A.C. Supply\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "partially matched",
+      "page": [
+        9
+      ],
+      "note": "Checked by hand: p9 gives 3 x 380-400/660-690 V for 2.2-18.5 kW motors and 3 x 380-420/660-725 V for 22-200 kW motors. 415 V falls inside the second range only, so it is covered for the larger motors, not for the smaller ones.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | phase": {
+    "cri": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "AI-drafted from a full read of mv-vertical-multistage-inline.pdf: \"Three Phase 415V, 50Hz, A.C. Supply\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        9
+      ],
+      "note": "Checked by hand: p9 - 'As standard, CR, CRI, CRN pumps are equipped with three-phase MG motors up to 18.5 kW and Innomotics motors from 22 to 200 kW'.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | voltage_tolerance": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        9
+      ],
+      "note": "Checked by hand: p9 electrical data table - 'Supply voltage, Tolerance: +/- 10 %'.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | frequency": {
+    "cri": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "AI-drafted from a full read of mv-vertical-multistage-inline.pdf: \"Three Phase 415V, 50Hz, A.C. Supply\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        9
+      ],
+      "note": "Checked by hand: p9 electrical data table - 'Supply frequency 50 Hz'.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "fully matched",
+      "page": [
+        3
+      ],
+      "note": "AI-drafted from a full read of rkb-rkbf-rkbk-rkbv.pdf: \"Various models are available to operate at 1450 rpm and 2900 rpm at 50 Hz power supply frequency.\"",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Frequency 50 Hz\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | frequency_tolerance": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | motor_enclosure_type": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        9
+      ],
+      "note": "Checked by hand: p9 - 'totally enclosed, fan-cooled, 2-pole standard motors' (TEFC).",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Surface-cooled KSB squirrel-cage motor\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | ingress_protection_rating": {
+    "cri": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "AI-drafted from a full read of mv-vertical-multistage-inline.pdf: \"Degree of protection: IP55\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        9
+      ],
+      "note": "Checked by hand: p9 electrical data table, standard motors CR/CRI/CRN - 'Enclosure class IP55' (IP44 and IP54 available on request).",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Enclosure IP55\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | insulation_class": {
+    "cri": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "AI-drafted from a full read of mv-vertical-multistage-inline.pdf: \"Insulation class: 'F'\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        9
+      ],
+      "note": "Checked by hand: p9 electrical data table - 'Insulation class F'.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Thermal class F to IEC 34-1\"",
+      "checked": false
+    }
+  },
+  "Type-1 pumpwith motor along with spare mechanical seals | motor_starter_compatibility": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "partially matched",
+      "page": [
+        92
+      ],
+      "note": "AI-drafted from a full read of cr-databooklet-50hz.pdf: \"380-400\u0394/660-690Y\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | pump_type": {
+    "cri": {
+      "status": "fully matched",
+      "page": [
+        1,
+        10
+      ],
+      "note": "AI-drafted from a full read of ecw-series-catalogue.pdf: \"VERTICAL MULTISTAGE INLINE PUMPS\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        3
+      ],
+      "note": "UNVERIFIED QUOTE, check by hand. AI-drafted from a full read of cr-databooklet-50hz.pdf: \"CR pumps are vertical, multistage centrifugal pumps. The in-line design of the pumps enables installation in a horizontal one-pipe system\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "partially matched",
+      "page": [
+        7
+      ],
+      "note": "AI-drafted from a full read of rkb-rkbf-rkbk-rkbv.pdf: \"Pumps available in vertical execution complete with motor-stool /driving unit.\"",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"High-pressure in-line pump\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | suction_condition": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | operating_duty_head": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "Checked by hand: ecw-series-catalogue.pdf p10, MV / MVNB vertical multistage inline pumps section, states only 'Max. Head: 300 m' for the series. No size table or curve, so a 35 m duty is plausible but not shown.",
+      "checked": true
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        56
+      ],
+      "note": "Checked by hand: p56 CR 32 50 Hz performance curves - at Q = 30 m3/h the CR 32-2-2 / -3 and higher curves read at or above 35 m, so 35 MWC at 30 m3/h is reachable with a CR 32 model. Head is read off a curve family, not stated as a single figure.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "partially matched",
+      "page": [
+        2
+      ],
+      "note": "p2 gives only \u2018Head: up to 850 metres\u2019 as a series maximum; a 35 m duty is plausible but not shown. The pipeline\u2019s page 11 is from a different brochure.",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Head H [m] \u2264 401 \u2264 249\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | operating_duty_flow": {
+    "cri": {
+      "status": "fully matched",
+      "page": [
+        10
+      ],
+      "note": "AI-drafted from a full read of ecw-series-catalogue.pdf: \"Max. Flow: 200 m\u00b3/h\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        7
+      ],
+      "note": "AI-drafted from a full read of cr-databooklet-50hz.pdf: \"Flow rate [m3/h] 15-40\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "AI-drafted from a full read of rkb-rkbf-rkbk-rkbv.pdf: \"Capacity : up to 850 m 3 /hr\"",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Flow rate Q [m3/h] \u2264 8.6 \u2264 160\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | pumping_efficiency": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "Checked by hand: ecw-series-catalogue.pdf p10, MV / MVNB section, salient features say 'Enhanced hydraulic efficiency' with no figure. The claim is made but a 70 % requirement cannot be compared.",
+      "checked": true
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        6
+      ],
+      "note": "Checked by hand: p6 product range table - 'Max. pump efficiency [%]' is 70 for size 10 and 72 for sizes 15 and 20. Meets the 70 % asked for (maximum efficiency of the size, not at a specific duty point).",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        37
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Eta [%]\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | companion_flange_material": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | companion_flange_standard": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | companion_flange_pressure_rating": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        96
+      ],
+      "note": "UNVERIFIED QUOTE, check by hand. AI-drafted from a full read of cr-databooklet-50hz.pdf: \"16 bar EN 1092-1\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        23,
+        67
+      ],
+      "note": "Checked by hand: p23 Table 15 gives maximum pressure class PN 16 for V/VS connections and PN 40 for the round-flange designs (VF, VSF, VCF); p67 captions show Movitec VF/VSF flanges at PN 16. Meets the PN 16 asked for.",
+      "checked": true
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | noise_level": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "Checked by hand: ecw-series-catalogue.pdf p10, MV / MVNB section, salient features say 'Low noise level and low vibration level' with no dBA figure. The claim is made but 85 dBA cannot be compared.",
+      "checked": true
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | pump_impeller_material": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        1,
+        10
+      ],
+      "note": "AI-drafted from a full read of ecw-series-catalogue.pdf: \"Impeller; Type-C: SS 304; Type-S: SS 304; Type-N: SS 316\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "partially matched",
+      "page": [
+        11
+      ],
+      "note": "AI-drafted from a full read of cr-databooklet-50hz.pdf: \"Impeller Stainless steel EN 10088 1.4301 AISI 304\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "partially matched",
+      "page": [
+        3
+      ],
+      "note": "AI-drafted from a full read of rkb-rkbf-rkbk-rkbv.pdf: \"The enclosed impellers of the radial flow type are provided with balancing holes\"",
+      "checked": false
+    },
+    "ksb": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Impeller12) 1.43019) / 1.430810) 1.44049) / 1.440810)\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | mechanical_seal_type": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        1,
+        10
+      ],
+      "note": "AI-drafted from a full read of ecw-series-catalogue.pdf: \"Strengthened cartridge seals\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        18,
+        21
+      ],
+      "note": "Checked by hand: p21 seal table lists the standard HQQE/V seals as 'O-ring (cartridge) (balanced seal)'; p18 also names 'H Balanced cartridge seal with O-ring'. Both cartridge and balanced are stated.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "partially matched",
+      "page": [
+        4
+      ],
+      "note": "Checked by hand: p4 (RKBX multistage diffuser pump, horizontal axial suction) says 'Sealing: standard mechanical pusher seal, optional: cartridge or packed gland'. Cartridge is only an option and 'balanced' is not stated. Page shows the horizontal RKBX, not the vertical in-line version the tender asks for.",
+      "checked": true
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        6
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Cartridge mechanical seal \u2013 Unbalanced bellows-type design (PN 25) or special balanced design (PN 40)\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | mechanical_seal_operating_temperature_limit": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "Checked by hand: ecw-series-catalogue.pdf p10, MV / MVNB section, states 'Strengthened cartridge seals' and 'Max. Liquid Temp: 120 C' for the pump. That is the liquid limit, not a rating for the seal itself, so the seal's own temperature limit is not stated.",
+      "checked": true
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        21
+      ],
+      "note": "Checked by hand: p21 'Operating range of the shaft seal' - standard HQQE/V cartridge seal, HQQE (balanced, SiC/SiC, EPDM) -40 to +120 C. Covers the 100 C asked for.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "partially matched",
+      "page": [
+        3
+      ],
+      "note": "AI-drafted from a full read of rkb-rkbf-rkbk-rkbv.pdf: \"While pumping high temperature liquids from 90\u00baC to 140\u00baC, cooling jacket is provided for the stuffing box.\"",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | mechanical_seal_operating_pressure_limit": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "partially matched",
+      "page": [
+        21
+      ],
+      "note": "Checked by hand: p21 operating-range graphs show the HQQE/V seals reaching about 40 bar at lower liquid temperatures, with the allowed pressure lower at higher temperature. Not stated as a single limit in bar, and 30 bar at 100 C together is not clearly shown.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "partially matched",
+      "page": [
+        6,
+        19
+      ],
+      "note": "Checked by hand: p19 Table 12 lists seal codes 17 and 19 at PN 40 (-20 to +120 C) and p6 names the special balanced cartridge design (PN 40); the standard seal is PN 25 (PN 16). Rated as a pressure class (PN), not a limit in bar, and the pump's own limit is PN 16/25 (p23), so 30 bar is possible only with the special seal.",
+      "checked": true
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | pump_coupling": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "partially matched",
+      "page": [
+        75
+      ],
+      "note": "Checked by hand: p75 parts list (Table 44) names item 862 'Coupling' only. It shows a coupling exists but does not state its type, so 'rigid' is not confirmed. Searched the booklet for 'rigid'; not stated.",
+      "checked": true
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | liquid_to_be_handled": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        94
+      ],
+      "note": "UNVERIFIED QUOTE, check by hand. AI-drafted from a full read of cr-databooklet-50hz.pdf: \"Completely desalinated water (demineralized water) 120 \u00b0C - HQQE\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | specific_gravity": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        26
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Density: 1.0 kg/dm\u00b3\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | service_temperature": {
+    "cri": {
+      "status": "fully matched",
+      "page": [
+        1,
+        10
+      ],
+      "note": "AI-drafted from a full read of ecw-series-catalogue.pdf: \"Max. Liquid Temp: 120\u00b0 C\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        7
+      ],
+      "note": "AI-drafted from a full read of cr-databooklet-50hz.pdf: \"Max. liquid temperature [\u00b0C] 3) 120\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "partially matched",
+      "page": [
+        3
+      ],
+      "note": "Checked by hand: rkb-rkbf-rkbk-rkbv.pdf p3 gives 90-140 C only for high-temperature liquids (cooling jacket, oil lubrication). No plain maximum temperature is stated, so 60 C is implied but not stated. The pipeline's 'fully matched' came from p11 of another brochure about end-suction process pumps.",
+      "checked": true
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Fluid temperature T [\u00b0C] \u2265 -15 \u2265 -20 \u2264 120 \u2264 1401)\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | viscosity": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        27
+      ],
+      "note": "AI-drafted from a full read of cr-databooklet-50hz.pdf: \"The curves apply to the following kinematic viscosity: \u03c5 = 1 mm2/s (1 cSt).\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        26
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Kinematic viscosity: 1 mm\u00b2/s\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | service": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        1
+      ],
+      "note": "AI-drafted from a full read of mv-vertical-multistage-inline.pdf: \"trouble-free service\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "Checked by hand: 'continuous duty S1' appears only for Etanorm (end-suction, single-stage, p4-5), not for the multistage Movitec. Movitec booklet states no duty type.",
+      "checked": true
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | head_capacity_curve": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "partially matched",
+      "page": [
+        13
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Information about the characteristic curve\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | pump_casing_material": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "AI-drafted from a full read of ecw-series-catalogue.pdf: \"Pump Head; Type-C: CI; Type-S: SS 304; Type-N: SS 316\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        13
+      ],
+      "note": "Checked by hand: p13 'Materials, CRN' table - pump head stainless steel EN 10283 1.4408, 'CF 8M equal to AISI 316'. CF8M is named, matching the grade asked for. Applies to the CRN (stainless) version; standard CR heads are cast iron.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "fully matched",
+      "page": [
+        6
+      ],
+      "note": "AI-drafted from a full read of rkb-rkbf-rkbk-rkbv.pdf: \"Stainless Steel CF8M IS 3444 Gr. 4\"",
+      "checked": false
+    },
+    "ksb": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Pump casing 1.4308 EN-GJL-2507) / 1.4408 EN-GJS-400-158)\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | impeller_material": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        2,
+        10
+      ],
+      "note": "AI-drafted from a full read of ecw-series-catalogue.pdf: \"Impeller; Type-C: SS 304; Type-S: SS 304; Type-N: SS 316\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "partially matched",
+      "page": [
+        13
+      ],
+      "note": "AI-drafted from a full read of cr-databooklet-50hz.pdf: \"Impeller Stainless steel EN 10088 1.4401 AISI 316\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "partially matched",
+      "page": [
+        6
+      ],
+      "note": "AI-drafted from a full read of rkb-rkbf-rkbk-rkbv.pdf: \"Stainless steel 316 IS 1570 (part V) Gr. X04Cr17Ni12Mo2\"",
+      "checked": false
+    },
+    "ksb": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Impeller12) 1.43019) / 1.430810) 1.44049) / 1.440810)\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | shaft_material": {
+    "cri": {
+      "status": "partially matched",
+      "page": [
+        2,
+        10
+      ],
+      "note": "AI-drafted from a full read of ecw-series-catalogue.pdf: \"Pump Shaft; Type-C: SS 304 / SS 431; Type-S: SS 304 / SS 431; Type-N: SS 316 / SS 329\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        15
+      ],
+      "note": "AI-drafted from a full read of cr-databooklet-50hz.pdf: \"Shaft Stainless steel EN 10088 1.4462\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "partially matched",
+      "page": [
+        10
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Shaft 1.4057 1.4460 / 1.440111)\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | motor_type": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "partially matched",
+      "page": [
+        9
+      ],
+      "note": "Checked by hand: p9 states totally enclosed, fan-cooled, 2-pole standard motors with principal dimensions per EN standards and B14/V18 or B5/V1 flange mounting. 'Squirrel cage induction' is not stated, so part of the long description is unconfirmed.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "partially matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Surface-cooled KSB squirrel-cage motor\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | motor_safety_margin": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | motor_loading_type": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | motor_rated_speed": {
+    "cri": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "AI-drafted from a full read of mv-vertical-multistage-inline.pdf: \"Speed: 2900 rpm\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        92
+      ],
+      "note": "AI-drafted from a full read of cr-databooklet-50hz.pdf: \"2900-2900\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "fully matched",
+      "page": [
+        3
+      ],
+      "note": "AI-drafted from a full read of rkb-rkbf-rkbk-rkbv.pdf: \"Various models are available to operate at 1450 rpm and 2900 rpm at 50 Hz power supply frequency.\"",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        22
+      ],
+      "note": "Checked by hand: p22 Table 14 (motor technical data), column n [rpm] - 2-pole motors run 2750-2970 rpm, with 2900 rpm stated for the 1.5 kW and 2.2 kW motors. 4-pole motors are 1425-1460 rpm.",
+      "checked": true
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | motor_efficiency_class": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        9
+      ],
+      "note": "AI-drafted from a full read of cr-databooklet-50hz.pdf: \"Efficiency class IE4\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        22
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Efficiency class IE3 to IEC 60034-30 (for three-phase motors \u2265 0.75 kW)\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | phase": {
+    "cri": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "AI-drafted from a full read of mv-vertical-multistage-inline.pdf: \"Three Phase 415V, 50Hz, A.C. Supply\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        9
+      ],
+      "note": "Checked by hand: p9 - 'As standard, CR, CRI, CRN pumps are equipped with three-phase MG motors up to 18.5 kW and Innomotics motors from 22 to 200 kW'.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | rated_voltage": {
+    "cri": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "AI-drafted from a full read of mv-vertical-multistage-inline.pdf: \"Three Phase 415V, 50Hz, A.C. Supply\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "partially matched",
+      "page": [
+        9
+      ],
+      "note": "Checked by hand: p9 gives 3 x 380-400/660-690 V for 2.2-18.5 kW motors and 3 x 380-420/660-725 V for 22-200 kW motors. 415 V falls inside the second range only, so it is covered for the larger motors, not for the smaller ones.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | voltage_tolerance": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        9
+      ],
+      "note": "Checked by hand: p9 electrical data table - 'Supply voltage, Tolerance: +/- 10 %'.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | frequency": {
+    "cri": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "AI-drafted from a full read of mv-vertical-multistage-inline.pdf: \"Three Phase 415V, 50Hz, A.C. Supply\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        9
+      ],
+      "note": "Checked by hand: p9 electrical data table - 'Supply frequency 50 Hz'.",
+      "checked": true
+    },
+    "kirloskar": {
+      "status": "fully matched",
+      "page": [
+        3
+      ],
+      "note": "AI-drafted from a full read of rkb-rkbf-rkbk-rkbv.pdf: \"Various models are available to operate at 1450 rpm and 2900 rpm at 50 Hz power supply frequency.\"",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Frequency 50 Hz\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | frequency_tolerance": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | motor_enclosure_type": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        9
+      ],
+      "note": "UNVERIFIED QUOTE, check by hand. AI-drafted from a full read of cr-databooklet-50hz.pdf: \"totally enclosed, fan-cooled, 2-pole standard motors\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Surface-cooled KSB squirrel-cage motor\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | ingress_protection_rating": {
+    "cri": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "AI-drafted from a full read of mv-vertical-multistage-inline.pdf: \"Degree of protection: IP55\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        9
+      ],
+      "note": "AI-drafted from a full read of cr-databooklet-50hz.pdf: \"Enclosure class IP55\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Enclosure IP55\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | insulation_class": {
+    "cri": {
+      "status": "fully matched",
+      "page": [
+        2
+      ],
+      "note": "AI-drafted from a full read of mv-vertical-multistage-inline.pdf: \"Insulation class: 'F'\"",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "fully matched",
+      "page": [
+        9
+      ],
+      "note": "AI-drafted from a full read of cr-databooklet-50hz.pdf: \"Insulation class F\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "fully matched",
+      "page": [
+        5
+      ],
+      "note": "AI-drafted from a full read of movitec-50hz-type-series-booklet.pdf: \"Thermal class F to IEC 34-1\"",
+      "checked": false
+    }
+  },
+  "Type-2 pump with motor along with spare mechanical seals | motor_starter_compatibility": {
+    "cri": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "grundfos": {
+      "status": "partially matched",
+      "page": [
+        92
+      ],
+      "note": "AI-drafted from a full read of cr-databooklet-50hz.pdf: \"380-400\u0394/660-690Y\"",
+      "checked": false
+    },
+    "kirloskar": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    },
+    "ksb": {
+      "status": "missing capability",
+      "page": null,
+      "note": "AI-drafted: the documents state nothing that meets it",
+      "checked": false
+    }
+  }
+}

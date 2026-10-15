@@ -8,6 +8,7 @@ import pint
 from app.services.abbreviations import Groups, alternatives, load_abbreviations
 from app.services.atomize import AtomicRequirement
 from app.services.measure import spelled
+from app.services.roles import load_roles
 
 UNIT_VIEWS_FILE = Path(__file__).resolve().parents[2] / "config" / "units.json"
 ureg = pint.UnitRegistry()
@@ -40,16 +41,24 @@ def unit_views(attribute: str, value: str, unit: str, views: dict[str, list[dict
 
 
 def product_words(title: str) -> str:
-    """The product's name: the words of an item title before its first number or code.
+    """The product's name: the words of an item title before its first number, code or linking word.
 
     "1600677219 VALVE GATE 250 1500# BW A217 WC" -> "VALVE GATE". A leading code is skipped.
+    "Type-1 pump with motor along with spare mechanical seals" -> "pump": what comes after "with" are extras, not the product.
+    A line break that lost the space ("pumpwith motor") is read as "pump with".
     """
+    stop = load_roles()["title_stop"]
     words = title.split()
     has_digit = [any(c.isdigit() for c in w) for w in words]
     start = has_digit.index(False) if False in has_digit else len(words)
     name = []
     for word, digit in zip(words[start:], has_digit[start:], strict=True):
         if digit:
+            break
+        glued = next((word[: -len(s)] for s in stop if word.lower().endswith(s) and len(word) >= len(s) + 4), None)
+        if word.lower() in stop or glued is not None:
+            if glued:
+                name.append(glued)
             break
         name.append(word)
     return " ".join(name)

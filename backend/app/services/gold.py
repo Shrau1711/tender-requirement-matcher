@@ -18,6 +18,7 @@ class Label(BaseModel):
     status: Status | None = None
     page: int | list[int] | None = None  # one page, or every page where it is stated
     note: str = ""
+    checked: bool = False  # a person looked at the cited page and confirmed the label
 
     @property
     def pages(self) -> list[int]:
@@ -33,6 +34,7 @@ class Row(BaseModel):
     gold_pages: list[int]
     our_page: int | None
     reason: str
+    checked: bool = False
 
     @property
     def agrees(self) -> bool:
@@ -84,10 +86,54 @@ def compare(outcomes: list[Outcome], gold: Gold) -> list[Row]:
             seen.add((key, o.manufacturer))  # a label is compared once, even if the same product is listed twice
             rows.append(Row(
                 attribute=key, manufacturer=o.manufacturer, gold=label.status, ours=o.status, score=o.score,
-                gold_pages=label.pages, our_page=o.evidence.pdf_page if o.evidence else None, reason=o.reason,
+                gold_pages=label.pages, our_page=o.evidence.pdf_page if o.evidence else None, reason=o.reason, checked=label.checked,
             ))
     return rows
 
 
+def cited(gold: Gold, atoms: list[AtomicRequirement]) -> list[tuple[AtomicRequirement, str, str, set[int]]]:
+    """Every (requirement, label key, manufacturer, pages) where a person found something and said on which pages.
+
+    A requirement that several items share is listed once per manufacturer.
+    """
+    several = has_several([a.item for a in atoms])
+    found, seen = [], set()
+    for a in atoms:
+        key = key_for(a.item, a.attribute, several)
+        for maker, label in gold.get(key, {}).items():
+            if label.status in ("fully matched", "partially matched") and label.pages and (key, maker) not in seen:
+                seen.add((key, maker))
+                found.append((a, key, maker, set(label.pages)))
+    return found
+
+
 def share(hits: int, total: int) -> str:
     return f"{hits}/{total} ({100 * hits / total:.0f}%)" if total else "none"
+
+
+def mirror(gold: Gold, atoms: list[AtomicRequirement]) -> list[tuple[str, str, str]]:
+    """Copy each hand-checked label to the same requirement of the tender's other items, when it asks exactly the same thing.
+
+    A tender often lists nearly identical products with the same line of requirements; the documents say the same for all of them.
+    Returns (from key, to key, manufacturer) for every label copied. Labels already checked by hand are never overwritten.
+    """
+    from app.services.evidence import question
+
+    several = has_several([a.item for a in atoms])
+    same: dict[tuple, list[str]] = {}
+    for a in atoms:
+        key = key_for(a.item, a.attribute, several)
+        if a.evidence == "product" and key not in same.setdefault(question(a), []):
+            same[question(a)].append(key)
+    copied = []
+    for keys in same.values():
+        for source in keys:
+            for maker, label in gold.get(source, {}).items():
+                if not label.checked:
+                    continue
+                for target in (k for k in keys if k != source):
+                    other = gold.get(target, {}).get(maker)
+                    if other is not None and not other.checked:
+                        gold[target][maker] = label.model_copy()
+                        copied.append((source, target, maker))
+    return copied

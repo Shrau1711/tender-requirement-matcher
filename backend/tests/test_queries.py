@@ -79,3 +79,11 @@ def test_a_head_in_metres_is_not_also_searched_as_millimetres_but_a_size_is():
     views = load_unit_views()
     assert "160000 mm" not in queries_for(req("head", "number", ["160"], "mtrs"), views)
     assert "250 mm" in queries_for(req("face_to_face_dimension", "number", ["250"], "mm"), views)
+
+
+def test_what_follows_a_linking_word_in_a_title_is_not_the_product():
+    assert product_words("Type-2 pump with motor along with spare mechanical seals") == "pump"
+
+
+def test_a_line_break_that_lost_the_space_is_read_as_a_space():
+    assert product_words("Type-1 pumpwith motor along with spare mechanical seals") == "pump"

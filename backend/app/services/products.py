@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import json
+import re
 
 from pydantic import BaseModel
 
 from app.services.evidence import Evidence
 from app.services.llm import LLM, ask
+from app.services.roles import load_roles
+from app.services.words import singular
 
 SYSTEM = """You are given the names of products found in one manufacturer's documents. The same product is often written in several ways (with or without a model code, with or without "butterfly valve", different dashes or capital letters).
 Group the names that mean the same product. Different models, seat types or constructions are different products, even when their names are similar.
@@ -20,8 +23,19 @@ class Groups(BaseModel):
     groups: list[list[str]]
 
 
+def is_component(name: str) -> bool:
+    """True when the name is a part fitted to a product ("Standard motors", "Cartridge seal"), not a product of its own.
+
+    The head noun decides: the last word before any bracket or dash, so "Canned Motor Pump - i-CM" is still a pump.
+    """
+    head = re.split(r"\(| - ", name)[0].split()
+    return bool(head) and singular(head[-1].lower().strip(",.")) in load_roles()["components"]
+
+
 def is_named(e: Evidence) -> bool:
-    return e.same_product_type == "yes" and e.product.strip().lower() != UNNAMED
+    """A statement counts as naming a product when it names one that is not just a part. Statements about a part
+    (a motor's enclosure, a seal's material) belong to the product of the document they come from."""
+    return e.same_product_type == "yes" and e.product.strip().lower() != UNNAMED and not is_component(e.product)
 
 
 def canonical_names(llm: LLM, names: list[str], cover: list[str] | None = None) -> dict[str, str]:

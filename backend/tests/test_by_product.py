@@ -85,3 +85,16 @@ def test_a_product_of_the_wrong_type_does_not_win_even_when_it_scores_higher_els
     }
     product, _ = best_product([kind, SIZE, HANDLE], "m", table, ALIASES, True)
     assert product == "In-line"
+
+
+def test_a_statement_about_a_part_of_the_product_counts_for_the_product_of_its_document():
+    motor_says = ev("Lever", items=["Lever"], name="Standard motors")
+    table = {(0, "m"): [size_of("A")], (1, "m"): [motor_says]}
+    product, outcomes = best_product([SIZE, HANDLE], "m", table, ALIASES, True)
+    assert product == "A" and outcomes[1].score == 100
+
+
+def test_a_part_is_not_a_product_but_a_pump_named_after_its_drive_is():
+    from app.services.products import is_component
+    assert is_component("Standard motors") and is_component("Cartridge mechanical seal")
+    assert not is_component("Canned Motor Pump - i-CM") and not is_component("CR, CRI, CRN pumps")

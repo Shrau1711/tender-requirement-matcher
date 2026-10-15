@@ -285,3 +285,29 @@ def test_the_attributes_own_name_and_the_tenders_boilerplate_need_not_be_stated(
     wanted = req("handle_type", "text", ["Operating handle (lever) assembly shall be supplied complete"])
     assert verdict(wanted, ev("Lever, Gear", items=["Lever", "Gear"]), ALIASES).score == 100
     assert verdict(wanted, ev("Wheel", items=["Wheel"]), ALIASES).score == 0
+
+
+def test_or_better_is_met_by_the_stated_grade_itself():
+    wanted = req("ingress_protection_rating", "text", ["IP55 or better"])
+    assert verdict(wanted, ev("IP55", items=["IP55"]), ALIASES).score == 100
+
+
+def test_a_number_written_in_words_is_read_as_that_number():
+    wanted = req("phase", "number", ["3"], "phase")
+    assert verdict(wanted, ev("Single Phase, Three Phase", "options", items=["Single Phase", "Three Phase"]), ALIASES).score == 100
+    assert verdict(wanted, ev("Single Phase", items=["Single Phase"]), ALIASES).score == 0
+
+
+def test_a_lone_figure_after_max_is_a_limit_that_covers_a_lower_need():
+    wanted = req("service_temperature", "number", ["60"], "°C")
+    found = verdict(wanted, ev("120 °C", "single", [120], "°C"), ALIASES)
+    assert found.score == 0
+    stated = ev("120 °C", "single", [120], "°C")
+    stated = stated.model_copy(update={"quote": "Max. fluid temperature 120 °C"})
+    assert verdict(wanted, stated, ALIASES).score == 75
+
+
+def test_a_higher_efficiency_class_meets_or_better():
+    wanted = req("motor_efficiency_class", "text", ["IE3 or better energy efficient type"])
+    assert verdict(wanted, ev("IE4", items=["IE4"]), ALIASES).score == 100
+    assert verdict(wanted, ev("IE2", items=["IE2"]), ALIASES).score == 0

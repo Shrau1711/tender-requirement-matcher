@@ -45,7 +45,7 @@ def main(tender: str, category_dir: str) -> None:
             if not table[i, maker]:
                 print(f"  {maker:11} -- nothing found")
             for e in table[i, maker]:
-                print(f"  {maker:11} p{e.pdf_page:<3} [{e.product}] {e.stated}  \"{e.quote[:90]}\"")
+                print(f"  {maker:11} {e.file} p{e.pdf_page:<3} [{e.product}] {e.stated}  \"{e.quote[:90]}\"")
                 print(f"{'':16}-> {e.shape} {e.numbers} unit={e.unit} items={e.items} when={e.condition} limit={e.condition_limit}")
     print(f"\n{llm.summary()}, {time.time() - started:.0f}s")
 
