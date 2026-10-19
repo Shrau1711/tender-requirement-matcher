@@ -87,6 +87,13 @@ Other routes: `GET /health`, `/categories`, `/runs`, `PATCH`/`DELETE /runs/{id}`
 
 Categories live in `data/categories/<category>/manufacturers/<maker>/` as PDFs plus source notes. Add a folder of PDFs and it appears in the category list; no code changes are needed.
 
+Collecting catalogues by hand does not scale, so there is an optional crawler that lists, and with `--download` saves, the PDFs a manufacturer publishes, recording each file's address, the page it was found on, the date and a hash in `crawl_sources.csv` next to them. It obeys `robots.txt`, waits between requests, stays on the manufacturer's site, and does nothing unless asked:
+
+```
+cd backend
+python -m scripts.crawl_catalogues --category pumps --maker grundfos --start <page listing the catalogues> --include databooklet --exclude price
+```
+
 Included: `pumps` (CRI, Grundfos, Kirloskar, KSB) and `valves` (Delval, Duncan, Intervalve, King, KSB, L&T, Leader).
 
 ## Statuses and scores
