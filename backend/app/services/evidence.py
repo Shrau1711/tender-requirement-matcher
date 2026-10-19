@@ -10,10 +10,11 @@ from app.services.atomize import AtomicRequirement
 from app.services.llm import LLM, ask
 from app.services.parallel import run_parallel
 from app.services.queries import queries_for
-from app.services.search import Hit, Index
+from app.services.search import Hit, Index, tokenize
 from app.services.terms import candidates
 
 TOP_K = number_setting("EVIDENCE_TOP_K", 16)  # passages read per requirement and manufacturer: fewer is cheaper, more is thorough
+SCATTER = number_setting("EVIDENCE_QUOTE_SCATTER", 40)  # other words allowed between the first and last word of a quote that joins a table heading to its cell
 RESCUED = number_setting("EVIDENCE_RESCUED", 3)  # more passages read because they say the requirement's own words and numbers, wherever the search ranked them
 
 SYSTEM = """You read passages from one manufacturer's documents and report what they state about one attribute.
@@ -96,8 +97,25 @@ def squash(text: str) -> str:
 
 
 def is_verbatim(quote: str, text: str) -> bool:
-    """True when the quote really appears in the passage. Exact match, so identifiers can never be 'close enough'."""
-    return bool(quote.strip()) and squash(quote) in squash(text)
+    """True when the quote's words stand in the passage in that order, close together.
+
+    Spacing and table separators ("|", ";", ">") are not words, so a model that rejoins the cells of a table row has still quoted it faithfully.
+    A table quote may join a column heading to its cell ("Speed [rpm] 2900-2900") with other cells between them in the text, so the words may be a little apart,
+    but never out of order, never missing, and never spread over more than a short stretch. Every word and number must match exactly, so an identifier can never be 'close enough'.
+    """
+    words, have = tokenize(quote), tokenize(text)
+    if not words:
+        return False
+    reach = len(words) + SCATTER
+    for start in (i for i, w in enumerate(have) if w == words[0]):
+        at = start
+        for w in words[1:]:
+            at = next((j for j in range(at + 1, min(len(have), start + reach)) if have[j] == w), -1)
+            if at < 0:
+                break
+        else:
+            return True
+    return False
 
 
 def usable(req: AtomicRequirement, hits: list[Hit]) -> list[Hit]:
@@ -116,6 +134,17 @@ def unique(found: list[Evidence]) -> list[Evidence]:
     return kept
 
 
+def rejected(finding: Finding, hits: list[Hit]) -> str | None:
+    """Why a finding is set aside, or None when it stands."""
+    if finding.same_product_type == "no":
+        return "about another type of product"
+    if not 0 <= finding.passage < len(hits):
+        return "cites a passage that does not exist"
+    if not is_verbatim(finding.quote, hits[finding.passage].chunk.text):
+        return "quote is not word for word in the passage"
+    return None
+
+
 def find_evidence(llm: LLM, req: AtomicRequirement, hits: list[Hit]) -> list[Evidence]:
     """What the given chunks state about the requirement.
 
@@ -125,10 +154,7 @@ def find_evidence(llm: LLM, req: AtomicRequirement, hits: list[Hit]) -> list[Evi
     if not hits:
         return []
     found = ask(llm, SYSTEM, passages_prompt(req, hits), Found).findings
-    checked = [
-        f for f in found
-        if f.same_product_type != "no" and 0 <= f.passage < len(hits) and is_verbatim(f.quote, hits[f.passage].chunk.text)
-    ]
+    checked = [f for f in found if rejected(f, hits) is None]
     return unique([
         Evidence(
             manufacturer=hits[f.passage].chunk.manufacturer, file=hits[f.passage].chunk.file,
@@ -140,14 +166,14 @@ def find_evidence(llm: LLM, req: AtomicRequirement, hits: list[Hit]) -> list[Evi
 
 
 def retrieve(
-    index: Index, req: AtomicRequirement, manufacturer: str, views: dict[str, list[dict]], rescue: bool = True
+    index: Index, req: AtomicRequirement, manufacturer: str, views: dict[str, list[dict]], rescue: bool = True, depth: int = TOP_K
 ) -> list[Hit]:
     """The chunks of one manufacturer most likely to state the requirement.
 
     The search ranks by keyword and meaning together. Then a plain scan adds the passages that say the requirement's own words
     and numbers but were ranked too low to be read, so a passage worded unexpectedly is not lost.
     """
-    hits = index.search_many(queries_for(req, views), manufacturer, TOP_K)
+    hits = index.search_many(queries_for(req, views), manufacturer, depth)
     if not rescue or req.kind == "standard":  # an identifier is found by the keyword search or not at all
         return hits
     shown = {(h.chunk.file, h.chunk.pdf_page, h.chunk.text) for h in hits}
@@ -161,18 +187,24 @@ def question(req: AtomicRequirement) -> tuple:
     return req.attribute, req.kind, req.operator, tuple(req.values), req.unit, req.source_name, req.source_value
 
 
-def evidence_table(
-    llm: LLM, index: Index, atoms: list[AtomicRequirement], makers: list[str], views: dict[str, list[dict]]
-) -> dict[tuple[int, str], list[Evidence]]:
-    """Evidence for every product requirement and manufacturer, keyed by (position of the requirement, manufacturer).
-
-    A requirement that several items share is looked up once per manufacturer, not once per item.
-    """
+def question_jobs(atoms: list[AtomicRequirement], makers: list[str]) -> tuple[list[tuple[int, str]], dict[tuple, int]]:
+    """Every (requirement position, manufacturer) that needs evidence, and the first position that asks each distinct question of a manufacturer."""
     pairs = [(i, m) for i, a in enumerate(atoms) if a.evidence == "product" for m in makers]
     first: dict[tuple, int] = {}
     for i, m in pairs:
         first.setdefault((question(atoms[i]), m), i)
+    return pairs, first
+
+
+def evidence_table(
+    llm: LLM, index: Index, atoms: list[AtomicRequirement], makers: list[str], views: dict[str, list[dict]], depth: int = TOP_K
+) -> dict[tuple[int, str], list[Evidence]]:
+    """Evidence for every product requirement and manufacturer, keyed by (position of the requirement, manufacturer).
+
+    A requirement that several items share is looked up once per manufacturer, not once per item. depth is how many passages are read per question.
+    """
+    pairs, first = question_jobs(atoms, makers)
     jobs = list(first.items())
-    searched = [(atoms[i], retrieve(index, atoms[i], m, views)) for (_, m), i in jobs]  # searching is quick, so one at a time
+    searched = [(atoms[i], retrieve(index, atoms[i], m, views, depth=depth)) for (_, m), i in jobs]  # searching is quick, so one at a time
     found = dict(zip(first, run_parallel(lambda job: find_evidence(llm, *job), searched), strict=True))  # reading is slow, so all at once
     return {(i, m): found[question(atoms[i]), m] for i, m in pairs}

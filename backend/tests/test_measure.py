@@ -42,3 +42,10 @@ def test_a_head_asked_for_in_metres_of_water_column_is_compared_in_metres():
 def test_a_unit_that_is_not_a_unit_cannot_be_converted_instead_of_failing():
     assert convert(5, "10 mm", "mm", "nominal_size", ALIASES) is None
     assert convert(5, "x 10^3 rpm", "rpm", "speed", ALIASES) is None
+
+
+def test_units_pint_cannot_convert_give_none_instead_of_crashing():
+    aliases = load_aliases()
+    assert convert(85.0, "dB(A)", "mm", "noise level", aliases) is None  # a decibel level is logarithmic
+    assert convert(85.0, "mm", "dB", "size", aliases) is None
+    assert convert(5.0, '"', "mm", "noise level", aliases) is None  # a lone quote mark is not a unit, unless the attribute is a size (inches)

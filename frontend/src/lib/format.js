@@ -8,9 +8,10 @@ export const STATUS_CLASS = {
 };
 
 export const FLAG_HELP = {
-  "units": "The units are missing or cannot be converted, so the numbers could not be compared safely.",
+  "units": "The units are missing or cannot be converted, so the numbers could not be compared safely. It is left out of the compatibility.",
+  "no number stated": "The document speaks about this but gives no number to compare. It is left out of the compatibility.",
   "unit read the other way": "It matches only if a unit such as PN is read the other way.",
-  "unclear tender value": "The tender's value is not a plain number.",
+  "unclear tender value": "The tender's value is not a plain number. It is left out of the compatibility.",
   "reference only": "The document names a standard or reference, not the thing the tender asks for.",
   "equivalent grade": "The tender accepts an equivalent; whether this is one needs a person.",
   "grade not stated": "The document gives the kind of material or type, not the exact grade or number asked for.",
@@ -23,6 +24,7 @@ export const FLAG_HELP = {
 export const FLAG_ACTION = {
   "units": "Find the value on the page and its unit. Convert it, and decide whether it meets the tender's value.",
   "unit read the other way": "Check which unit the page really uses (for example PN or bar). The score assumes one reading; the other would change the result.",
+  "no number stated": "The page speaks about this without a number. Read it and decide whether it meets the tender's value.",
   "unclear tender value": "The tender's value is not a plain number. Read the tender line and decide whether the page meets it.",
   "reference only": "The page names a standard, not the property the tender asks for. Check that the product itself meets what is asked.",
   "equivalent grade": "The tender accepts an equivalent. Decide whether the grade or standard on the page is one.",

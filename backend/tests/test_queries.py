@@ -1,5 +1,5 @@
 from app.services.atomize import AtomicRequirement
-from app.services.queries import load_unit_views, product_words, queries_for
+from app.services.queries import load_unit_views, product_words, queries_for, unit_views
 from app.services.tender import Item
 
 VIEWS = load_unit_views()
@@ -87,3 +87,13 @@ def test_what_follows_a_linking_word_in_a_title_is_not_the_product():
 
 def test_a_line_break_that_lost_the_space_is_read_as_a_space():
     assert product_words("Type-1 pumpwith motor along with spare mechanical seals") == "pump"
+
+
+def test_a_number_with_no_unit_has_no_other_spellings_and_does_not_crash():
+    assert unit_views("pressure", "85", None, VIEWS) == []
+    assert unit_views("pressure", "85", "", VIEWS) == []
+
+
+def test_a_unit_pint_cannot_classify_gives_no_other_spellings_instead_of_crashing():
+    assert unit_views("noise level", "85", "dB(A)", VIEWS) == []  # a decibel level is logarithmic
+    assert unit_views("size", "85", '"', VIEWS) == []  # a lone quote mark is not a unit

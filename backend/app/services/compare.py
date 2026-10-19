@@ -18,7 +18,7 @@ from app.services.words import is_stated, kind_words, shape_of, singular, spoken
 PARTLY = 75  # the most a statement can earn when it only applies under a condition or for an unnamed product
 EXCEEDS = 75  # rated higher than asked
 DIFFERENT_READING = 50  # matches only if a trade unit such as PN is read the other way
-CANNOT_COMPARE = 25  # a statement exists but is in units that cannot be converted
+CANNOT_COMPARE = 25  # a statement exists but cannot be compared (units that cannot be converted, no number): shown, never averaged
 FAMILY_ONLY = 50  # the statement names the kind of thing (grey cast iron) but not the grade or number asked for (IS 210 FG 260)
 CLASS_UNITS = ("class", "#", "lb")  # what a pressure class number is printed with
 BARE_NUMBER = re.compile(r"^(?:class\s*)?#?\s*(\d+(?:\.\d+)?)\s*#?$", re.IGNORECASE)  # "1500#", "Class 1500", "1500"
@@ -34,6 +34,8 @@ GRADE_NOT_STATED = "grade not stated"
 CONDITION = "only under a condition"
 PRODUCT_NOT_NAMED = "product not named"
 SCANNED = "scanned page"
+NO_NUMBER = "no number stated"
+CANNOT_JUDGE = frozenset({UNCLEAR_VALUE, UNITS, NO_NUMBER})  # the statement is there but plain code cannot say whether it meets the need: a person must
 
 
 class Verdict(BaseModel):
@@ -78,7 +80,7 @@ def number_verdict(req: AtomicRequirement, ev: Evidence, aliases: dict[str, dict
     said = " ".join(ev.stated.split())
     numbers = ev.numbers or spoken_numbers(" ".join(ev.items) or ev.stated)
     if not numbers:
-        return Verdict(score=0, reason="no number is stated")
+        return Verdict(score=CANNOT_COMPARE, reason="the statement gives no number to compare", flags=[NO_NUMBER])
     try:
         wanted = [float(v) for v in req.values]
     except ValueError:

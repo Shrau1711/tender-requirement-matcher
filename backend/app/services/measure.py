@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import tokenize
 from functools import lru_cache
 from pathlib import Path
 
@@ -64,5 +65,5 @@ def convert(
         return None
     try:
         return float(ureg.Quantity(value, unit).to(target).magnitude)
-    except (pint.errors.PintError, TypeError, ValueError):  # a unit read as "10 mm" or "x 10^3" is not one we can convert
+    except (pint.errors.PintError, TypeError, ValueError, AssertionError, tokenize.TokenError):  # "10 mm", "x 10^3", a decibel level or a lone quote mark is not a unit we can convert
         return None

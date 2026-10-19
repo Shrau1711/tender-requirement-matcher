@@ -5,7 +5,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 from app.services.atomize import AtomicRequirement
-from app.services.compare import verdict
+from app.services.compare import CANNOT_JUDGE, verdict
 from app.services.evidence import Evidence
 from app.services.tender import Item, distinct_items
 
@@ -24,12 +24,18 @@ class Outcome(BaseModel):
     reason: str
     evidence: Evidence | None = None
 
+    @property
+    def judged(self) -> bool:
+        """False when the statement could not be compared, so its score is a placeholder that must not move the average."""
+        return not CANNOT_JUDGE.intersection(self.flags)
+
 
 class Summary(BaseModel):
     manufacturer: str
     compatibility: float | None  # average score over the requirements a catalogue could show; None if nothing was assessed
     coverage: float | None  # share of those requirements for which any evidence was found
     counted: int
+    left_out: int = 0  # counted requirements whose statement could not be compared, so they are not in the compatibility
 
 
 class ItemSummary(BaseModel):
@@ -58,14 +64,17 @@ def match_requirement(
 
 
 def summarize(manufacturer: str, outcomes: list[Outcome]) -> Summary:
-    counted = [o for o in outcomes if o.status != "unsupported requirement" and o.assessed]
-    if not counted:
-        return Summary(manufacturer=manufacturer, compatibility=None, coverage=None, counted=0)
+    """Compatibility is the average over the requirements that could be compared; coverage and the count include every assessed one."""
+    assessed = [o for o in outcomes if o.status != "unsupported requirement" and o.assessed]
+    judged = [o for o in assessed if o.judged]
+    if not judged:
+        return Summary(manufacturer=manufacturer, compatibility=None, coverage=None, counted=0, left_out=len(assessed))
     return Summary(
         manufacturer=manufacturer,
-        compatibility=sum(o.score for o in counted) / len(counted),
-        coverage=100 * sum(o.found for o in counted) / len(counted),
-        counted=len(counted),
+        compatibility=sum(o.score for o in judged) / len(judged),
+        coverage=100 * sum(o.found for o in assessed) / len(assessed),
+        counted=len(assessed),
+        left_out=len(assessed) - len(judged),
     )
 
 

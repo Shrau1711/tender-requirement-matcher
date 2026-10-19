@@ -39,7 +39,18 @@ def test_summary_leaves_out_unsupported_requirements():
     summary = summarize("m", outcomes)
     assert (summary.compatibility, summary.coverage, summary.counted) == (100, 100, 1)
 
+
 def test_an_unreadable_manufacturer_is_not_assessed_rather_than_scored_zero():
     outcomes = match_all([SIZE], ["m"], {}, ALIASES, set())
     summary = summarize("m", outcomes)
     assert (outcomes[0].assessed, summary.compatibility, summary.coverage, summary.counted) == (False, None, None, 0)
+
+
+def test_a_statement_that_cannot_be_compared_is_shown_but_left_out_of_the_compatibility():
+    pressure = req("nominal_pressure", "number", ["16"], "bar")
+    table = {(0, "m"): [ev("50 NB to 350 NB", "range", [50, 350], "NB")], (1, "m"): [ev("16", "single", [16], None)]}
+    outcomes = match_all([SIZE, pressure], ["m"], table, ALIASES, {"m"})
+    summary = summarize("m", outcomes)
+    assert (outcomes[1].score, outcomes[1].judged) == (25, False)
+    assert (summary.compatibility, summary.coverage, summary.counted, summary.left_out) == (100, 100, 2, 1)
+    assert summarize("m", outcomes[1:]).compatibility is None

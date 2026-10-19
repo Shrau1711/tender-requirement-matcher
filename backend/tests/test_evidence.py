@@ -103,3 +103,33 @@ def test_an_identifier_is_not_scanned_for_because_the_keyword_search_already_fin
 
     index = RankedIndex([chunk("unrelated", 1), chunk("nominal pressure 1.6", 9)])
     assert [h.chunk.pdf_page for h in retrieve(index, req("standard"), "ksb", {})] == [1]
+
+
+def test_a_finding_is_set_aside_for_a_reason_or_stands():
+    from app.services.evidence import Finding, rejected
+    hits = [hit("The motor is rated 415 V.")]
+    base = dict(passage=0, stated="415 V", product="p", same_product_type="yes", quote="rated 415 V")
+    assert rejected(Finding(**base), hits) is None
+    assert "another type" in rejected(Finding(**{**base, "same_product_type": "no"}), hits)
+    assert "does not exist" in rejected(Finding(**{**base, "passage": 3}), hits)
+    assert "word for word" in rejected(Finding(**{**base, "quote": "rated 400 V"}), hits)
+
+
+def test_a_table_row_rejoined_with_other_separators_is_still_a_faithful_quote_but_changed_words_are_not():
+    from app.services.evidence import is_verbatim
+    row = "Pos. > 3; Impeller > Stainless steel; EN 10088 1.4401; AISI 316"
+    assert is_verbatim("Impeller | Stainless steel | EN 10088 1.4401 | AISI 316", row.replace("Pos. > 3; ", ""))
+    assert not is_verbatim("Impeller | Stainless steel | EN 10088 1.4408 | AISI 316", row)
+    assert not is_verbatim("", row) and not is_verbatim("AISI 316 Impeller", row)
+
+
+def test_a_table_heading_joined_to_its_cell_counts_as_quoted_but_a_changed_number_does_not():
+    from app.services.evidence import is_verbatim
+
+    table = "Frequency [Hz] 50 Voltage [V] 400 Speed [rpm] 2900-2900 Power [kW] 7.5 Efficiency [%] 91"
+    assert is_verbatim("Speed [rpm] 2900-2900", table)
+    assert is_verbatim("Speed [rpm] 2900-2900", "Speed [rpm] Power [kW] Efficiency [%] Frame IE3 | 2900-2900 | 7.5")
+    assert not is_verbatim("Speed [rpm] 2900-2950", table)
+    assert not is_verbatim("2900-2900 Speed [rpm]", table)
+    far = "Speed [rpm] " + "filler " * 80 + "2900-2900"
+    assert not is_verbatim("Speed [rpm] 2900-2900", far)

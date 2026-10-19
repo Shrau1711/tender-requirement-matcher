@@ -311,3 +311,8 @@ def test_a_higher_efficiency_class_meets_or_better():
     wanted = req("motor_efficiency_class", "text", ["IE3 or better energy efficient type"])
     assert verdict(wanted, ev("IE4", items=["IE4"]), ALIASES).score == 100
     assert verdict(wanted, ev("IE2", items=["IE2"]), ALIASES).score == 0
+
+
+def test_a_statement_without_a_number_cannot_be_judged_instead_of_failing():
+    found = verdict(SIZE, ev("see the curve", "single", [], "mm"), ALIASES)
+    assert (found.score, found.flags) == (25, ["no number stated"])

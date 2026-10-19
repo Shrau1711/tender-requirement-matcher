@@ -35,6 +35,8 @@ class Row(BaseModel):
     our_page: int | None
     reason: str
     checked: bool = False
+    flags: list[str] = []  # the warnings our answer carried, such as "scanned page"
+    found: bool = False  # some evidence was found, whether or not it meets the requirement
 
     @property
     def agrees(self) -> bool:
@@ -86,7 +88,7 @@ def compare(outcomes: list[Outcome], gold: Gold) -> list[Row]:
             seen.add((key, o.manufacturer))  # a label is compared once, even if the same product is listed twice
             rows.append(Row(
                 attribute=key, manufacturer=o.manufacturer, gold=label.status, ours=o.status, score=o.score,
-                gold_pages=label.pages, our_page=o.evidence.pdf_page if o.evidence else None, reason=o.reason, checked=label.checked,
+                gold_pages=label.pages, our_page=o.evidence.pdf_page if o.evidence else None, reason=o.reason, checked=label.checked, flags=o.flags, found=o.found,
             ))
     return rows
 

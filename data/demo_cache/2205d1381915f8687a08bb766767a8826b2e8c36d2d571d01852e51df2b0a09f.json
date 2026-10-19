@@ -1,0 +1,1 @@
+{"text":"{\"requirements\": [{\"attribute\": \"nominal_size\", \"evidence\": \"product\", \"kind\": \"number\", \"operator\": \"equals\", \"row\": 0, \"unit\": \"mm\", \"values\": [\"80\"]}]}","input_tokens":832,"output_tokens":49}

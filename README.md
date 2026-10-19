@@ -46,7 +46,9 @@ Backend environment variables:
 | Variable | Default | Meaning |
 |----------|---------|---------|
 | `GEMINI_API_KEY` | none (required) | your Gemini key |
-| `LLM_MAX_CALLS` | 300 | hard cap on Gemini calls per run, a cost guard |
+| `LLM_MAX_CALLS` | 400 | hard cap on Gemini calls per run, a cost guard |
+| `TENDER_TOKEN_BUDGET` | 1500000 | input tokens of new Gemini questions one tender may use (about 150 rupees). A tender over it is read from fewer passages per question, and if still over, only its first items are evaluated; the report's notes say exactly what was cut |
+| `SEED_CACHE_DIR` | baked into the image | model answers shipped for the example tenders, so those tenders cost nothing to run |
 | `LLM_WORKERS` | 4 | parallel Gemini calls; lower it on a free-tier key |
 | `MAX_UPLOAD_MB` | 60 | upload size limit |
 | `CATEGORIES_DIR` | baked into the image | folder of categories and manufacturer PDFs |

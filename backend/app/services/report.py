@@ -15,7 +15,7 @@ DEFINITIONS: dict[str, str] = {
     "partially matched": (
         "The document says something relevant but not enough to be sure: the value is higher than asked (75), "
         "applies only under a condition or to a product that is not named (75), is the same kind of thing but not the grade or number asked for (50), "
-        "meets the need only if a unit such as PN is read the other way (50), or is in units that cannot be converted (25). These are flagged for review."
+        "meets the need only if a unit such as PN is read the other way (50), or cannot be compared at all, such as units that cannot be converted or a statement with no number (25). These are flagged for review, and the ones that cannot be compared are shown but left out of the compatibility."
     ),
     "missing capability": (
         "A catalogue could show this requirement and at least one manufacturer's documents speak to it, "
@@ -37,7 +37,8 @@ METHOD = (
     "An item that no manufacturer's documents can be judged for is not scored at all. "
     "The overall compatibility is the average over the scored items, each item weighing the same whatever its quantity. "
     "Coverage is the share of the counted requirements for which the documents state something, whether or not it meets the need. "
-    "Statements that need a person to look (marked review) still count at their score."
+    "Statements that need a person to look (marked review) still count at their score, except those that cannot be compared at all (units that cannot be converted, a tender value that is not a plain number, a statement with no number): "
+    "they are shown with their flag but left out of the average, so the compatibility rests only on what could be compared."
 )
 
 
@@ -67,6 +68,7 @@ class ItemResult(BaseModel):
     compatibility: float | None
     coverage: float | None
     counted: int
+    left_out: int = 0  # counted requirements that could not be compared, so they are not in the compatibility
     note: str | None = None
     rows: list[Row]
 
@@ -80,6 +82,7 @@ class MakerResult(BaseModel):
     counts: dict[str, int]
     by_status: dict[str, list[str]]
     review_needed: int
+    left_out: int = 0
     items: list[ItemResult]
 
 
@@ -132,6 +135,7 @@ def item_result(item: Item, product: str | None, outcomes: list[Outcome], reason
     """One manufacturer's result for one item, before it is known whether the item can be scored at all."""
     outcomes = [set_apart(o, reasons[key_of(o.requirement)]) if key_of(o.requirement) in reasons else o for o in outcomes]
     counted = [o for o in outcomes if o.status != "unsupported requirement"]
+    judged = [o for o in counted if o.judged]
     mismatch = wrong_type(outcomes)
     has_product = offered(outcomes) and mismatch is None
     absent = f"the product judged ({product}) is not the type the tender asks for: {mismatch}" if mismatch else "no product of this type is named in this manufacturer's documents"
@@ -141,14 +145,16 @@ def item_result(item: Item, product: str | None, outcomes: list[Outcome], reason
         note, scored, comp, cov = "no requirement of this item can be judged from catalogues", False, None, None
     elif not has_product:
         note, scored, comp, cov = absent[0].upper() + absent[1:], True, 0.0, 0.0
+    elif not judged:
+        note, scored, comp, cov = "none of this item's requirements could be compared, so a person has to check them", False, None, None
     else:
         note, scored = None, True
-        comp, cov = sum(o.score for o in counted) / len(counted), 100 * sum(o.found for o in counted) / len(counted)
+        comp, cov = sum(o.score for o in judged) / len(judged), 100 * sum(o.found for o in counted) / len(counted)
     if not has_product and assessed and counted:
         outcomes = [o if o.status == "unsupported requirement" else o.model_copy(update={"score": 0, "status": "missing capability", "review": False, "flags": [], "reason": absent}) for o in outcomes]
     return ItemResult(
         item=item.title, quantity=item.quantity, product=product if has_product else None, scored=scored, compatibility=comp,
-        coverage=cov, counted=len(counted) if scored else 0, note=note, rows=[row_of(o) for o in outcomes],
+        coverage=cov, counted=len(counted) if scored else 0, left_out=len(counted) - len(judged) if scored else 0, note=note, rows=[row_of(o) for o in outcomes],
     )
 
 
@@ -160,7 +166,7 @@ def pooled_by_item(outcomes: list[Outcome], reasons: dict[tuple, str], titles: l
     result: dict[str, float | None] = {}
     for title in titles:
         mine = [o for o in outcomes if o.requirement.item.title == title]
-        counted = [o for o in mine if key_of(o.requirement) not in reasons and o.assessed]
+        counted = [o for o in mine if key_of(o.requirement) not in reasons and o.assessed and o.judged]
         result[title] = mean([float(o.score) for o in counted]) if counted and offered(mine) and wrong_type(mine) is None else (0.0 if counted else None)
     return result
 
@@ -177,7 +183,7 @@ def maker_result(maker: str, items: list[ItemResult], pooled: dict[str, float | 
         pooled_compatibility=mean([pooled[r.item] for r in live if pooled.get(r.item) is not None]),
         counts={s: sum(row.status == s for _, row in rows) for s in STATUSES},
         by_status={s: [f"{item}: {row.attribute}: {row.wanted}" for item, row in rows if row.status == s] for s in STATUSES},
-        review_needed=sum(row.review for _, row in rows), items=items,
+        review_needed=sum(row.review for _, row in rows), left_out=sum(r.left_out for r in live), items=items,
     )
 
 

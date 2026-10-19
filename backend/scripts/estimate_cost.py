@@ -3,7 +3,7 @@
 Usage: python -m scripts.estimate_cost <tender folder or pdf> <category_dir>
 
 Reading the tender is real (and cached). Every question about a manufacturer's documents is counted, not asked.
-Pages of the manufacturers' documents that are only pictures are not counted.
+The manufacturers' scanned pages are read the same way the real run reads them (already-read pages come from the cache), so the passages, and so the cache hits, match the real run.
 """
 import sys
 import threading
@@ -30,16 +30,17 @@ class DryRun:
 
     def generate(self, system: str, user: str) -> Reply:
         with self.lock:
-            self.asked.append((self.cache.path_for(system, user).exists(), len(system) + len(user)))
+            self.asked.append((self.cache.has(system, user), len(system) + len(user)))
         return Reply(text='{"findings": []}')
 
 
 def main(tender: str, category_dir: str) -> None:
     llm = make_llm()
-    atoms, _ = read_atoms(llm, tender, reader_for(llm))
-    print(f"reading the tender: {llm.summary()}")
+    read_image = reader_for(llm)
+    atoms, _ = read_atoms(llm, tender, read_image)
+    print(f"reading the tender and the scanned pages: {llm.summary()}")
     dry = DryRun(llm)
-    evidence_table(dry, Index(load_chunks(category_dir)), atoms, manufacturers(category_dir), load_unit_views())
+    evidence_table(dry, Index(load_chunks(category_dir, read_image)), atoms, manufacturers(category_dir), load_unit_views())
     new = [chars for cached, chars in dry.asked if not cached]
     print(f"\nreading the manufacturers' documents ({TOP_K} passages per question):")
     print(f"  {len(dry.asked)} questions, {len(dry.asked) - len(new)} already answered in the cache")

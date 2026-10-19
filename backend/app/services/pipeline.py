@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from app.services.atomize import AtomicRequirement, atomize_tender, contradictions
+from app.services.budget import plan
 from app.services.by_product import best_products
 from app.services.corpus import load_chunks, manufacturers
 from app.services.evidence import Evidence, evidence_table
@@ -54,10 +55,13 @@ def gather(
     progress("Reading the tender and splitting it into requirements")
     atoms, notes = read_atoms(llm, tender, read_image)
     makers = manufacturers(category_dir)
-    progress(f"Searching the documents for evidence on {len(atoms)} requirements")
-    table = evidence_table(llm, Index(chunks), atoms, makers, load_unit_views())
+    progress(f"Checking what reading the documents for {len(atoms)} requirements would cost")
+    index, views = Index(chunks), load_unit_views()
+    chosen = plan(llm, index, atoms, makers, views)
+    progress(f"Searching the documents for evidence on {len(chosen.atoms)} requirements")
+    table = evidence_table(llm, index, chosen.atoms, makers, views, chosen.depth)
     covers = {c.manufacturer: c.document_headings for c in chunks}
-    return Gathered(atoms, notes, makers, table, set(covers), covers)
+    return Gathered(chosen.atoms, notes + chosen.notes, makers, table, set(covers), covers)
 
 
 def score(found: Gathered) -> list[Outcome]:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import tokenize
 from pathlib import Path
 
 import pint
@@ -22,15 +23,25 @@ def number(x: float) -> str:
     return f"{x:.6g}"  # 16.000000000000004 -> 16
 
 
+def has_dimension(quantity: pint.Quantity, dimension: str) -> bool:
+    """Whether the quantity measures that dimension. A unit pint cannot classify (a decibel level, say) measures none of them."""
+    try:
+        return quantity.check(dimension)
+    except (AttributeError, pint.errors.PintError):
+        return False
+
+
 def unit_views(attribute: str, value: str, unit: str, views: dict[str, list[dict]]) -> list[str]:
     """The same quantity written the other ways brochures write it, e.g. 1.6 MPa -> 16 bar, PN 16."""
+    if not spelled(unit):
+        return []  # a bare number has no other spellings
     try:
         quantity = ureg.Quantity(float(value), spelled(unit))  # "LPS" is a flow to us, though pint does not know it
-    except (ValueError, pint.errors.PintError):
+    except (ValueError, pint.errors.PintError, tokenize.TokenError):
         return []
     found = []
     for dimension, targets in views.items():
-        if not quantity.check(dimension):
+        if not has_dimension(quantity, dimension):
             continue
         for target in targets:
             if any(part in attribute for part in target.get("attribute_contains", [""])):

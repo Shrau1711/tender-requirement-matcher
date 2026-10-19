@@ -1,4 +1,4 @@
-from app.services.evaluation import confusion, overclaims, per_status, to_markdown, underclaims
+from app.services.evaluation import confusion, overclaims, per_status, to_markdown, trust, underclaims
 from app.services.gold import Row
 
 
@@ -30,3 +30,16 @@ def test_the_confusion_matrix_counts_each_pair():
 def test_the_markdown_has_every_section_and_lists_the_disagreements():
     text = to_markdown({"T1": ROWS})
     assert all(h in text for h in ("## Agreement per tender", "## Per status", "## Confusion matrix", "## Disagreements")) and "| T1 | 4 | 0 |" in text
+
+
+def test_answers_are_grouped_by_the_warnings_they_carried():
+    plain, scanned = row("fully matched", "fully matched"), row("missing capability", "fully matched").model_copy(update={"flags": ["scanned page"]})
+    groups = trust([plain, scanned, row("fully matched", "missing capability")])
+    assert groups["fully matched, no warning"] == [plain] and groups["fully matched, with a warning"] == [scanned]
+    assert groups["warning: scanned page"] == [scanned] and "partially matched, no warning" not in groups
+
+
+def test_a_missing_capability_is_grouped_by_whether_anything_was_found():
+    nothing, failed = row("missing capability", "missing capability"), row("fully matched", "missing capability").model_copy(update={"found": True})
+    groups = trust([nothing, failed])
+    assert groups["missing capability, nothing found"] == [nothing] and groups["missing capability, found but does not meet it"] == [failed]

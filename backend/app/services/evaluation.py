@@ -48,6 +48,23 @@ def page_agreement(rows: list[Row]) -> tuple[int, int]:
     return sum(r.page_agrees for r in both), len(both)
 
 
+def trust(rows: list[Row]) -> dict[str, list[Row]]:
+    """The answers grouped by how much warning came with them: how far to trust each kind.
+
+    A match is grouped by its status with and without any warning, then by each warning on its own (an answer with two warnings is in both).
+    A "missing capability" is grouped by whether anything was found at all.
+    """
+    claimed = [r for r in rows if r.ours != "missing capability"]
+    groups = {f"{status}, {label}": [r for r in claimed if r.ours == status and bool(r.flags) == flagged]
+              for status in ("fully matched", "partially matched") for label, flagged in (("no warning", False), ("with a warning", True))}
+    for flag in sorted({f for r in claimed for f in r.flags}):
+        groups[f"warning: {flag}"] = [r for r in claimed if flag in r.flags]
+    missing = [r for r in rows if r.ours == "missing capability"]
+    groups["missing capability, nothing found"] = [r for r in missing if not r.found]
+    groups["missing capability, found but does not meet it"] = [r for r in missing if r.found]
+    return {name: found for name, found in groups.items() if found}
+
+
 def to_markdown(by_tender: dict[str, list[Row]]) -> str:
     """The whole evaluation as text for the write-up: agreement per tender, then per status, then the confusion matrix."""
     rows = [r for found in by_tender.values() for r in found]
@@ -63,6 +80,9 @@ def to_markdown(by_tender: dict[str, list[Row]]) -> str:
     lines += ["", "## Confusion matrix (rows: what the person found; columns: what the system said)", "", "| | " + " | ".join(JUDGED) + " |", "|---|---|---|---|"]
     for gold in JUDGED:
         lines.append(f"| {gold} | " + " | ".join(str(table[(gold, ours)]) for ours in JUDGED) + " |")
+    lines += ["", "## How far to trust an answer", "", "| Kind of answer | Answers | Right | Over-claims | Under-claims |", "|---|---|---|---|---|"]
+    for name, found in trust(rows).items():
+        lines.append(f"| {name} | {len(found)} | {share(sum(r.agrees for r in found), len(found))} | {len(overclaims(found))} | {len(underclaims(found))} |")
     lines += ["", "## Disagreements", ""]
     for r in (r for r in rows if not r.agrees):
         lines.append(f"- {r.attribute} / {r.manufacturer}: person {r.gold}, system {r.ours} ({r.score}). {r.reason}")

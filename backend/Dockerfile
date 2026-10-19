@@ -21,6 +21,8 @@ COPY backend/app app
 COPY backend/config config
 COPY backend/scripts scripts
 COPY data/categories /app/data/categories
+# Model answers for the example tenders, so running them costs nothing (see scripts/export_demo_cache.py).
+COPY data/demo_cache /app/data/demo_cache
 
 # Everything the service writes (stored runs, cached model answers) lives in /data, which can be a volume.
 RUN useradd --create-home --uid 10001 app && mkdir -p /data/runs /data/cache && chown -R app /data /opt/fastembed
