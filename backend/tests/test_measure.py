@@ -1,3 +1,5 @@
+import pytest
+
 from app.services.measure import convert, load_aliases, unit_in
 
 ALIASES = load_aliases()
@@ -49,3 +51,9 @@ def test_units_pint_cannot_convert_give_none_instead_of_crashing():
     assert convert(85.0, "dB(A)", "mm", "noise level", aliases) is None  # a decibel level is logarithmic
     assert convert(85.0, "mm", "dB", "size", aliases) is None
     assert convert(5.0, '"', "mm", "noise level", aliases) is None  # a lone quote mark is not a unit, unless the attribute is a size (inches)
+
+
+def test_indian_tender_units_are_understood():
+    aliases = load_aliases()
+    assert convert(69, "Bar", "KG/CM SQ", "working pressure", aliases) == pytest.approx(70.36, abs=0.01)
+    assert convert(175, "°C", "DEGREE CENTIGRADE", "operating temperature", aliases) == 175

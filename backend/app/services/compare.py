@@ -141,7 +141,9 @@ def closeness(kind: str, wanted: str, stated: str, ignore: set[str] | None = Non
 
 
 def best_closeness(req: AtomicRequirement, wanted: str, heard: list[str]) -> tuple[int, list[str]]:
-    ignore = kind_words(req.attribute) | {singular(w) for w in load_roles()["generic"]}
+    roles = load_roles()
+    # "40 NB" and "DN: 40" say the same thing; the designator is not a word the document has to repeat. (Only in the comparison: the search keeps the buyer's words.)
+    ignore = kind_words(req.attribute) | {singular(w) for w in roles["generic"] + roles["size_designators"]}
     return max((closeness(req.kind, wanted, i, ignore) for i in heard), key=lambda c: (c[0], -len(c[1])))
 
 

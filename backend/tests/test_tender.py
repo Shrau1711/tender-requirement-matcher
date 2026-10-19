@@ -45,3 +45,24 @@ def test_only_tables_under_an_item_heading_are_requirements():
     found = read_requirements(doc([heading("Valves ( 5 pieces )", 150)], [bid_details, spec]))
     assert [r.name for r in found] == ["Nominal Size (DN) (mm)", "Nominal Pressure (PN) (MPa)"]
     assert found[0].item.quantity == 5
+
+
+def page(number: int, lines: list[Line], tables: list[RawTable]) -> PageRecord:
+    return PageRecord(pdf_page=number, text="x", n_chars=1, n_images=0, needs_ocr=False, lines=lines, tables=tables)
+
+
+def test_heading_at_the_foot_of_a_page_names_the_table_on_the_next_page():
+    first = page(1, [heading("Pumpsets ( 2 pieces )", 700)], [table(0, [["Bid End Date", "07-10-2026"]])])
+    second = page(2, [], [table(50, SPEC)])
+    found = read_requirements(ReadDocument(path="t.pdf", sha256="0", n_pages=2, pages=[first, second]))
+    assert {(r.item.title, r.pdf_page) for r in found} == {("Pumpsets", 2)}
+
+
+def test_a_table_before_any_heading_is_still_not_a_requirement():
+    found = read_requirements(doc([], [table(0, SPEC)]))
+    assert found == []
+
+
+def test_repeated_column_titles_are_not_requirements():
+    rows = [["", "Specification Name", "Bid Requirement (Allowed Values)"], ["", "Nominal Size", "125"]]
+    assert name_value_rows(table(0, [["", "", ""], *rows])) == [(None, "Nominal Size", "125")]

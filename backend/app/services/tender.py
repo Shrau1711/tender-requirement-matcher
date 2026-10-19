@@ -37,10 +37,15 @@ def parse_item(text: str) -> Item | None:
     return Item(title=title, quantity=int(match["qty"]))
 
 
-def item_above(page: PageRecord, table: RawTable) -> Item | None:
-    """The nearest item heading printed above the table on this page."""
-    above = [line for line in page.lines if line.y1 <= table.bbox[1] and parse_item(line.text)]
-    return parse_item(max(above, key=lambda line: line.y1).text) if above else None
+def in_page_order(page: PageRecord) -> list[tuple[float, Item | RawTable]]:
+    """The item headings and the tables of a page, top to bottom. A heading comes before a table that starts where it ends."""
+    headings = [(line.y1, item) for line in page.lines if (item := parse_item(line.text))]
+    return sorted([*headings, *((table.bbox[1], table) for table in page.tables)], key=lambda entry: entry[0])
+
+
+def is_header(name: str, value: str) -> bool:
+    """The column titles of a specification table, however many times a page repeats them ("Specification Name | Bid Requirement (Allowed Values)")."""
+    return bool(re.search("specification", name, re.IGNORECASE) and re.search("allowed values|bid requirement", value, re.IGNORECASE))
 
 
 def name_value_rows(table: RawTable) -> list[tuple[str | None, str, str]]:
@@ -55,7 +60,7 @@ def name_value_rows(table: RawTable) -> list[tuple[str | None, str, str]]:
         name, value = cells[-2], cells[-1]
         if width == 3 and cells[0]:
             group = cells[0]
-        if name and value:
+        if name and value and not is_header(name, value):
             result.append((group, name, value))
     return result
 
@@ -66,14 +71,14 @@ def read_requirements(doc: ReadDocument) -> list[Requirement]:
     current: Item | None = None
     file = Path(doc.path).name
     for page in doc.pages:
-        for table in sorted(page.tables, key=lambda t: t.bbox[1]):
-            current = item_above(page, table) or current
-            if current is None:
-                continue
-            for group, name, value in name_value_rows(table):
-                requirements.append(
-                    Requirement(item=current, group=group, name=name, value=value, pdf_page=page.pdf_page, file=file)
-                )
+        for _, entry in in_page_order(page):
+            if isinstance(entry, Item):
+                current = entry  # a heading at the foot of a page still names the table that opens the next one
+            elif current is not None:
+                for group, name, value in name_value_rows(entry):
+                    requirements.append(
+                        Requirement(item=current, group=group, name=name, value=value, pdf_page=page.pdf_page, file=file)
+                    )
     return requirements
 
 

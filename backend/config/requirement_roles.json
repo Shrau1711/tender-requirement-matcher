@@ -62,5 +62,9 @@
     "drive",
     "starter",
     "baseplate"
+  ],
+  "size_designators": [
+    "nb",
+    "dn"
   ]
 }

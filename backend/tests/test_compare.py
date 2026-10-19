@@ -1,6 +1,6 @@
 from builders import ev, req
 
-from app.services.compare import verdict
+from app.services.compare import best_closeness, verdict
 from app.services.evidence import Limit
 from app.services.measure import load_aliases
 
@@ -316,3 +316,8 @@ def test_a_higher_efficiency_class_meets_or_better():
 def test_a_statement_without_a_number_cannot_be_judged_instead_of_failing():
     found = verdict(SIZE, ev("see the curve", "single", [], "mm"), ALIASES)
     assert (found.score, found.flags) == (25, ["no number stated"])
+
+
+def test_a_size_designator_is_not_a_missing_word():
+    wanted = req("nominal_size", "items", ["40 NB"])
+    assert best_closeness(wanted, "40 NB", ["SIZE (mm): 40"]) == (100, [])
