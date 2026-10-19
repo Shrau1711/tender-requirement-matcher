@@ -11,7 +11,8 @@ from app.config import cache_dir, path_setting
 from app.services.embedder import MODEL_NAME, embed_texts
 
 CACHE_FILE = cache_dir() / "embeddings.sqlite"
-# Vectors computed when the image was built (see scripts.build_embeddings); read-only, so a new install does not embed the documents again.
+# A copy of the vectors computed where the shipped model answers were saved (read only). Another machine computes slightly different vectors, which can change
+# the order of the passages in a question and so the question itself, and a changed question does not find its saved answer.
 SEED_FILE = path_setting("SEED_EMBEDDINGS", Path(__file__).resolve().parents[3] / "data" / "seed_embeddings.sqlite")
 BATCH = 32  # texts embedded and saved at a time: memory stays small and an interrupted run keeps its progress
 

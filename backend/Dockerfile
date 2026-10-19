@@ -24,9 +24,9 @@ COPY data/categories /app/data/categories
 # Model answers for the example tenders, so running them costs nothing (see scripts/export_demo_cache.py).
 COPY data/demo_cache /app/data/demo_cache
 
-# Every passage of the manufacturers' documents is embedded now, so the first run of a fresh container does not spend minutes doing it.
-# It needs no network and no key: scanned pages come from the saved answers above.
-RUN python -m scripts.build_embeddings /app/data/categories /app/data/seed_embeddings.sqlite
+# The vectors of the manufacturers' passages and of the example tenders' questions, as computed where the answers above were saved.
+# Searching with the same vectors finds the same passages, so those answers are found; vectors computed on another machine differ in the last digits.
+COPY data/seed_embeddings.sqlite /app/data/seed_embeddings.sqlite
 
 # Everything the service writes (stored runs, cached model answers) lives in /data, which can be a volume.
 RUN useradd --create-home --uid 10001 app && mkdir -p /data/runs /data/cache && chown -R app /data /opt/fastembed

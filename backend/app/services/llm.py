@@ -22,15 +22,20 @@ class LLM(Protocol):
     """Anything that turns a system prompt and a user prompt into a reply."""
 
     def generate(self, system: str, user: str) -> Reply: ...
-    
+
 
 def parse_json(raw: str, schema: type[T]) -> T:
     return schema.model_validate(json.loads(FENCE.sub("", raw.strip())))
 
 
+def request_system(system: str, schema: type[T]) -> str:
+    """The system prompt the model really receives: the instructions plus the schema its reply must match. Saved answers are found by this text."""
+    return f"{system}\n\nReply with JSON only, matching this schema:\n{json.dumps(schema.model_json_schema())}"
+
+
 def ask(llm: LLM, system: str, user: str, schema: type[T], attempts: int = MAX_ATTEMPTS) -> T:
     """Get a reply that matches `schema`. A bad reply is sent back with the error, up to `attempts` times."""
-    system = f"{system}\n\nReply with JSON only, matching this schema:\n{json.dumps(schema.model_json_schema())}"
+    system = request_system(system, schema)
     prompt, error = user, None
     for _ in range(attempts):
         try:

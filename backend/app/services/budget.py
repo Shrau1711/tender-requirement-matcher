@@ -10,8 +10,17 @@ from dataclasses import dataclass
 
 from app.config import number_setting
 from app.services.atomize import AtomicRequirement
-from app.services.evidence import SYSTEM, TOP_K, passages_prompt, question, question_jobs, retrieve, usable
-from app.services.llm import LLM
+from app.services.evidence import (
+    SYSTEM,
+    TOP_K,
+    Found,
+    passages_prompt,
+    question,
+    question_jobs,
+    retrieve,
+    usable,
+)
+from app.services.llm import LLM, request_system
 from app.services.llm_cache import MAX_CALLS
 from app.services.search import Index
 from app.services.tender import distinct_items
@@ -40,7 +49,7 @@ def price(llm: LLM, req: AtomicRequirement, hits: list) -> int:
         return 0
     user = passages_prompt(req, hits)
     has = getattr(llm, "has", None)
-    if has is not None and has(SYSTEM, user):
+    if has is not None and has(request_system(SYSTEM, Found), user):
         return 0
     return (len(SYSTEM) + len(user)) // CHARS_PER_TOKEN
 

@@ -90,3 +90,22 @@ def test_a_later_item_that_does_not_fit_is_dropped_whole_never_cut_in_half():
     atoms = [req("Valve A", "1"), req("Valve B", "2"), req("Valve B", "3")]
     result = planned(Plain(), budget=2 * ONE + 500, atoms=atoms)  # A plus one of B's two questions would fit; B whole would not
     assert [a.item.title for a in result.atoms] == ["Valve A"]
+
+
+def test_an_answer_saved_by_a_real_request_is_recognised_so_it_costs_nothing(tmp_path):
+    """The saved answer is found by the system prompt the model really received, which carries the reply schema."""
+    from app.services.evidence import SYSTEM, Found, passages_prompt
+    from app.services.llm import Reply, request_system
+    from app.services.llm_cache import CachedLLM
+
+    class Model:
+        model, settings = "m", "s"
+
+        def generate(self, system, user):
+            return Reply(text='{"findings": []}')
+
+    hits = Index().search_many([], "ksb", 1)
+    llm = CachedLLM(Model(), tmp_path)
+    assert price(llm, ATOMS[0], hits) > 0
+    llm.generate(request_system(SYSTEM, Found), passages_prompt(ATOMS[0], hits))
+    assert price(llm, ATOMS[0], hits) == 0
