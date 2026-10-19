@@ -39,3 +39,13 @@ def test_new_text_is_embedded_in_small_batches_and_saved_as_it_goes(tmp_path, mo
     assert sizes == [2, 2, 1]
     embed_cached(["a", "e"], tmp_path / "e.sqlite", fake)
     assert sizes == [2, 2, 1]  # nothing new, nothing embedded
+
+
+def test_vectors_in_the_shipped_seed_are_used_and_not_copied_or_changed(tmp_path):
+    embed, asked = counting_embed()
+    embed_cached(["wafer"], tmp_path / "seed.sqlite", embed, seed_file=None)
+    asked.clear()
+    vectors = embed_cached(["wafer", "lug"], tmp_path / "c.sqlite", embed, seed_file=tmp_path / "seed.sqlite")
+    assert asked == ["lug"] and vectors[0, 0] == 5.0
+    embed_cached(["wafer"], tmp_path / "other.sqlite", embed, seed_file=tmp_path / "missing.sqlite")
+    assert asked == ["lug", "wafer"]  # no seed file: everything is computed as before

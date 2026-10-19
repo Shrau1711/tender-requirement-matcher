@@ -1,10 +1,13 @@
 import io
+import threading
+import time
 
 import pytest
 from fastapi.testclient import TestClient
 from test_report import ALIASES, BIG, SIZE, run  # noqa: F401
 
 from app.main import create_app
+from app.services.estimate import make_estimate
 
 PDF = b"%PDF-1.4 fake"
 
@@ -29,8 +32,8 @@ def client(folders, runner=fake_runner):
     return TestClient(create_app(folders[0], folders[1], runner))
 
 
-def upload(c, name="bid.pdf", data=PDF, category="pumps"):
-    return c.post("/runs", data={"category": category}, files=[("files", (name, io.BytesIO(data), "application/pdf"))])
+def upload(c, name="bid.pdf", data=PDF, category="pumps", **form):
+    return c.post("/runs", data={"category": category, **form}, files=[("files", (name, io.BytesIO(data), "application/pdf"))])
 
 
 def test_categories_are_the_folders_that_hold_manufacturers(folders):
@@ -99,3 +102,49 @@ def test_an_uploaded_tender_file_can_be_opened_by_its_run(folders):
     assert c.get(f"/runs/{run_id}/tender/bid.pdf").content == PDF
     assert c.get(f"/runs/{run_id}/tender/other.pdf").status_code == 404
     assert c.get("/runs/nope/tender/bid.pdf").status_code == 404
+
+
+def asking_runner(run_id, tender_dir, category_dir, name, progress, ask=None):
+    if ask:
+        ask(make_estimate(12, 40, 200_000, ["part of the tender was left out"]))
+    return fake_runner(run_id, tender_dir, category_dir, name, progress)
+
+
+def start_asking(c):
+    """Starts a run that must be approved. The upload call only returns when the run has ended, so it runs in a thread."""
+    thread = threading.Thread(target=lambda: upload(c, ask_first="true"))
+    thread.start()
+    for _ in range(200):
+        runs = c.get("/runs").json()
+        if runs and runs[0]["status"] == "awaiting":
+            return thread, runs[0]
+        time.sleep(0.02)
+    raise AssertionError("the run never asked")
+
+
+def test_a_run_asked_to_wait_shows_its_estimate_and_goes_on_when_told_to(folders):
+    c = client(folders, asking_runner)
+    thread, waiting = start_asking(c)
+    assert waiting["estimate"]["questions"] == 40 and waiting["estimate"]["notes"] == ["part of the tender was left out"]
+    assert c.post(f"/runs/{waiting['id']}/proceed").status_code == 200
+    thread.join(5)
+    assert c.get(f"/runs/{waiting['id']}").json()["status"] == "done"
+    assert c.get(f"/runs/{waiting['id']}").json()["estimate"] is None
+
+
+def test_cancelling_the_estimate_ends_the_run_without_a_report(folders):
+    c = client(folders, asking_runner)
+    thread, waiting = start_asking(c)
+    assert c.post(f"/runs/{waiting['id']}/cancel").status_code == 200
+    thread.join(5)
+    info = c.get(f"/runs/{waiting['id']}").json()
+    assert info["status"] == "cancelled" and "Cancelled" in info["error"]
+    assert c.get(f"/runs/{waiting['id']}/report").status_code == 409
+
+
+def test_a_run_not_asked_to_wait_starts_at_once_and_has_nothing_to_answer(folders):
+    c = client(folders, asking_runner)
+    run_id = upload(c).json()["id"]
+    assert c.get(f"/runs/{run_id}").json()["status"] == "done"
+    assert c.post(f"/runs/{run_id}/proceed").status_code == 409
+    assert c.post("/runs/nope/cancel").status_code == 404

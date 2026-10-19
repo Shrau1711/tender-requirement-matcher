@@ -6,9 +6,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
-Status = Literal["queued", "running", "done", "failed"]
+from app.services.estimate import Estimate
+
+Status = Literal["queued", "awaiting", "running", "done", "failed", "cancelled"]  # awaiting: the person has an estimate to approve
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS runs (
@@ -21,11 +23,12 @@ CREATE TABLE IF NOT EXISTS runs (
     finished_at TEXT,
     model_calls TEXT,
     report TEXT,
-    progress TEXT
+    progress TEXT,
+    estimate TEXT
 )
 """
 
-COLUMNS = "id, tender, category, status, error, created_at, finished_at, model_calls, progress"
+COLUMNS = "id, tender, category, status, error, created_at, finished_at, model_calls, progress, estimate"
 
 
 class RunInfo(BaseModel):
@@ -40,6 +43,12 @@ class RunInfo(BaseModel):
     finished_at: str | None = None
     model_calls: str | None = None
     progress: str | None = None  # what the run is doing right now, while it runs
+    estimate: Estimate | None = None  # what the search will cost, while the person decides
+
+    @field_validator("estimate", mode="before")
+    @classmethod
+    def stored_estimate(cls, value):
+        return Estimate.model_validate_json(value) if isinstance(value, str) else value
 
 
 def now() -> str:
@@ -54,8 +63,10 @@ class RunStore:
         self.path = path
         with self.connect() as db:
             db.execute(SCHEMA)
-            if "progress" not in {row["name"] for row in db.execute("PRAGMA table_info(runs)")}:
-                db.execute("ALTER TABLE runs ADD COLUMN progress TEXT")  # a database made before progress was reported
+            have = {row["name"] for row in db.execute("PRAGMA table_info(runs)")}
+            for column in ("progress", "estimate"):
+                if column not in have:
+                    db.execute(f"ALTER TABLE runs ADD COLUMN {column} TEXT")  # a database made before this was kept
 
     def connect(self) -> sqlite3.Connection:
         db = sqlite3.connect(self.path)
@@ -76,13 +87,21 @@ class RunStore:
         with self.connect() as db:
             db.execute("UPDATE runs SET progress = ? WHERE id = ?", (text, run_id))
 
+    def await_approval(self, run_id: str, estimate: Estimate) -> None:
+        with self.connect() as db:
+            db.execute("UPDATE runs SET status = 'awaiting', progress = NULL, estimate = ? WHERE id = ?", (estimate.model_dump_json(), run_id))
+
+    def cancel(self, run_id: str, reason: str) -> None:
+        with self.connect() as db:
+            db.execute("UPDATE runs SET status = 'cancelled', progress = NULL, error = ?, finished_at = ? WHERE id = ?", (reason, now(), run_id))
+
     def rename(self, run_id: str, name: str) -> bool:
         with self.connect() as db:
             return db.execute("UPDATE runs SET tender = ? WHERE id = ?", (name, run_id)).rowcount > 0
 
     def finish(self, run_id: str, report_json: str, model_calls: str) -> None:
         with self.connect() as db:
-            db.execute("UPDATE runs SET status = 'done', progress = NULL, report = ?, model_calls = ?, finished_at = ? WHERE id = ?", (report_json, model_calls, now(), run_id))
+            db.execute("UPDATE runs SET status = 'done', progress = NULL, estimate = NULL, report = ?, model_calls = ?, finished_at = ? WHERE id = ?", (report_json, model_calls, now(), run_id))
 
     def fail(self, run_id: str, error: str) -> None:
         with self.connect() as db:
@@ -110,4 +129,4 @@ class RunStore:
     def fail_unfinished(self, reason: str) -> None:
         """Runs a restart interrupted can never finish; say so instead of leaving them 'running' forever."""
         with self.connect() as db:
-            db.execute("UPDATE runs SET status = 'failed', error = ?, finished_at = ? WHERE status IN ('queued', 'running')", (reason, now()))
+            db.execute("UPDATE runs SET status = 'failed', error = ?, finished_at = ? WHERE status IN ('queued', 'awaiting', 'running')", (reason, now()))

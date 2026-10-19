@@ -8,7 +8,7 @@ import { callsSummary, shortDate } from "../lib/format";
 import { links } from "../lib/route";
 import { matches } from "../lib/tables";
 
-const STATUS_BADGE = { done: "badge-full", failed: "badge-missing", running: "badge-partial", queued: "badge-unsupported" };
+const STATUS_BADGE = { done: "badge-full", failed: "badge-missing", running: "badge-partial", awaiting: "badge-review", queued: "badge-unsupported", cancelled: "badge-unsupported" };
 
 function RenameForm({ run, onSave, onCancel }) {
   const [text, setText] = useState(run.tender);
@@ -61,7 +61,7 @@ export default function RunsPage({ runs, refresh }) {
         <section className="card">
           <div className="table-tools">
             <label className="field grow"><span>Search runs</span><input type="search" value={query} onChange={(e) => setQuery(e.target.value)} /></label>
-            <label className="field"><span>Status</span><select value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All</option>{["done", "running", "queued", "failed"].map((s) => <option key={s}>{s}</option>)}</select></label>
+            <label className="field"><span>Status</span><select value={status} onChange={(e) => setStatus(e.target.value)}><option value="">All</option>{["done", "awaiting", "running", "queued", "failed", "cancelled"].map((s) => <option key={s}>{s}</option>)}</select></label>
           </div>
           {shown.length ? <DataTable caption="Runs" columns={columns} rows={shown} rowKey={(r) => r.id} pageSize={15} /> : <EmptyState title="No runs match">Change the search or the status.</EmptyState>}
         </section>

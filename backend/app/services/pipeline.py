@@ -8,6 +8,7 @@ from app.services.atomize import AtomicRequirement, atomize_tender, contradictio
 from app.services.budget import plan
 from app.services.by_product import best_products
 from app.services.corpus import load_chunks, manufacturers
+from app.services.estimate import Estimate, make_estimate
 from app.services.evidence import Evidence, evidence_table
 from app.services.llm import LLM
 from app.services.match import Outcome, match_all
@@ -44,11 +45,13 @@ def read_atoms(llm: LLM, tender: str | Path, read_image: ImageReader | None = No
 
 
 def gather(
-    llm: LLM, tender: str | Path, category_dir: str | Path, read_image: ImageReader | None = None, progress: Callable[[str], None] = lambda _: None
+    llm: LLM, tender: str | Path, category_dir: str | Path, read_image: ImageReader | None = None, progress: Callable[[str], None] = lambda _: None,
+    ask: Callable[[Estimate], None] | None = None,
 ) -> Gathered:
     """Read the tender and the manufacturers' documents, and find the evidence for every requirement.
 
     read_image reads the pages of the tender's and the manufacturers' documents that are only pictures. progress is told each stage as it starts.
+    ask, if given, is shown what the search will cost before it is paid for, and stops the job by raising if the person says no.
     """
     progress("Reading the manufacturers' documents")
     chunks = load_chunks(category_dir, read_image)
@@ -58,6 +61,8 @@ def gather(
     progress(f"Checking what reading the documents for {len(atoms)} requirements would cost")
     index, views = Index(chunks), load_unit_views()
     chosen = plan(llm, index, atoms, makers, views)
+    if ask:
+        ask(make_estimate(len(chosen.atoms), chosen.questions, chosen.tokens, notes + chosen.notes))
     progress(f"Searching the documents for evidence on {len(chosen.atoms)} requirements")
     table = evidence_table(llm, index, chosen.atoms, makers, views, chosen.depth)
     covers = {c.manufacturer: c.document_headings for c in chunks}

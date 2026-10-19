@@ -145,6 +145,25 @@ describe("the other pages", () => {
     expect(await screen.findByText(/Searching the documents for evidence on 40 requirements/)).toBeInTheDocument();
   });
 
+  it("shows what a run will cost and lets the person say yes or no", async () => {
+    const estimate = { requirements: 12, questions: 40, tokens: 200000, rupees: 20, minutes_low: 2, minutes_high: 6, notes: ["Only part of the tender was evaluated."] };
+    vi.spyOn(api, "run").mockResolvedValue({ ...run, status: "awaiting", estimate });
+    const proceed = vi.spyOn(api, "proceed").mockResolvedValue({});
+    open("#/runs/abc");
+    expect(await screen.findByRole("heading", { name: "Ready to match" })).toBeInTheDocument();
+    expect(screen.getByText(/₹20/)).toBeInTheDocument();
+    expect(screen.getByText(/2–6 minutes/)).toBeInTheDocument();
+    expect(screen.getByText("Only part of the tender was evaluated.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Proceed" }));
+    await waitFor(() => expect(proceed).toHaveBeenCalledWith("abc"));
+  });
+
+  it("says nothing is spent when a run was cancelled", async () => {
+    vi.spyOn(api, "run").mockResolvedValue({ ...run, status: "cancelled", error: "Cancelled" });
+    open("#/runs/abc");
+    expect(await screen.findByRole("heading", { name: "Cancelled" })).toBeInTheDocument();
+  });
+
   it("says plainly when a run failed", async () => {
     vi.spyOn(api, "run").mockResolvedValue({ ...run, status: "failed", error: "ClientError: 429" });
     open("#/runs/abc");

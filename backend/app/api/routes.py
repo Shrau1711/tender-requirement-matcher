@@ -10,6 +10,7 @@ from fastapi.responses import Response
 from app.api.categories import Category, list_categories
 from app.api.uploads import MAX_UPLOAD_MB, save_tender
 from app.db.runs import RunInfo, RunStore
+from app.services.approval import APPROVALS
 from app.services.llm_cache import MAX_CALLS
 from app.services.report import Report
 from app.services.report_xlsx import build_workbook
@@ -58,9 +59,13 @@ def categories(request: Request) -> list[Category]:
 
 @router.post("/runs", status_code=202)
 async def create_run(
-    request: Request, background: BackgroundTasks, files: list[UploadFile], category: str = Form(...), name: str | None = Form(None)
+    request: Request, background: BackgroundTasks, files: list[UploadFile], category: str = Form(...), name: str | None = Form(None),
+    ask_first: bool = Form(False),
 ) -> RunInfo:
-    """Upload a tender (one or more PDFs) and start matching it against a category's manufacturers. Poll GET /runs/{id}."""
+    """Upload a tender (one or more PDFs) and start matching it against a category's manufacturers. Poll GET /runs/{id}.
+
+    With ask_first the run stops once it knows what the search will cost (status "awaiting", with its estimate) until POST /runs/{id}/proceed or /cancel.
+    """
     state = request.app.state
     if category not in {c.name for c in list_categories(state.categories_dir)}:
         raise HTTPException(404, f"Unknown category: {category}")
@@ -73,6 +78,8 @@ async def create_run(
         state.store.delete(run.id)
         shutil.rmtree(state.runs_dir / run.id, ignore_errors=True)
         raise
+    if ask_first:
+        APPROVALS.require(run.id)
     runner: Runner = state.runner
     background.add_task(execute, state.store, run.id, folder, state.categories_dir / category, run.tender, runner)
     return run
@@ -86,6 +93,26 @@ def list_runs(request: Request) -> list[RunInfo]:
 @router.get("/runs/{run_id}")
 def get_run(request: Request, run_id: str) -> RunInfo:
     return known_run(request, run_id)
+
+
+def answer_estimate(request: Request, run_id: str, yes: bool) -> RunInfo:
+    run = known_run(request, run_id)
+    if run.status != "awaiting":
+        raise HTTPException(409, f"The run is {run.status}, so there is no estimate to answer.")
+    APPROVALS.answer(run_id, yes)
+    return run
+
+
+@router.post("/runs/{run_id}/proceed")
+def proceed(request: Request, run_id: str) -> RunInfo:
+    """Say yes to the estimate of a run that is awaiting it."""
+    return answer_estimate(request, run_id, True)
+
+
+@router.post("/runs/{run_id}/cancel")
+def cancel(request: Request, run_id: str) -> RunInfo:
+    """Say no to the estimate of a run that is awaiting it. Nothing more is spent."""
+    return answer_estimate(request, run_id, False)
 
 
 @router.get("/runs/{run_id}/report")

@@ -14,14 +14,18 @@ DEFAULT_MODEL = "gemini-3.8-flash"  # override with the LLM_MODEL environment va
 DEFAULT_THINKING = "LOW"  # override with LLM_THINKING: MINIMAL, LOW, MEDIUM, HIGH, or DEFAULT for the model's own choice
 
 
+def model_and_level() -> tuple[str, str]:
+    """The model and thinking level in use. Together they are part of every cache key, because they change the answers."""
+    return os.environ.get("LLM_MODEL", DEFAULT_MODEL), os.environ.get("LLM_THINKING", DEFAULT_THINKING).upper()
+
+
 class GeminiLLM:
     def __init__(self) -> None:
         key_name, key = gemini_key()
         self.client = genai.Client(api_key=key)
-        self.model = os.environ.get("LLM_MODEL", DEFAULT_MODEL)
-        level = os.environ.get("LLM_THINKING", DEFAULT_THINKING).upper()
+        self.model, level = model_and_level()
         self.thinking = None if level == "DEFAULT" else types.ThinkingConfig(thinking_level=level)
-        self.settings = f"thinking={level}"  # part of the cache key, because it changes the answers
+        self.settings = f"thinking={level}"
         print(f"[llm] key={key_name} model={self.model} thinking={level}", file=sys.stderr)
 
     def generate(self, system: str, user: str) -> Reply:

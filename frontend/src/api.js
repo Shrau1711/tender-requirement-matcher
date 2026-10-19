@@ -21,6 +21,8 @@ export const api = {
   run: async (id) => (await request(`/runs/${part(id)}`)).json(),
   report: async (id) => (await request(`/runs/${part(id)}/report`)).json(),
   rename: async (id, name) => (await request(`/runs/${part(id)}`, json("PATCH", { name }))).json(),
+  proceed: async (id) => (await request(`/runs/${part(id)}/proceed`, { method: "POST" })).json(),
+  cancel: async (id) => (await request(`/runs/${part(id)}/cancel`, { method: "POST" })).json(),
   remove: async (id) => request(`/runs/${part(id)}`, { method: "DELETE" }),
   reviews: async (id) => (await request(`/runs/${part(id)}/reviews`)).json(),
   saveReviews: async (id, items) => (await request(`/runs/${part(id)}/reviews`, json("PUT", { items }))).json(),
@@ -29,6 +31,7 @@ export const api = {
     files.forEach((file) => form.append("files", file));
     form.append("category", category);
     if (name) form.append("name", name);
+    form.append("ask_first", "true");  // the run stops with its estimate until the person says yes
     return (await request("/runs", { method: "POST", body: form })).json();
   },
   downloadUrl: (id, kind) => `${base()}/runs/${part(id)}/${DOWNLOADS[kind]}`,

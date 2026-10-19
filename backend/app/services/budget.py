@@ -29,6 +29,8 @@ class Plan:
     atoms: list[AtomicRequirement]  # the requirements that will be evaluated
     depth: int  # passages read per question
     notes: list[str]  # what was cut, for the report
+    questions: int = 0  # new questions the model will be asked
+    tokens: int = 0  # their input tokens
 
 
 def price(llm: LLM, req: AtomicRequirement, hits: list) -> int:
@@ -89,9 +91,11 @@ def plan(
     """What can be evaluated within the budget: everything at full depth if it fits, else everything shallower, else the first requirements of the tender shallower."""
     calls = max(1, getattr(llm, "max_calls", MAX_CALLS) - getattr(llm, "calls", 0) - RESERVED_CALLS)
     for depth in depths:
-        kept = atoms_within(atoms, makers, prices(llm, index, atoms, makers, views, depth), token_budget, calls)
+        priced = prices(llm, index, atoms, makers, views, depth)
+        kept = atoms_within(atoms, makers, priced, token_budget, calls)
         if len(kept) == len(atoms):
             break
+    asked = [priced[k] for k in keys_of(kept, makers)]
     notes = []
     if depth < depths[0]:
         notes.append(
@@ -111,4 +115,4 @@ def plan(
             + (f"These items were not evaluated and are in no score or count: {'; '.join(left[:LISTED])}{f'; and {len(left) - LISTED} more' if len(left) > LISTED else ''}. " if left else "")
             + "Raise TENDER_TOKEN_BUDGET to evaluate more."
         )
-    return Plan(atoms=kept, depth=depth, notes=notes)
+    return Plan(atoms=kept, depth=depth, notes=notes, questions=sum(t > 0 for t in asked), tokens=sum(asked))

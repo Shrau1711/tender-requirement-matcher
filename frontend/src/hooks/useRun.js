@@ -21,7 +21,7 @@ export function useRun(id, onChange) {
         if (info.status === "done") {
           setReport(await api.report(id));
           onChange?.();
-        } else if (info.status === "failed") {
+        } else if (info.status === "failed" || info.status === "cancelled") {
           onChange?.();
         } else {
           timer = setTimeout(look, POLL_MS);

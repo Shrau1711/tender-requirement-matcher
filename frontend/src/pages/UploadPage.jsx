@@ -76,7 +76,7 @@ export default function UploadPage({ onStarted }) {
         </label>
         {limits && (
           <p className="notice">
-            Answers the system has found before are reused and cost nothing. A tender it has not seen makes calls to the language model, at most {limits.max_model_calls} per run, and takes a few minutes.
+            Answers the system has found before are reused and cost nothing. A tender it has not seen makes calls to the language model, at most {limits.max_model_calls} per run. Before anything is spent you will see an estimate of the cost and time, and can cancel.
           </p>
         )}
         {(error || loadError) && <div className="problem" role="alert">{error || `Could not reach the server: ${loadError}`}</div>}
