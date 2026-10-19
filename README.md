@@ -99,19 +99,20 @@ Pump tender GeM 9935891, category `pumps`. The summary table from the generated 
 
 | Rank | Manufacturer | Compatibility | Coverage | Fully | Partially | Missing | Unsupported | Need review |
 |---|---|---|---|---|---|---|---|---|
-| 1 | grundfos | 37.5% | 56.7% | 18 | 10 | 32 | 22 | 8 |
-| 2 | cri | 33.3% | 48.3% | 17 | 8 | 35 | 22 | 25 |
-| 3 | kirloskar | 22.9% | 30.0% | 6 | 11 | 43 | 22 | 15 |
-| 4 | ksb | 0.0% | 0.0% | 0 | 0 | 60 | 22 | 0 |
+| 1 | grundfos | 37.7% | 53.5% | 16 | 12 | 30 | 24 | 12 |
+| 2 | cri | 37.1% | 51.8% | 16 | 14 | 28 | 24 | 30 |
+| 3 | ksb | 33.0% | 58.6% | 10 | 21 | 27 | 24 | 21 |
+| 4 | kirloskar | 9.9% | 18.9% | 3 | 6 | 49 | 24 | 8 |
 
-Requirement-by-requirement rows for one item, with the page each claim comes from (Grundfos, judged against the CR, CRI and CRN pumps):
+The top three are close, and the report says so by showing how much of each score rests on rows that need a person to look ("Need review"). Requirement-by-requirement rows for one item, with the page each claim comes from (Grundfos, judged against the CR, CRI and CRN pumps):
 
 | Requirement | Status | Score | Evidence | Why |
 |---|---|---|---|---|
-| pump_type: vertical multistage, in-line type | fully matched | 100 | cr-databooklet-50hz.pdf p1: "Vertical multistage centrifugal pumps" | states Vertical multistage centrifugal |
-| motor_rated_speed: 2900 RPM | fully matched | 100 | cr-databooklet-50hz.pdf p60: "QH 2900 rpm" | stated 2900 rpm |
-| motor_efficiency_class: IE3 | fully matched | 100 | cr-databooklet-50hz.pdf p9: "Efficiency class IE4" | states IE4, which is at least IE3 |
+| pump_type: vertical multistage, in-line type | partially matched (check: only part stated) | 50 | cr-databooklet-50hz.pdf p1: "Vertical multistage centrifugal pumps" | states Vertical multistage centrifugal: only part of what is asked; not stated: line |
+| pumping_efficiency: 70 % | partially matched (check: only under a condition) | 75 | cr-databooklet-50hz.pdf p6: "Max. pump efficiency [%] 35 48 58 66 70" | stated 70 %; only pump size 10 |
+| mechanical_seal_type: Cartridge type and balanced | fully matched | 100 | cr-databooklet-50hz.pdf p21: "O-ring (cartridge) (balanced seal)" | states O-ring, cartridge, balanced seal |
 | operating_duty_flow: 20 m3/h | missing capability | 0 | | no evidence found in the documents |
+| suction_condition: Flooded | unsupported requirement | | | none of the collected documents says anything about it for any manufacturer, so it cannot be judged |
 
 The same report is available as JSON (`/runs/<id>/report`) and Excel (`/runs/<id>/report.xlsx`), and in the UI with each evidence link opening the cited PDF page.
 
