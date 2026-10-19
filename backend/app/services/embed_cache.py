@@ -11,6 +11,7 @@ from app.config import cache_dir
 from app.services.embedder import MODEL_NAME, embed_texts
 
 CACHE_FILE = cache_dir() / "embeddings.sqlite"
+BATCH = 32  # texts embedded and saved at a time: memory stays small and an interrupted run keeps its progress
 
 
 def key_for(text: str) -> str:
@@ -32,8 +33,10 @@ def embed_cached(
             if row:
                 found[text] = np.frombuffer(row[0], dtype=np.float32)
         missing = [t for t in dict.fromkeys(texts) if t not in found]
-        if missing:
-            for text, vector in zip(missing, embed(missing), strict=True):
+        for start in range(0, len(missing), BATCH):
+            batch = missing[start:start + BATCH]
+            for text, vector in zip(batch, embed(batch), strict=True):
                 found[text] = vector.astype(np.float32)
                 db.execute("INSERT INTO vectors VALUES (?, ?)", (key_for(text), found[text].tobytes()))
+            db.commit()
     return np.stack([found[t] for t in texts])
