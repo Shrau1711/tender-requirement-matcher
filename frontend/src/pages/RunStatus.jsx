@@ -24,7 +24,7 @@ function Estimate({ run }) {
           <li>Roughly <strong>{estimate.minutes_low}–{estimate.minutes_high} minutes</strong>. This is a guess: the model's speed varies.</li>
         </ul>
       ) : (
-        <p>Everything this needs is already saved, so it costs nothing and takes about a minute.</p>
+        <p>Everything this needs is already saved, so it costs nothing. Reading the manufacturers' documents still takes a minute or two, longer for a big pump tender.</p>
       )}
       {estimate.notes.map((note) => <p key={note} className="notice">{note}</p>)}
       {problem && <div className="problem" role="alert">{problem}</div>}
