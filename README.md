@@ -94,6 +94,8 @@ cd backend
 python -m scripts.crawl_catalogues --category pumps --maker grundfos --start <page listing the catalogues> --include databooklet --exclude price
 ```
 
+Scanned catalogue pages are read once by the model and the transcription is saved. `python -m scripts.compare_ocr <category folder>` measures, without any model call, how closely a free local reader (`pip install rapidocr onnxruntime`) matches those saved transcriptions on the numbers in each page. It is an experiment to decide whether a cheaper reader is good enough for new catalogues; the matching pipeline does not use it.
+
 Included: `pumps` (CRI, Grundfos, Kirloskar, KSB) and `valves` (Delval, Duncan, Intervalve, King, KSB, L&T, Leader).
 
 ## Statuses and scores
