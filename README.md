@@ -108,7 +108,7 @@ Pump tender GeM 9935891, category `pumps`. The summary table from the generated 
 |---|---|---|---|---|---|---|---|---|
 | 1 | grundfos | 37.7% | 53.5% | 16 | 12 | 30 | 24 | 12 |
 | 2 | cri | 37.1% | 51.8% | 16 | 14 | 28 | 24 | 30 |
-| 3 | ksb | 33.0% | 58.6% | 10 | 21 | 27 | 24 | 21 |
+| 3 | ksb | 30.2% | 58.6% | 10 | 19 | 29 | 24 | 19 |
 | 4 | kirloskar | 9.9% | 18.9% | 3 | 6 | 49 | 24 | 8 |
 
 The top three are close, and the report says so by showing how much of each score rests on rows that need a person to look ("Need review"). Requirement-by-requirement rows for one item, with the page each claim comes from (Grundfos, judged against the CR, CRI and CRN pumps):
