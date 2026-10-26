@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 
 from app.chunking.corpus import manufacturers
+from app.cost.tokens import CHARS_PER_TOKEN
 from app.extraction.evidence import evidence_table
 from app.llm.llm_factory import make_llm
 from app.pipeline.pipeline import read_atoms
@@ -14,7 +15,7 @@ from app.reading.ocr import reader_for
 from app.retrieval.queries import load_unit_views
 from app.tender.bid_details import category_of
 from app.vectorstore.ingest import open_index
-from scripts.cost.estimate_cost import CHARS_PER_TOKEN, DryRun
+from scripts.cost.estimate_cost import DryRun
 
 
 def main(tenders_dir: str, categories_dir: str) -> None:

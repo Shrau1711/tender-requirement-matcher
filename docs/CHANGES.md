@@ -219,3 +219,35 @@ The search itself keeps BM25 for keywords and RRF to merge the rankings; only th
 **In an interview.** "Category knowledge used to be spread through the code: a word table, a filler word, a pump rule inside the prompt. Now each category is a folder with its documents and a small JSON file, and a tender's items are routed to categories by their product words, or by which category's documents they resemble most, so a mixed tender becomes one run per category. I checked that the prompt is byte-identical to before, so every saved answer still matches, and the routing put all 11 labelled items in the right category."
 
 **Files to read.** `data/categories/pumps/category.json`, `backend/app/categories/config.py`, `backend/app/categories/routing.py`, `execute_routed` in `backend/app/pipeline/runner.py`, and the top of `backend/app/extraction/atomize.py`.
+
+## Phase 5: Architecture document, token counting, model settings, document sources
+
+**What changed.**
+- **`docs/architecture.md`** (new): what each package does; three Mermaid diagrams (overall structure, the ingest path, the query path); and a design-decisions section with the trade-offs stated plainly: the model reads and code judges, answers keyed by the exact prompt, the default chunker kept for cache reasons, exact scoring instead of approximate search, one process per Chroma folder, the shared tender-reading prompt, one run per category, routing without the model, approval before spending, settings that default to what the saved answers were made with, and what needs paid runs. All three diagrams parse with Mermaid's own parser (checked with `mermaid` 11.4.1 outside the project).
+- **Token counting** (`app/cost/tokens.py`, new). `TOKEN_COUNTER` chooses how a question's tokens are counted for the budget and the estimate:
+  - `estimate` (the default): characters / 4, as before.
+  - `gemini`: Gemini's own `count_tokens`, which is exact. Counting is a request to Google, so it stays under `LLM_MAX_CALLS`: once that many counts have been made in a process, or if a count fails, it falls back to the estimate. With the limit at 0 nothing is sent. Each text is counted once.
+
+  The budget keeps giving the estimate the instructions without the answer format added to them (about 440 tokens a question less than is sent), as it always has, so default estimates do not change; the exact counter is given what is really sent. The Gemini API refuses a system instruction in `count_tokens` (the installed SDK raises for it), so the instructions are counted as the first part of the message. `estimate_cost` also prints the exact figure, and says how many counts really were exact. The two copies of "4 characters a token" in the cost scripts now come from `app/cost/tokens.py`.
+- **Temperature as a setting.** `LLM_TEMPERATURE` (a number, or `DEFAULT` for the model's own) replaces the 0 written into `gemini.py`, and the model was already a setting (`LLM_MODEL`). The default stays 0: Google's Gemini 3 page currently says "we strongly recommend keeping the temperature parameter at its default value of 1.0" and that lower values "may lead to unexpected behavior, such as looping or degraded performance", but every saved answer was made at 0, so changing it is a paid check (`docs/NEEDS_PAID_RUN.md`). At the default the cache-key settings stay exactly `thinking=LOW` (checked on the real client), and any other value adds itself to the key. `0` and `0.0` give the same key.
+- **Collecting: no new tool, the existing one made accountable.** `app/collecting` already found catalogue PDFs on a manufacturer's site (`crawl.py`: links followed to a depth, staying on the site, obeying `robots.txt`) and saved them politely (`download.py`: a pause between requests, each content saved once by its hash). But the record of where a saved file came from was written by the script, untested, and nothing checked that the shipped documents had one. Now:
+  - `app/collecting/sources.py` keeps the records: address, the page it was found on, date, size and SHA-256 in the maker's `crawl_sources.csv`. Hand-collected documents keep their row in `data/categories/sources.csv`.
+  - `unrecorded()` lists any PDF with neither, and a test runs it over the shipped documents: all 27 have a source.
+
+**Why.** Reviewers asked for an architecture document with diagrams, a real token counter instead of characters / 4, temperature and model as settings, and a way to collect documents with their sources.
+
+**Defaults did not change.**
+- The model client's cache-key settings are `thinking=LOW` and the temperature sent is 0, as before.
+- The tender-reading prompt test still passes, and the budget's estimate uses the same rule on the same text.
+- `estimate_cost` gives the same output as the previous commit's code (see below).
+
+**Measured, free (cached answers only, `LLM_MAX_CALLS=0`).**
+- `estimate_cost` on the two labelled tenders: 9933225 has 56 of 56 questions already answered in the cache, and 9935891 has 204 of 204. So the saved answers still match.
+- On 9840129, which has uncached questions, I ran the previous commit's code and this phase's code side by side on the same caches. The output is identical: 133 questions, 10 already answered, 123 new, about 606,094 input tokens.
+- The budget's own pricing is unchanged by construction: the same rule on the same text, with `tests/cost/test_budget.py` unchanged and passing.
+
+**Tests.** 413 passed (398 before): `tests/cost/test_tokens.py` (the default is the original estimate; an exact counter is used up to the call limit, once per text, nothing is sent at a limit of 0, a failed count falls back; unknown counters refused), `tests/llm/test_gemini_settings.py` (temperature values and their cache keys), `tests/collecting/test_sources.py` (a saved file's record, unrecorded files found, every shipped document recorded).
+
+**In an interview.** "Phase 5 was about honesty and settings: an architecture document whose design decisions say what each choice costs, a token counter that can ask Gemini for the exact count but never spends past the call limit, and model, thinking and temperature as settings. Every default stays what the saved answers were made with, which is why the temperature is still 0 even though Google now recommends 1.0 for Gemini 3; testing that is listed as a paid check. For collecting I did not add a new tool: I moved the source records into the package and added a test that every document has one."
+
+**Files to read.** `docs/architecture.md`, `backend/app/cost/tokens.py`, `temperature_setting` in `backend/app/llm/gemini.py`, `backend/app/collecting/sources.py`.

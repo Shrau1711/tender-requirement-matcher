@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from app.config import number_setting
+from app.cost.tokens import TOKEN_COUNTER, count_tokens
 from app.extraction.atomize import AtomicRequirement
 from app.extraction.evidence import (
     SYSTEM,
@@ -27,7 +28,6 @@ from app.tender.items import distinct_items
 
 TOKEN_BUDGET = number_setting("TENDER_TOKEN_BUDGET", 1_500_000)  # input tokens of new questions one tender may use (about 150 rupees at the current price)
 RESERVED_CALLS = number_setting("RESERVED_CALLS", 60)  # model calls kept back for reading the tender and naming products
-CHARS_PER_TOKEN = 4  # a rough rule for English technical text
 LISTED = 8  # how many skipped items are named in the note
 
 Prices = dict[tuple, int]  # (question, manufacturer) -> estimated input tokens, 0 when the answer is already saved
@@ -48,10 +48,13 @@ def price(llm: LLM, req: AtomicRequirement, hits: list) -> int:
     if not hits:
         return 0
     user = passages_prompt(req, hits)
+    sent = request_system(SYSTEM, Found)
     has = getattr(llm, "has", None)
-    if has is not None and has(request_system(SYSTEM, Found), user):
+    if has is not None and has(sent, user):
         return 0
-    return (len(SYSTEM) + len(user)) // CHARS_PER_TOKEN
+    # The estimate has always counted the instructions without the answer format added to them (about 440 tokens less);
+    # it still does, so estimates do not change. An exact counter is given what is really sent.
+    return count_tokens(SYSTEM if TOKEN_COUNTER == "estimate" else sent, user)
 
 
 def prices(llm: LLM, index: Index, atoms: list[AtomicRequirement], makers: list[str], views: dict, depth: int) -> Prices:

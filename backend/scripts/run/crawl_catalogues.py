@@ -8,31 +8,11 @@ crawl_sources.csv in that folder (address, page it was found on, date, size, sha
 Respects robots.txt, waits between requests, stays on the start site, and skips content it already has.
 """
 import argparse
-import csv
-from pathlib import Path
 
+from app.categories.config import CATEGORIES_DIR
 from app.collecting.crawl import crawl
-from app.collecting.download import Saved, polite_fetcher, save_pdf
-from app.config import path_setting
-
-CATEGORIES = path_setting("CATEGORIES_DIR", Path(__file__).resolve().parents[3] / "data" / "categories")
-LOG_NAME = "crawl_sources.csv"
-
-
-def known_hashes(log: Path) -> set[str]:
-    if not log.exists():
-        return set()
-    with log.open(newline="", encoding="utf-8") as f:
-        return {row["sha256"] for row in csv.DictReader(f)}
-
-
-def append_record(log: Path, record: Saved) -> None:
-    new = not log.exists()
-    with log.open("a", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        if new:
-            writer.writerow(Saved._fields)
-        writer.writerow(record)
+from app.collecting.download import polite_fetcher, save_pdf
+from app.collecting.sources import known_hashes, record_source
 
 
 def parse() -> argparse.Namespace:
@@ -50,9 +30,9 @@ def parse() -> argparse.Namespace:
 
 def main() -> None:
     args = parse()
-    folder = CATEGORIES / args.category / "manufacturers" / args.maker
-    log, fetch = folder / LOG_NAME, polite_fetcher()
-    known = known_hashes(log)
+    folder = CATEGORIES_DIR / args.category / "manufacturers" / args.maker
+    fetch = polite_fetcher()
+    known = known_hashes(folder)
     for found in crawl(args.start, fetch, args.include, args.exclude, args.depth, args.max_pdfs):
         if not args.download:
             print(f"{found.pdf}\n    linked from {found.found_on}")
@@ -61,7 +41,7 @@ def main() -> None:
         saved = save_pdf(found.pdf, found.found_on, page.body, folder, known) if page else None
         print(f"saved {saved.file}" if saved else f"skipped {found.pdf} (not a PDF, unreadable or already have it)")
         if saved:
-            append_record(log, saved)
+            record_source(folder, saved)
 
 
 if __name__ == "__main__":

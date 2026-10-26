@@ -2,7 +2,7 @@
 
 Upload a GeM tender (PDF), and pick a category or let the system find each item's category. The system reads the tender, breaks it into individual requirements, searches each manufacturer's catalogue documents for evidence, compares them, and returns a report: a status and score per requirement per manufacturer, an overall compatibility ranking, and a cited page for every claim.
 
-An LLM (Gemini) only reads text and pulls out structured facts. The comparison and scoring are plain code, and every quoted piece of evidence is checked programmatically against the page it came from.
+How the parts fit together, with diagrams and the design decisions, is in [docs/architecture.md](docs/architecture.md). An LLM (Gemini) only reads text and pulls out structured facts. The comparison and scoring are plain code, and every quoted piece of evidence is checked programmatically against the page it came from.
 
 ## Run it (Docker, no build needed)
 
@@ -53,11 +53,13 @@ Backend environment variables:
 | `GEMINI_API_KEY` | none (required) | your Gemini key |
 | `LLM_MAX_CALLS` | 400 | hard cap on Gemini calls per run, a cost guard |
 | `TENDER_TOKEN_BUDGET` | 1500000 | input tokens of new Gemini questions one tender may use (about 150 rupees). A tender over it is read from fewer passages per question, and if still over, only its first items are evaluated; the report's notes say exactly what was cut |
+| `TOKEN_COUNTER` | `estimate` | how a question's tokens are counted for the budget and the estimate: `estimate` (characters / 4, free) or `gemini` (Gemini's own count_tokens, exact; each count is a request and counts toward `LLM_MAX_CALLS`, after which it estimates). Counting never changes a question, so saved answers still match |
 | `SEED_CACHE_DIR` | baked into the image | model answers shipped for the example tenders, so those tenders cost nothing to run |
 | `SEED_EMBEDDINGS` | baked into the image | search vectors of the manufacturers' documents and of the example tenders' questions, computed where the shipped answers were saved. Vectors computed on another machine differ in the last digits, which can change the passages a question reads and so miss a saved answer |
 | `EVIDENCE_TOP_K` | 16 | passages read per question. 8 is an economy mode at roughly half the cost: the cited page was among the passages read 95% of the time at 16 and 82% at 8, but on my two hand-labelled tenders the accuracy was about the same |
 | `LLM_MODEL` | `gemini-3.8-flash` | Gemini model. Saved answers belong to a model and a thinking level, so changing either means asking again |
 | `LLM_THINKING` | `LOW` | `MINIMAL`, `LOW`, `MEDIUM`, `HIGH` or `DEFAULT` |
+| `LLM_TEMPERATURE` | `0` | a number, or `DEFAULT` for the model's own (1.0). Google advises leaving Gemini 3 models at their default because lower values can cause looping; 0 stays the default because every saved answer was made with it, and any other value means asking again |
 | `CHUNKER` | `table_rows` | how manufacturer documents are cut into passages: `table_rows` (one chunk per table row, then sections or packed text; the original), `recursive` (fixed size with overlap), `sections` (whole tables and headed sections), `parent_child` (small chunks searched, the larger passage read), `structure` (numbered clauses and flowchart boxes), or `auto` (picked per document from what it looks like). Saved answers belong to the passages, so anything but `table_rows` means asking again |
 | `VECTOR_STORE` | `chroma` | where chunk vectors are kept: `chroma` (on disk, so a document is read and embedded once, and again only when its content or the chunking settings change) or `memory` (everything read again at each start; the original). Both give the same results to the last digit. Chroma's folder is for one process at a time: do not run a script on it while the server runs; if it ever breaks, delete the folder, it is only a cache |
 | `CHROMA_DIR` | `<CACHE_DIR>/chroma` | where the Chroma store is kept |
@@ -107,7 +109,7 @@ Categories live in `data/categories/<category>/manufacturers/<maker>/` as PDFs p
 
 Every field may be left out. Units, abbreviations and other shared vocabulary stay in `backend/config/`.
 
-Collecting catalogues by hand does not scale, so there is an optional crawler that lists, and with `--download` saves, the PDFs a manufacturer publishes, recording each file's address, the page it was found on, the date and a hash in `crawl_sources.csv` next to them. It obeys `robots.txt`, waits between requests, stays on the manufacturer's site, and does nothing unless asked:
+Collecting catalogues by hand does not scale, so there is an optional crawler that lists, and with `--download` saves, the PDFs a manufacturer publishes, recording each file's address, the page it was found on, the date and a hash in `crawl_sources.csv` next to them. It obeys `robots.txt`, waits between requests, stays on the manufacturer's site, and does nothing unless asked. Documents collected by hand are recorded in `data/categories/sources.csv` instead, and a test checks that every manufacturer PDF has its source recorded in one of the two:
 
 ```
 cd backend
