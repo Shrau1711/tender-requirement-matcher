@@ -2,12 +2,13 @@
 
 Prints the share with and without the plain term scan that adds passages saying the requirement's own words and numbers.
 
-Usage: python -m scripts.eval.eval_candidates <tender folder or pdf> <category_dir>
+Usage: python -m scripts.eval.eval_candidates <tender folder or pdf> <category_dir> [chunking strategy or auto]
 """
 import sys
 from pathlib import Path
 
 from app.chunking.corpus import load_chunks
+from app.chunking.router import CHUNKER
 from app.evaluation.gold import GOLD_DIR, cited, load_gold, share
 from app.extraction.evidence import retrieve
 from app.llm.llm_factory import make_llm
@@ -17,12 +18,12 @@ from app.retrieval.queries import load_unit_views
 from app.retrieval.search import Index
 
 
-def main(tender: str, category_dir: str) -> None:
+def main(tender: str, category_dir: str, chunker: str = CHUNKER) -> None:
     gold = load_gold(GOLD_DIR / f"{Path(tender).stem}.json")
     llm = make_llm()
     read_image = reader_for(llm)
     atoms, _ = read_atoms(llm, tender, read_image)
-    index, views = Index(load_chunks(category_dir, read_image)), load_unit_views()
+    index, views = Index(load_chunks(category_dir, read_image, chunker)), load_unit_views()
     wanted = cited(gold, atoms)
     for rescue in (False, True):
         misses = [(key, maker, pages) for a, key, maker, pages in wanted
@@ -33,4 +34,4 @@ def main(tender: str, category_dir: str) -> None:
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    main(*sys.argv[1:4])

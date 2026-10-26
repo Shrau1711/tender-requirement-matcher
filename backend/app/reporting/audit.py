@@ -4,8 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
-from app.chunking.chunker import Chunk
-from app.extraction.atomize import AtomicRequirement
+from app.chunking.base import Chunk
 from app.judging.match import Outcome
 from app.vocabulary.terms import candidates
 

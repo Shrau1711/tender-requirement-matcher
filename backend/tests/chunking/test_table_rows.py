@@ -1,11 +1,7 @@
-from app.chunking.chunker import (
-    caption_for,
-    chunk_document,
-    chunk_page,
-    join_rows,
-    pack,
-    page_headings,
-)
+from builders import chunk_page
+
+from app.chunking.base import chunk_document, pack, page_headings
+from app.chunking.strategies.table_rows import TableRows, caption_for, join_rows
 from app.reading.layout import build_sections
 from app.reading.pdf_reader import (
     Line,
@@ -100,4 +96,4 @@ def test_every_chunk_of_a_document_carries_the_headings_of_its_first_page():
     cover = read_page(1, "# Resilient Seated Butterfly Valves\nWafer, Lug Body")
     inner = read_page(2, "Size Range: 2 to 40 inch")
     doc = ReadDocument(path="x/delval/d.pdf", sha256="s", n_pages=2, pages=[cover, inner])
-    assert all(c.document_headings == ["Resilient Seated Butterfly Valves"] for c in chunk_document(doc))
+    assert all(c.document_headings == ["Resilient Seated Butterfly Valves"] for c in chunk_document(doc, TableRows()))

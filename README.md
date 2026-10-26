@@ -58,6 +58,7 @@ Backend environment variables:
 | `EVIDENCE_TOP_K` | 16 | passages read per question. 8 is an economy mode at roughly half the cost: the cited page was among the passages read 95% of the time at 16 and 82% at 8, but on my two hand-labelled tenders the accuracy was about the same |
 | `LLM_MODEL` | `gemini-3.8-flash` | Gemini model. Saved answers belong to a model and a thinking level, so changing either means asking again |
 | `LLM_THINKING` | `LOW` | `MINIMAL`, `LOW`, `MEDIUM`, `HIGH` or `DEFAULT` |
+| `CHUNKER` | `table_rows` | how manufacturer documents are cut into passages: `table_rows` (one chunk per table row, then sections or packed text; the original), `recursive` (fixed size with overlap), `sections` (whole tables and headed sections), `parent_child` (small chunks searched, the larger passage read), `structure` (numbered clauses and flowchart boxes), or `auto` (picked per document from what it looks like). Saved answers belong to the passages, so anything but `table_rows` means asking again |
 | `RUPEES_PER_MILLION_TOKENS` | 100 | turns tokens into the rupee figure on the estimate; change it if the price changes |
 | `APPROVAL_WAIT_MINUTES` | 30 | how long a run waits for Proceed or Cancel before it cancels itself, because a waiting run holds up the runs behind it |
 | `LLM_WORKERS` | 4 | parallel Gemini calls; lower it on a free-tier key |

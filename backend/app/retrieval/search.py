@@ -9,7 +9,7 @@ import numpy as np
 from pydantic import BaseModel
 from rank_bm25 import BM25Okapi
 
-from app.chunking.chunker import Chunk
+from app.chunking.base import Chunk
 from app.embedding.embed_cache import embed_cached
 from app.retrieval.fusion import rrf
 
@@ -79,12 +79,19 @@ class Index:
         """The first top_k of the ranking, but no file takes more than its share of the places.
 
         A maker with six booklets that all say much the same must not have one booklet fill every place.
+        Two children of one parent (parent-child chunking) take one place, since the model would read the same parent twice.
         """
         share = -(-top_k // n_files)  # rounded up
         taken: Counter[str] = Counter()
+        parents: set[tuple[str, int, str]] = set()
         kept = []
         for i, score in ranked:
-            file = self.chunks[i].file
+            chunk = self.chunks[i]
+            file = chunk.file
+            if chunk.parent:
+                if (file, chunk.pdf_page, chunk.parent) in parents:
+                    continue
+                parents.add((file, chunk.pdf_page, chunk.parent))
             if taken[file] < share:
                 taken[file] += 1
                 kept.append((i, score))

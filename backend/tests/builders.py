@@ -1,9 +1,12 @@
 import pymupdf
 
+from app.chunking.base import Chunk, Chunker, maker
+from app.chunking.strategies.table_rows import TableRows
 from app.extraction.atomize import AtomicRequirement
 from app.extraction.evidence import Evidence, Limit
 from app.judging.match import match_all
 from app.judging.measure import load_aliases
+from app.reading.pdf_reader import PageRecord
 from app.reporting.report import assemble
 from app.tender.items import Item
 
@@ -47,3 +50,8 @@ def run(atoms, table, makers=("a",), readable=None):
     outs = {m: match_all(atoms, [m], {k: v for k, v in table.items() if k[1] == m}, ALIASES, readable) for m in makers}
     by_product = {m: [(Item(title="Valves", quantity=1), "Wafer", outs[m])] for m in makers}
     return assemble("t", atoms, ["a note"], makers, table, readable, by_product, [o for m in makers for o in outs[m]])
+
+
+def chunk_page(page: PageRecord, manufacturer: str, file: str, chunker: Chunker | None = None) -> list[Chunk]:
+    """One page cut by one strategy (the default unless another is given)."""
+    return (chunker or TableRows()).chunk([page], maker(manufacturer, file))

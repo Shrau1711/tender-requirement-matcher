@@ -24,6 +24,11 @@ def number_setting(name: str, default: int) -> int:
     return int(os.environ.get(name, default))
 
 
+def text_setting(name: str, default: str) -> str:
+    """A word setting that can be overridden in backend/.env or the environment, e.g. CHUNKER=auto."""
+    return os.environ.get(name, default)
+
+
 def path_setting(name: str, default: Path) -> Path:
     """A folder that can be moved with an environment variable, e.g. CATEGORIES_DIR, so a container can mount its own data."""
     return Path(os.environ.get(name, default))

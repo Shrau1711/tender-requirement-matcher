@@ -1,6 +1,6 @@
 from builders import CALLS
 
-from app.chunking.chunker import Chunk
+from app.chunking.base import Chunk
 from app.cost.budget import atoms_within, plan, price, prices
 from app.extraction.atomize import AtomicRequirement
 from app.extraction.evidence import question

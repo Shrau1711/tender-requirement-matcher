@@ -1,6 +1,6 @@
 import json
 
-from app.chunking.chunker import Chunk
+from app.chunking.base import Chunk
 from app.extraction.atomize import AtomicRequirement
 from app.extraction.evidence import find_evidence
 from app.retrieval.search import Hit
@@ -133,3 +133,11 @@ def test_a_table_heading_joined_to_its_cell_counts_as_quoted_but_a_changed_numbe
     assert not is_verbatim("2900-2900 Speed [rpm]", table)
     far = "Speed [rpm] " + "filler " * 80 + "2900-2900"
     assert not is_verbatim("Speed [rpm] 2900-2900", far)
+
+
+def test_the_model_reads_the_parent_of_a_small_chunk_and_a_quote_from_the_parent_stands(fake_llm):
+    small = hit("PN 10/16")
+    small.chunk.parent = "BOAX-B butterfly valve\nNominal pressure\nPN 10/16"
+    llm = fake_llm([reply(0, "BOAX-B butterfly valve")])
+    found = find_evidence(llm, req(), [small])
+    assert "BOAX-B butterfly valve" in llm.prompts[0] and found[0].quote == "BOAX-B butterfly valve"

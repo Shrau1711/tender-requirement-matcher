@@ -88,7 +88,7 @@ class Evidence(Reading):
 
 def passages_prompt(req: AtomicRequirement, hits: list[Hit]) -> str:
     wanted = {"attribute": req.attribute, "values": req.values, "buyer_text": f"{req.source_name}: {req.source_value}"}
-    passages = [{"passage": i, "page": h.chunk.pdf_page, "page_headings": h.chunk.page_headings, "document_headings": h.chunk.document_headings, "text": h.chunk.text} for i, h in enumerate(hits)]
+    passages = [{"passage": i, "page": h.chunk.pdf_page, "page_headings": h.chunk.page_headings, "document_headings": h.chunk.document_headings, "text": h.chunk.for_model()} for i, h in enumerate(hits)]
     return json.dumps({"buyer_product": req.item.title, "attribute_wanted": wanted, "passages": passages})
 
 
@@ -140,7 +140,7 @@ def rejected(finding: Finding, hits: list[Hit]) -> str | None:
         return "about another type of product"
     if not 0 <= finding.passage < len(hits):
         return "cites a passage that does not exist"
-    if not is_verbatim(finding.quote, hits[finding.passage].chunk.text):
+    if not is_verbatim(finding.quote, hits[finding.passage].chunk.for_model()):
         return "quote is not word for word in the passage"
     return None
 
@@ -176,9 +176,9 @@ def retrieve(
     hits = index.search_many(queries_for(req, views), manufacturer, depth)
     if not rescue or req.kind == "standard":  # an identifier is found by the keyword search or not at all
         return hits
-    shown = {(h.chunk.file, h.chunk.pdf_page, h.chunk.text) for h in hits}
+    shown = {(h.chunk.file, h.chunk.pdf_page, h.chunk.for_model()) for h in hits}  # what the model reads, so two children of one parent are not both read
     own = [c for c in index.chunks if c.manufacturer == manufacturer]
-    extra = [c for c in candidates(req, own, RESCUED + len(hits)) if (c.file, c.pdf_page, c.text) not in shown][:RESCUED]
+    extra = [c for c in candidates(req, own, RESCUED + len(hits)) if (c.file, c.pdf_page, c.for_model()) not in shown][:RESCUED]
     return hits + [Hit(score=0.0, keyword=0.0, meaning=0.0, chunk=c) for c in extra]
 
 

@@ -3,13 +3,14 @@
 Each case says: for this query and manufacturer, a correct chunk is on one of these pages.
 A case passes if any of the top results comes from one of them.
 
-Usage: python -m scripts.eval.eval_retrieval <category_dir> <cases.json>
+Usage: python -m scripts.eval.eval_retrieval <category_dir> <cases.json> [chunking strategy or auto]
 """
 import json
 import sys
 from pathlib import Path
 
 from app.chunking.corpus import load_chunks
+from app.chunking.router import CHUNKER
 from app.retrieval.search import Index, Mode
 
 MODES: list[Mode] = ["keyword", "meaning", "hybrid"]
@@ -21,9 +22,9 @@ def passes(index: Index, case: dict, mode: Mode) -> bool:
     return any(h.chunk.pdf_page in case["pages"] for h in hits)
 
 
-def main(category_dir: str, cases_file: str) -> None:
+def main(category_dir: str, cases_file: str, chunker: str = CHUNKER) -> None:
     cases = json.loads(Path(cases_file).read_text(encoding="utf-8"))
-    index = Index(load_chunks(category_dir))
+    index = Index(load_chunks(category_dir, chunker=chunker))
     totals = dict.fromkeys(MODES, 0)
     print(f"{'query':45} {'maker':11}" + "".join(f"{m:>9}" for m in MODES))
     for case in cases:
@@ -35,4 +36,4 @@ def main(category_dir: str, cases_file: str) -> None:
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    main(*sys.argv[1:4])

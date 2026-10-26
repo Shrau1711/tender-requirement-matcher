@@ -1,6 +1,6 @@
 from builders import req
 
-from app.chunking.chunker import Chunk
+from app.chunking.base import Chunk
 from app.judging.match import Outcome
 from app.reporting.audit import audit, to_markdown
 from app.vocabulary.terms import candidates, share_said

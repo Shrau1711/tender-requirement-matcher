@@ -1,7 +1,6 @@
 import pymupdf
-from builders import CALLS, picture_only_pdf
+from builders import CALLS, chunk_page, picture_only_pdf
 
-from app.chunking.chunker import chunk_page
 from app.llm.llm import Reply
 from app.llm.llm_cache import CachedLLM
 from app.reading.ocr import reader_for

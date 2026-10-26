@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from functools import lru_cache
 
-from app.chunking.chunker import Chunk
+from app.chunking.base import Chunk
 from app.extraction.atomize import AtomicRequirement
 from app.vocabulary.roles import load_roles
 from app.vocabulary.words import kind_words, singular

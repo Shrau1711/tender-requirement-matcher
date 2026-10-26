@@ -1,6 +1,6 @@
 from builders import ev, req
 
-from app.chunking.chunker import Chunk
+from app.chunking.base import Chunk
 from app.reporting.coverage import inventory, matrix, nowhere, thin, to_markdown
 
 A, B = req("pump_type", "text", ["x"]), req("noise_level", "number", ["85"], "dBA")

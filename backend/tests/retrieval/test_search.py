@@ -1,6 +1,6 @@
 import numpy as np
 
-from app.chunking.chunker import Chunk
+from app.chunking.base import Chunk
 from app.retrieval.fusion import rrf
 from app.retrieval.search import Index, tokenize
 
@@ -73,3 +73,10 @@ def test_one_booklet_cannot_fill_every_place_of_a_maker_with_several():
     chunks = [chunk("a", f"gate valve materials {i}", file="check.pdf") for i in range(4)] + [chunk("a", "gate valve", file="gate.pdf")]
     files = [h.chunk.file for h in Index(chunks, fake_embed).search_many(["gate valve materials"], "a", top_k=4)]
     assert files.count("check.pdf") == 2 and "gate.pdf" in files
+
+
+def test_two_children_of_one_parent_take_one_place():
+    parent = "wafer valve body and lug valve body"
+    kids = [chunk("a", "wafer valve").model_copy(update={"parent": parent}), chunk("a", "lug valve").model_copy(update={"parent": parent})]
+    hits = Index([*kids, chunk("a", "gate valve"), chunk("a", "other text")], fake_embed).search("valve", "a", top_k=3)
+    assert sum(h.chunk.parent == parent for h in hits) == 1

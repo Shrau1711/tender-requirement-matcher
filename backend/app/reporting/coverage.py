@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from app.chunking.chunker import Chunk
+from app.chunking.base import Chunk
 from app.evaluation.gold import has_several, key_for
 from app.extraction.atomize import AtomicRequirement
 from app.extraction.evidence import Evidence
