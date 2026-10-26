@@ -13,21 +13,25 @@ SPELLINGS_FILE = Path(__file__).resolve().parents[2] / "config" / "unit_spelling
 ureg = pint.UnitRegistry()
 
 
+# Loads the trade-unit table (PN, DN, NB...) from config/unit_aliases.json.
 def load_aliases(path: Path = ALIASES_FILE) -> dict[str, dict]:
     """Trade 'units' that pint does not know (PN, DN, NB, INCH for nominal sizes), written as data."""
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+# Loads other spellings of units (m3/hr, MWC...) mapped to the ones pint understands.
 @lru_cache
 def load_spellings(path: Path = SPELLINGS_FILE) -> dict[str, str]:
     """Other ways a plain unit is written (m3/hr, MWC, metres), each with the spelling pint understands."""
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+# Normalises the spelling of a unit.
 def spelled(unit: str | None) -> str | None:
     return load_spellings().get((unit or "").strip().lower(), unit)
 
 
+# Finds the trade-unit entry that applies to this unit and attribute.
 def alias_for(unit: str | None, attribute: str, aliases: dict[str, dict]) -> dict | None:
     entry = aliases.get((unit or "").upper())
     if entry and any(part in attribute for part in entry["attribute_contains"]):
@@ -35,12 +39,15 @@ def alias_for(unit: str | None, attribute: str, aliases: dict[str, dict]) -> dic
     return None
 
 
+# Finds a trade unit written inside the statement itself (like 'PN 1.6') when the reader left the unit out.
 def unit_in(text: str, attribute: str, aliases: dict[str, dict]) -> str | None:
     """A trade unit written in the statement itself ("PN 1.6"), for when the reading left the unit out."""
     words = {w.upper() for w in re.findall(r"[A-Za-z]+", text)}
     return next((u for u in aliases if u in words and alias_for(u, attribute, aliases)), None)
 
 
+# Converts a value to the target unit with pint and the trade-unit table. alternative=True uses the other common
+# reading of a trade unit. Returns None when it cannot convert, which becomes 'cannot compare'.
 def convert(
     value: float, unit: str | None, target: str | None, attribute: str, aliases: dict[str, dict], alternative: bool = False
 ) -> float | None:

@@ -8,19 +8,25 @@ from app.services.roles import wrong_type
 from app.services.tender import Item, distinct_items
 
 
+# The evidence that belongs to one product: statements that name it, plus unnamed statements from a document that
+# describes it.
 def evidence_for(found: list[Evidence], product: str, files: set[str]) -> list[Evidence]:
     """What is known about one product: statements that name it, and statements that name no product but come from a document that describes it."""
     return [e for e in found if (is_named(e) and e.product == product) or (not is_named(e) and e.file in files)]
 
 
+# The files in which a product is named.
 def files_of(table: dict[tuple[int, str], list[Evidence]], maker: str, product: str) -> set[str]:
     return {e.file for (_, m), found in table.items() if m == maker for e in found if is_named(e) and e.product == product}
 
 
+# Every product name a manufacturer has evidence for.
 def products_of(table: dict[tuple[int, str], list[Evidence]], maker: str) -> list[str]:
     return sorted({e.product for (_, m), found in table.items() if m == maker for e in found if is_named(e)})
 
 
+# Scores a manufacturer's products one at a time and keeps the best: right kind of product first, then compatibility,
+# then coverage. No credit is combined across products.
 def best_product(
     atoms: list[AtomicRequirement], maker: str, table: dict[tuple[int, str], list[Evidence]], aliases: dict[str, dict], readable: bool
 ) -> tuple[str | None, list[Outcome]]:
@@ -33,11 +39,13 @@ def best_product(
     if not candidates:
         return None, match_all(atoms, [maker], table, aliases, {maker} if readable else set())
 
+    # All requirement outcomes using only this one product's evidence.
     def outcomes_for(product: str) -> list[Outcome]:
         files = files_of(table, maker, product)
         own = {key: evidence_for(found, product, files) for key, found in table.items() if key[1] == maker}
         return match_all(atoms, [maker], own, aliases, {maker} if readable else set())
 
+    # Sort key for choosing the best product. A product of the wrong kind cannot win.
     def rank(product: str) -> tuple[bool, float, float]:
         """A product that is not the kind the tender asks for is zeroed in the report, so it must not win here either."""
         outcomes = outcomes_for(product)
@@ -48,6 +56,7 @@ def best_product(
     return chosen, outcomes_for(chosen)
 
 
+# Runs best_product for each item of the tender.
 def best_products(
     atoms: list[AtomicRequirement], maker: str, table: dict[tuple[int, str], list[Evidence]], aliases: dict[str, dict], readable: bool
 ) -> list[tuple[Item, str | None, list[Outcome]]]:

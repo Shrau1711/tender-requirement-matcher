@@ -50,6 +50,7 @@ class ReadDocument(BaseModel):
     pages: list[PageRecord]
 
 
+# Fingerprint of a file's content.
 def sha256_file(path: Path) -> str:
     h = hashlib.sha256()
     with open(path, "rb") as f:
@@ -58,6 +59,7 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
+# Every text line of a page with its position, font size and bold flag.
 def extract_lines(page: pymupdf.Page) -> list[Line]:
     lines: list[Line] = []
     for block_no, block in enumerate(page.get_text("dict", sort=True)["blocks"]):
@@ -76,6 +78,8 @@ def extract_lines(page: pymupdf.Page) -> list[Line]:
     return lines
 
 
+# Builds lines for text read from a picture, which has no layout. A blank line starts a new block and '# ' marks a
+# heading.
 def lines_from_text(text: str) -> list[Line]:
     """Lines for text that has no layout of its own (read from a picture). A blank line starts a new block,
     and a line that starts with '# ' is a heading (the reader was asked to mark them), so it counts as bold."""
@@ -92,6 +96,8 @@ def lines_from_text(text: str) -> list[Line]:
     return lines
 
 
+# True for a page with almost no text but a picture or drawn text. It leans toward reading, because skipping a page
+# loses it silently.
 def needs_ocr(page: pymupdf.Page, text: str, n_images: int) -> bool:
     """A page with almost no text of its own but something to read: a picture, or text drawn as vector shapes.
 
@@ -100,16 +106,19 @@ def needs_ocr(page: pymupdf.Page, text: str, n_images: int) -> bool:
     return len(text) < MIN_TEXT_CHARS and (n_images > 0 or len(page.get_drawings()) >= MIN_DRAWINGS)
 
 
+# The page with the text the reader found in its picture.
 def with_text(record: PageRecord, text: str) -> PageRecord:
     """The page, with the text the reader found in its picture."""
     return record.model_copy(update={"text": text, "n_chars": len(text), "lines": lines_from_text(text)})
 
 
+# Finds the tables on a page with PyMuPDF.
 def extract_tables(page: pymupdf.Page) -> list[RawTable]:
     found = page.find_tables().tables
     return [RawTable(bbox=tuple(t.bbox), rows=t.extract()) for t in found]
 
 
+# The page number printed on the page ('iv', '12'), or None if the PDF's labels are broken.
 def printed_label(page) -> str | None:
     """The page number printed on the page ("iv", "12"). Some PDFs carry broken label tables, which only cost the label."""
     try:
@@ -118,6 +127,7 @@ def printed_label(page) -> str | None:
         return None
 
 
+# Reads a PDF into pages of text, lines and tables. Picture-only pages are read together by the model.
 def read_pdf(path: str | Path, read_image: ImageReader | None = None) -> ReadDocument:
     """Every page as text, lines and tables. Pages that are only a picture or drawn text are read by read_image, if one is given.
 

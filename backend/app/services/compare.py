@@ -48,10 +48,13 @@ class Verdict(BaseModel):
         return bool(self.flags)
 
 
+# Compares two numbers safely, ignoring tiny floating point differences.
 def close(a: float, b: float) -> bool:
     return math.isclose(a, b, rel_tol=1e-6)
 
 
+# Scores ONE wanted number against what the page states (a single value, range, up to, at least). 100 if it is
+# covered, 75 if a stated maximum is higher than asked, 0 if it fails.
 def reach(wanted: float, operator: str, shape: str, numbers: list[float]) -> int:
     """How well one stated number, range or list serves one wanted number."""
     low, high = min(numbers), max(numbers)
@@ -72,10 +75,14 @@ def reach(wanted: float, operator: str, shape: str, numbers: list[float]) -> int
     return 100 if low <= wanted or close(low, wanted) else 0  # at_most
 
 
+# Joins the scores when the tender wants several values: the best one for 'one of', the average otherwise.
 def combine(scores: list[int], operator: str) -> int:
     return max(scores) if operator == "one_of" else round(sum(scores) / len(scores))
 
 
+# Judges a numeric requirement. Converts the stated numbers to the tender's unit and calls reach(). If that scores 0
+# it tries the other reading of a trade unit like PN (score 50, flagged). A unit that cannot be converted gives 25 and
+# is left out of the average.
 def number_verdict(req: AtomicRequirement, ev: Evidence, aliases: dict[str, dict]) -> Verdict:
     said = " ".join(ev.stated.split())
     numbers = ev.numbers or spoken_numbers(" ".join(ev.items) or ev.stated)
@@ -100,6 +107,8 @@ def number_verdict(req: AtomicRequirement, ev: Evidence, aliases: dict[str, dict
     return Verdict(score=score, reason=f"stated {said}")
 
 
+# Special case for pressure class numbers such as 1500# or Class 1500 against a class list or range. Returns None when
+# it does not apply.
 def class_verdict(req: AtomicRequirement, ev: Evidence) -> Verdict | None:
     """A class rating asked for as a bare number ("1500#"), against class numbers stated as a list or a range ("Class 150 - 2500").
 
@@ -113,10 +122,13 @@ def class_verdict(req: AtomicRequirement, ev: Evidence) -> Verdict | None:
     return Verdict(score=score, reason=f"states {' '.join(ev.stated.split())}")
 
 
+# Strips spaces, punctuation and the year so 'IS 13095:2008' and 'IS13095' compare equal.
 def normal_identifier(text: str) -> str:
     return re.sub(r"[^a-z0-9]", "", re.sub(r":\s*\d{4}\b", "", text.lower()))  # "IS 13095:2008" -> "is13095"
 
 
+# Compares wanted and stated words for a text requirement: 100 if every wanted word is stated, 50 if only the family
+# (grey cast iron but not the grade), 0 otherwise. Also returns the wanted words that were missing.
 def closeness(kind: str, wanted: str, stated: str, ignore: set[str] | None = None) -> tuple[int, list[str]]:
     """How close the stated thing is to the wanted one, and the wanted words it does not say.
 
@@ -140,6 +152,8 @@ def closeness(kind: str, wanted: str, stated: str, ignore: set[str] | None = Non
     return (FAMILY_ONLY, [as_written[w] for w in missing]) if missing else (100, [])
 
 
+# Tries one wanted value against everything the document stated and keeps the best match, ignoring generic words like
+# NB and DN.
 def best_closeness(req: AtomicRequirement, wanted: str, heard: list[str]) -> tuple[int, list[str]]:
     roles = load_roles()
     # "40 NB" and "DN: 40" say the same thing; the designator is not a word the document has to repeat. (Only in the comparison: the search keeps the buyer's words.)
@@ -147,6 +161,8 @@ def best_closeness(req: AtomicRequirement, wanted: str, heard: list[str]) -> tup
     return max((closeness(req.kind, wanted, i, ignore) for i in heard), key=lambda c: (c[0], -len(c[1])))
 
 
+# True when the document only names a code or document (it has digits and shares no words) instead of the thing asked
+# for.
 def names_a_reference(req: AtomicRequirement, items: list[str]) -> bool:
     """True when every stated item is a code or document name (it has a digit) sharing no word with the requirement."""
     wanted = set().union(*(kind_words(w) for w in req.values))
@@ -155,6 +171,8 @@ def names_a_reference(req: AtomicRequirement, items: list[str]) -> bool:
     return all(any(c.isdigit() for c in i) and not kind_words(i) & wanted for i in items)
 
 
+# Judges a text requirement (material, type, standard). Scores the closeness, and flags 'reference only', 'equivalent
+# grade', 'only part stated' or 'grade not stated' instead of guessing.
 def items_verdict(req: AtomicRequirement, ev: Evidence) -> Verdict:
     items = ev.items or [ev.stated]
     heard = [*items, ev.stated] if req.kind != "standard" else items  # the printed label counts too: "Levers: SR+, SP+"
@@ -176,6 +194,8 @@ def items_verdict(req: AtomicRequirement, ev: Evidence) -> Verdict:
     return Verdict(score=score, reason=f"states {', '.join(items)}")
 
 
+# Entry point: picks the number, class or text judge, then applies caps and flags. A condition that does not cover the
+# need gives 0, a condition or an unnamed product caps the score at 75, and a scanned page gets a flag.
 def verdict(req: AtomicRequirement, ev: Evidence, aliases: dict[str, dict], context: list[AtomicRequirement] | None = None) -> Verdict:
     """How one piece of evidence measures up to one requirement. Only plain code decides this.
 

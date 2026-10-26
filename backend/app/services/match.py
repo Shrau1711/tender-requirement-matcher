@@ -43,10 +43,14 @@ class ItemSummary(BaseModel):
     summary: Summary
 
 
+# Turns a score into a status: 100 fully matched, 1 to 99 partially matched, 0 missing capability.
 def status_for(score: int) -> Status:
     return "fully matched" if score == 100 else "partially matched" if score else "missing capability"
 
 
+# One requirement against one manufacturer's evidence. In order: a certificate is 'unsupported requirement',
+# unreadable documents are 'not assessed', no evidence is 'no evidence found', otherwise the best-scoring evidence
+# wins.
 def match_requirement(
     req: AtomicRequirement, manufacturer: str, evidence: list[Evidence], aliases: dict[str, dict], readable: bool = True,
     context: list[AtomicRequirement] | None = None,
@@ -63,6 +67,8 @@ def match_requirement(
     return Outcome(**{**base, "found": True, "review": best.review, "flags": best.flags}, status=status_for(best.score), score=best.score, reason=reason, evidence=ev)
 
 
+# Compatibility is the average score of the requirements that could be compared; coverage is the share that had any
+# evidence.
 def summarize(manufacturer: str, outcomes: list[Outcome]) -> Summary:
     """Compatibility is the average over the requirements that could be compared; coverage and the count include every assessed one."""
     assessed = [o for o in outcomes if o.status != "unsupported requirement" and o.assessed]
@@ -78,6 +84,7 @@ def summarize(manufacturer: str, outcomes: list[Outcome]) -> Summary:
     )
 
 
+# One summary for each item of the tender.
 def summarize_items(manufacturer: str, outcomes: list[Outcome]) -> list[ItemSummary]:
     """One summary for each item of the tender."""
     return [
@@ -86,6 +93,7 @@ def summarize_items(manufacturer: str, outcomes: list[Outcome]) -> list[ItemSumm
     ]
 
 
+# The tender-level figure: the average over the items, so a manufacturer cannot hide a missing item behind the others.
 def overall(manufacturer: str, per_item: list[ItemSummary]) -> Summary:
     """The tender as a whole: the average over its items, so a manufacturer that cannot supply one item cannot hide it behind the others."""
     assessed = [s.summary for s in per_item if s.summary.compatibility is not None]
@@ -99,6 +107,7 @@ def overall(manufacturer: str, per_item: list[ItemSummary]) -> Summary:
     )
 
 
+# One outcome for every requirement and manufacturer, using the best evidence for each.
 def match_all(
     atoms: list[AtomicRequirement],
     makers: list[str],

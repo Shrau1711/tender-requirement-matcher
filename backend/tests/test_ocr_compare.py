@@ -2,7 +2,9 @@ from app.services.ocr_compare import (
     confident_pages,
     mean,
     number_recall,
+    number_hits,
     numbers_in,
+    pooled_recall,
     word_recall,
 )
 
@@ -17,6 +19,16 @@ def test_number_recall_is_the_share_of_the_references_numbers_found():
     assert number_recall("no numbers here", "anything 5") is None
 
 
+def test_number_hits_count_found_and_total():
+    assert number_hits("size 40 pressure 16 page 6", "size 40 pressure 16") == (2, 3)
+    assert number_hits("none", "5") == (0, 0)
+
+
+def test_pooled_recall_weighs_a_page_by_how_many_numbers_it_has():
+    assert pooled_recall([(0, 1), (49, 50)]) == 49 / 51  # a missed page number barely matters
+    assert pooled_recall([(0, 0)]) is None
+
+
 def test_word_recall_ignores_short_words_and_case():
     assert word_recall("Maximum Working pressure of 69 Bar", "maximum working PRESSURE") == 0.75
     assert word_recall("1 2 3", "x") is None
@@ -28,6 +40,6 @@ def test_mean_skips_missing_values():
 
 
 def test_confident_pages_say_whether_the_reader_knows_when_it_is_wrong():
-    pages = [(0.97, 1.0), (0.92, 0.9), (0.70, 0.4), (0.60, None)]
-    assert confident_pages(pages, 0.90) == (2, 0.95)
+    pages = [(0.97, 10, 10), (0.92, 8, 10), (0.70, 1, 10), (0.60, 0, 0)]
+    assert confident_pages(pages, 0.90) == (2, 0.9)
     assert confident_pages(pages, 0.99) == (0, None)

@@ -31,6 +31,7 @@ class Chunk(BaseModel):
     document_headings: list[str] = []  # the same for the document's first page (its cover), for pages that do not name the product
 
 
+# One string per text block, so a label stays with its value.
 def block_texts(lines: list[Line]) -> list[str]:
     """One string per text block, in block order. A block keeps its label and value together."""
     blocks: dict[int, list[str]] = {}
@@ -39,6 +40,7 @@ def block_texts(lines: list[Line]) -> list[str]:
     return ["\n".join(texts) for texts in blocks.values()]
 
 
+# Cuts a block that is too big for one chunk at line breaks, never in the middle of a line.
 def split_oversized(text: str, max_chars: int) -> list[str]:
     """Cut a block that is too big for one chunk into pieces of whole lines."""
     parts: list[str] = []
@@ -51,6 +53,7 @@ def split_oversized(text: str, max_chars: int) -> list[str]:
     return [*parts, current] if current else parts
 
 
+# Joins whole blocks into chunks of up to 1000 characters, never cutting inside a block.
 def pack(pieces: list[str], max_chars: int = MAX_CHARS) -> list[str]:
     """Join whole blocks into chunks of up to max_chars, never cutting inside a block."""
     chunks: list[str] = []
@@ -64,10 +67,12 @@ def pack(pieces: list[str], max_chars: int = MAX_CHARS) -> list[str]:
     return [*chunks, current] if current else chunks
 
 
+# The vertical middle of a line.
 def middle(line: Line) -> float:
     return (line.y0 + line.y1) / 2
 
 
+# Left to right, joins a value that starts with ':' to the label before it.
 def join_row(row: list[Line]) -> list[Line]:
     """Left to right, a value that starts with ':' is joined to the label before it. Plain neighbours are other columns."""
     merged: list[Line] = []
@@ -79,6 +84,7 @@ def join_row(row: list[Line]) -> list[Line]:
     return merged
 
 
+# Puts 'Face to Face' and ': API 609' back together when the file stored them as separate blocks.
 def join_rows(lines: list[Line]) -> list[Line]:
     """Put 'Face to Face' and ': API 609 ...' back together when the file stores them as separate blocks."""
     if not any(line.text.startswith(":") for line in lines):
@@ -92,6 +98,7 @@ def join_rows(lines: list[Line]) -> list[Line]:
     return [line for row in rows for line in join_row(row)]
 
 
+# The short line just above a table, such as 'Pressure Rating'.
 def caption_for(table: RawTable, lines: list[Line]) -> str | None:
     """The short line just above a table, such as 'Pressure Rating', which says what its rows are."""
     x0, y0, x1, _ = table.bbox
@@ -99,11 +106,13 @@ def caption_for(table: RawTable, lines: list[Line]) -> str | None:
     return max(above, key=lambda l: l.y1).text if above else None
 
 
+# True when a line sits inside a table's box, so it is not chunked twice.
 def inside(line: Line, table: RawTable) -> bool:
     x0, y0, x1, y1 = table.bbox
     return x0 <= (line.x0 + line.x1) / 2 <= x1 and y0 <= (line.y0 + line.y1) / 2 <= y1
 
 
+# The page's bold lines, top to bottom, which say what product the page is about.
 def page_headings(lines: list[Line]) -> list[str]:
     """The page's bold lines, top to bottom, without repeats (field labels ending in a colon are left out)."""
     low, high = HEADING_LENGTH
@@ -111,6 +120,7 @@ def page_headings(lines: list[Line]) -> list[str]:
     return list(dict.fromkeys(t for t in texts if low <= len(t) <= high and not t.endswith(":") and sum(c.isalpha() for c in t) >= MIN_LETTERS))[:MAX_HEADINGS]
 
 
+# Table rows of a scanned page, each with the heading above it as its caption.
 def ocr_rows(lines: list[Line]) -> list[str]:
     """The table rows of a page read from a picture, each with the heading above it as its caption."""
     rows, caption = [], None
@@ -122,6 +132,8 @@ def ocr_rows(lines: list[Line]) -> list[str]:
     return rows
 
 
+# Cuts one page into chunks: one per table row, then one per section if sections cover 80% of the text, otherwise
+# packed blocks of up to 1000 characters.
 def chunk_page(page: PageRecord, manufacturer: str, file: str, document_headings: list[str] | None = None) -> list[Chunk]:
     headings = page_headings(page.lines)
 
@@ -143,6 +155,8 @@ def chunk_page(page: PageRecord, manufacturer: str, file: str, document_headings
     return chunks + [make("text", None, t) for t in pack(block_texts(join_rows(lines)))]
 
 
+# Chunks every page of a document. The folder name is the manufacturer and the first page's headings are the cover
+# headings.
 def chunk_document(doc: ReadDocument) -> list[Chunk]:
     path = Path(doc.path)
     manufacturer = path.parent.name  # the folder name says whose document it is

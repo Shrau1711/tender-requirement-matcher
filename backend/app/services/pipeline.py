@@ -34,6 +34,7 @@ class Gathered:
     covers: dict[str, list[str]]  # each manufacturer's cover headings, which say what its main product line is
 
 
+# Reads the tender and splits it into single checkable requirements, with notes on how it was read.
 def read_atoms(llm: LLM, tender: str | Path, read_image: ImageReader | None = None) -> tuple[list[AtomicRequirement], list[str]]:
     """Every item of the tender split into single checkable requirements, and notes on how the tender was read.
 
@@ -44,6 +45,8 @@ def read_atoms(llm: LLM, tender: str | Path, read_image: ImageReader | None = No
     return atoms, read.notes + contradictions(atoms)
 
 
+# Reads the manufacturers' documents and the tender, estimates the cost (and asks the person if asked to), then finds
+# evidence for every requirement. This is the only step that costs money.
 def gather(
     llm: LLM, tender: str | Path, category_dir: str | Path, read_image: ImageReader | None = None, progress: Callable[[str], None] = lambda _: None,
     ask: Callable[[Estimate], None] | None = None,
@@ -69,11 +72,13 @@ def gather(
     return Gathered(chosen.atoms, notes + chosen.notes, makers, table, set(covers), covers)
 
 
+# Judges the evidence in plain code: one outcome per requirement and manufacturer.
 def score(found: Gathered) -> list[Outcome]:
     """One outcome per requirement and manufacturer, taking the best evidence for each requirement on its own."""
     return match_all(found.atoms, found.makers, found.table, load_aliases(), found.readable)
 
 
+# For each manufacturer and item, picks the single best product and its outcomes.
 def score_by_product(llm: LLM, found: Gathered) -> dict[str, list[tuple[Item, str | None, list[Outcome]]]]:
     """For each manufacturer and each item, its single best product and that product's outcomes."""
     table = canonical_table(llm, found.table, found.makers, found.covers)
@@ -81,11 +86,13 @@ def score_by_product(llm: LLM, found: Gathered) -> dict[str, list[tuple[Item, st
     return {m: best_products(found.atoms, m, table, aliases, m in found.readable) for m in found.makers}
 
 
+# Assembles the report: ranking, scores, statuses and the evidence behind each.
 def build_report(llm: LLM, found: Gathered, tender: str) -> Report:
     """The report for a tender: ranking, scores, statuses and the evidence behind each. Costs only the model calls that grouping product names needs."""
     return assemble(tender, found.atoms, found.notes, found.makers, found.table, found.readable, score_by_product(llm, found), score(found))
 
 
+# Everything from tender and documents to one outcome per requirement and manufacturer.
 def match_tender(
     llm: LLM, tender: str | Path, category_dir: str | Path, read_image: ImageReader | None = None
 ) -> tuple[list[AtomicRequirement], list[str], list[Outcome]]:

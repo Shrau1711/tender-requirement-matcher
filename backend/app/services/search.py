@@ -30,22 +30,26 @@ class Hit(BaseModel):
     chunk: Chunk
 
 
+# Splits text into letters and numbers so 'DN125', 'DN 125' and 'dn-125' match, and 13095 never matches 3095.
 def tokenize(text: str) -> list[str]:
     return TOKEN.findall(text.lower())
 
 
 class Index:
+    # Builds the keyword index (BM25) and the embedding matrix for all passages.
     def __init__(self, chunks: list[Chunk], embed: Embedder = embed_cached) -> None:
         self.chunks = chunks
         self.embed = embed
         self.bm25 = BM25Okapi([tokenize(c.text) for c in chunks])
         self.vectors = embed([c.text for c in chunks])
 
+    # Finds the best passages for one query.
     def search(
         self, query: str, manufacturer: str | None = None, top_k: int = 5, mode: Mode = "hybrid"
     ) -> list[Hit]:
         return self.search_many([query], manufacturer, top_k, mode)
 
+    # Finds the best passages for several phrasings. The keyword and meaning rankings are merged by rank (RRF).
     def search_many(
         self, queries: list[str], manufacturer: str | None = None, top_k: int = 5, mode: Mode = "hybrid"
     ) -> list[Hit]:
@@ -70,6 +74,7 @@ class Index:
             for i, score in self.share_between_files(rrf(rankings), top_k, max(1, len(files)) if manufacturer else 1)
         ]
 
+    # Stops one file taking all the places in the results.
     def share_between_files(self, ranked: list[tuple[int, float]], top_k: int, n_files: int) -> list[tuple[int, float]]:
         """The first top_k of the ranking, but no file takes more than its share of the places.
 
@@ -85,6 +90,7 @@ class Index:
                 kept.append((i, score))
         return kept[:top_k]
 
+    # Allows only a couple of table rows per page in a ranking, so one big table cannot fill the results.
     def spread(self, ranking: list[int]) -> list[int]:
         """Keep the order but allow only a few table rows from any one page, so near-identical rows
         of one big table do not take up the top places of a ranking. Other chunks are never held back."""
