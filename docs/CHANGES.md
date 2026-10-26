@@ -251,3 +251,36 @@ The search itself keeps BM25 for keywords and RRF to merge the rankings; only th
 **In an interview.** "Phase 5 was about honesty and settings: an architecture document whose design decisions say what each choice costs, a token counter that can ask Gemini for the exact count but never spends past the call limit, and model, thinking and temperature as settings. Every default stays what the saved answers were made with, which is why the temperature is still 0 even though Google now recommends 1.0 for Gemini 3; testing that is listed as a paid check. For collecting I did not add a new tool: I moved the source records into the package and added a test that every document has one."
 
 **Files to read.** `docs/architecture.md`, `backend/app/cost/tokens.py`, `temperature_setting` in `backend/app/llm/gemini.py`, `backend/app/collecting/sources.py`.
+
+## Phase 6: A small knowledge graph for equivalent standards and tender hierarchy
+
+**What changed.** A new package, `app/graph/`, built only from data the project already has, with no model calls:
+- `graph.py`: a minimal graph. Nodes have a kind, a label and the spellings seen for them; links have a relation and a list of where each was seen. It saves as plain JSON and draws as Mermaid. There is no graph library: it is about 70 lines.
+- `standards.py`: standards as a graph, with two kinds of knowledge kept apart because they are not equally sure.
+  - **The same standard under another name.** An adopting body keeps the number: "BS EN ISO 5208", "DIN EN ISO 5208", "EN ISO 5208" and "ISO 5208" are one document, and "BS EN 593" is "EN 593". This follows from the names, so each standard is one node and its spellings are its names.
+  - **Named together.** "API 600 / BS 1873" in a catalogue, or "ISO 21049/API 682" in a tender, is a link that records where it was seen. I first checked what such pairs mean in our documents, and they are often not equivalent: a gate-valve standard next to a globe-valve standard (API 600 / BS 1873), two materials (ASTM A105 / A216), two parts of one standard (EN 1092-1 / -2). Some are the same document (API 607 / ISO 10497, API 682 / ISO 21049). So these links never count as a match.
+
+  Standard names are found in capitals only, so "pressure is 16 bar" is not the standard IS 16. Steel grades and material numbers written with "EN" ("EN 8", "EN 1.4408") are not taken as standards.
+- `tender.py`: a tender as a graph: tender → items → requirement rows → atomic requirements, with rows citing standards. A row printed once for several items is one node shared by them, so "which items does this row apply to" and "what does this item require" are each one lookup.
+- `scripts/run/build_graph.py` builds the standards graph from every catalogue chunk and every saved tender reading, and writes `data/graph/standards.json`, which a person can read and correct. `scripts/run/show_graph.py <tender>` shows a tender's hierarchy, its shared rows and the standards it cites with their links, and can write the hierarchy as a Mermaid diagram.
+- **Use in judging, only with `KNOWLEDGE_GRAPH=on`** (default `off`). When a standard is asked for and the evidence does not state it by that name:
+  - a stated standard that is the same document under another name counts as met;
+  - a stated standard that documents only name together with it goes to a person (`equivalent grade` flag), and only when the tender says it accepts an equivalent.
+
+  With the setting off, the new code is never reached.
+
+**Why.** The plan's stretch goal, limited as asked to equivalent standards and the tender hierarchy.
+
+**Measured, free (saved answers only, `LLM_MAX_CALLS=0`).**
+- **Standards graph:** built from 2 categories' catalogues and the 9 tenders whose reading is saved (2 were skipped, not saved). It has 246 standards, 21 of them seen under more than one name, and 24 pairs named together (22 from catalogues, 2 from a tender: API 682 / ISO 21049 and API 614 / ISO 10438-3). A few nodes are still part numbers read as EN names; judging only looks up names that appear in a requirement and its evidence, so they cannot change a result.
+- **Tender hierarchy:** on all 9 tenders, every requirement is reachable from its tender. Rows shared by several items: 15 of 20 in 9840129 (4 items), 29 of 33 in 9935891 (2 items), 21 of 384 in 9987635; none in the one-item tenders.
+- **Effect on judging,** on the two labelled tenders (every answer from the cache: 269 read, 0 model calls). Scored with the graph off and on in separate processes, **no outcome changed**: 0 of 77 for 9933225, 0 of 328 for 9935891, and no row of either answer key comparison. The reason: their 31 standard outcomes are exact matches, "no evidence found", or test standards that need a certificate; none states a different standard for the graph to link.
+- The tenders whose cited standards do have links (9840129: API 598, ASME B16.10, B16.34; 9987635: API 682 / ISO 21049) do not have their evidence saved, so measuring them costs money; see `docs/NEEDS_PAID_RUN.md`.
+
+**The default did not change.** `KNOWLEDGE_GRAPH` is off, and judging only reaches the new code when it is on. No prompt, chunk or search changed; the test suite and the earlier checks pass as before.
+
+**Tests.** 432 passed (413 before): `tests/graph/test_standards.py` (names found and written one way, including the cases above that must not be standards; spellings as one node; links with where seen; "same" and "together" kept apart; the saved graph loads), `tests/graph/test_tender_graph.py` (a shared row is one node, every requirement reachable, cited standards, Mermaid), `tests/graph/test_judging_with_graph.py` (off changes nothing; the same standard under another name is met; named together goes to a person only with "or equivalent"; named together is never a match).
+
+**In an interview.** "The knowledge graph is deliberately small: standards and a tender's structure, built by a script from data I already had, saved as JSON a person can check. Before trusting 'A / B' in a catalogue as equivalence I looked at the pairs, and many were not, so only the naming rule for adopted standards can count as a match, and everything else only sends a requirement to a person. It is off by default, and on the labelled tenders it changed nothing, which I report as it is rather than claiming an improvement."
+
+**Files to read.** `backend/app/graph/standards.py`, `backend/app/graph/tender.py`, `standards_verdict` in `backend/app/judging/compare.py`, `data/graph/standards.json`.

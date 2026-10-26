@@ -34,6 +34,7 @@ flowchart LR
     TEN & ATOM & EVID -.-> LLM["llm<br/>Gemini + answer cache"]
     READ -.->|picture-only pages| LLM
     VOC["vocabulary<br/>words, units, roles"] -.-> JUDGE
+    GRAPH["graph (off by default)<br/>standards, tender layout"] -.-> JUDGE
     CFG["data/categories/*/category.json"] -.-> CAT & VOC & ATOM
     COL["collecting<br/>crawler + source records"] -.->|PDFs| READ
 ```
@@ -57,6 +58,7 @@ flowchart LR
 | `vocabulary` | shared words, abbreviations, number words, requirement roles |
 | `evaluation` | answer keys and scoring against them |
 | `collecting` | the catalogue crawler and the record of where each document came from |
+| `graph` | a small knowledge graph: standards that are one document under several names or that documents name together, and a tender's items, shared rows and requirements; off by default |
 
 ## Ingest path: a manufacturer document becomes searchable
 
@@ -123,5 +125,7 @@ flowchart TD
 **Money is only spent after a person agrees.** Before any evidence question is asked, every new question is counted and priced, the budget may read fewer passages or fewer items, and the web page waits for Proceed. Token counts are characters / 4 by default; `TOKEN_COUNTER=gemini` uses Gemini's exact count, which is a request to Google and so stays under the same call limit.
 
 **Settings default to what the saved answers were made with.** The model (`LLM_MODEL`), thinking level (`LLM_THINKING`) and temperature (`LLM_TEMPERATURE`) are settings. Temperature stays 0 by default even though Google advises leaving Gemini 3 models at 1.0, because every saved answer was made at 0. Changing any of them changes the cache key, so every question is new.
+
+**A knowledge graph that only advises.** The standards graph is built by a script from the catalogues and the saved tender readings, and saved as JSON that a person can read and correct. Its two kinds of link are not equally sure. One standard under several names follows from how adopted standards are named, so it may count as a match. Two standards named together ("API 600 / BS 1873") are often not equivalent, so that link can only send a requirement to a person, and only when the tender says it accepts an equivalent. The whole graph is off by default; on the two labelled tenders, switching it on changed no outcome.
 
 **What needs paid runs.** Whether another chunker, temperature, model or the exact token counter changes the results can only be measured by asking the model again. Each such check, what it would measure and how to run it is listed in [`NEEDS_PAID_RUN.md`](NEEDS_PAID_RUN.md). Phase 7 adds cost estimates to each entry.

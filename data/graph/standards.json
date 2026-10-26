@@ -1,0 +1,1971 @@
+{
+ "nodes": {
+  "ISO9001": {
+   "kind": "standard",
+   "label": "ISO9001",
+   "names": [
+    "ISO 9001"
+   ]
+  },
+  "ANSIB73.1": {
+   "kind": "standard",
+   "label": "ANSIB73.1",
+   "names": [
+    "ANSI B73.1"
+   ]
+  },
+  "EN733": {
+   "kind": "standard",
+   "label": "EN733",
+   "names": [
+    "EN 733"
+   ]
+  },
+  "DIN24255": {
+   "kind": "standard",
+   "label": "DIN24255",
+   "names": [
+    "DIN 24255"
+   ]
+  },
+  "EN10088": {
+   "kind": "standard",
+   "label": "EN10088",
+   "names": [
+    "EN 10088"
+   ]
+  },
+  "EN60034": {
+   "kind": "standard",
+   "label": "EN60034",
+   "names": [
+    "EN 60034"
+   ]
+  },
+  "IEC34-11": {
+   "kind": "standard",
+   "label": "IEC34-11",
+   "names": [
+    "IEC 34-11"
+   ]
+  },
+  "DIN44082": {
+   "kind": "standard",
+   "label": "DIN44082",
+   "names": [
+    "DIN 44082"
+   ]
+  },
+  "ASTM1": {
+   "kind": "standard",
+   "label": "ASTM1",
+   "names": [
+    "ASTM 1"
+   ]
+  },
+  "EN1561": {
+   "kind": "standard",
+   "label": "EN1561",
+   "names": [
+    "EN 1561"
+   ]
+  },
+  "ASTM25B": {
+   "kind": "standard",
+   "label": "ASTM25B",
+   "names": [
+    "ASTM 25B"
+   ]
+  },
+  "EN10277": {
+   "kind": "standard",
+   "label": "EN10277",
+   "names": [
+    "EN 10277"
+   ]
+  },
+  "EN1563": {
+   "kind": "standard",
+   "label": "EN1563",
+   "names": [
+    "EN 1563"
+   ]
+  },
+  "ASTMA536": {
+   "kind": "standard",
+   "label": "ASTMA536",
+   "names": [
+    "ASTM A536"
+   ]
+  },
+  "EN10283": {
+   "kind": "standard",
+   "label": "EN10283",
+   "names": [
+    "EN 10283"
+   ]
+  },
+  "ASTMA536-84": {
+   "kind": "standard",
+   "label": "ASTMA536-84",
+   "names": [
+    "ASTM A536-84"
+   ]
+  },
+  "DIN11853-2": {
+   "kind": "standard",
+   "label": "DIN11853-2",
+   "names": [
+    "DIN 11853-2"
+   ]
+  },
+  "EN1092-1": {
+   "kind": "standard",
+   "label": "EN1092-1",
+   "names": [
+    "EN 1092-1"
+   ]
+  },
+  "ISO9906": {
+   "kind": "standard",
+   "label": "ISO9906",
+   "names": [
+    "ISO 9906"
+   ]
+  },
+  "ISO990": {
+   "kind": "standard",
+   "label": "ISO990",
+   "names": [
+    "ISO 990"
+   ]
+  },
+  "ISO9": {
+   "kind": "standard",
+   "label": "ISO9",
+   "names": [
+    "ISO 9"
+   ]
+  },
+  "IS2950": {
+   "kind": "standard",
+   "label": "IS2950",
+   "names": [
+    "IS 2950"
+   ]
+  },
+  "DIN2635": {
+   "kind": "standard",
+   "label": "DIN2635",
+   "names": [
+    "DIN 2635"
+   ]
+  },
+  "DIN16288": {
+   "kind": "standard",
+   "label": "DIN16288",
+   "names": [
+    "DIN 16288"
+   ]
+  },
+  "API610": {
+   "kind": "standard",
+   "label": "API610",
+   "names": [
+    "API 610",
+    "API Standard 610",
+    "API Std. 610",
+    "API-610"
+   ]
+  },
+  "ISO14001": {
+   "kind": "standard",
+   "label": "ISO14001",
+   "names": [
+    "ISO 14001",
+    "ISO14001"
+   ]
+  },
+  "ISO50001": {
+   "kind": "standard",
+   "label": "ISO50001",
+   "names": [
+    "ISO 50001"
+   ]
+  },
+  "EN22858": {
+   "kind": "standard",
+   "label": "EN22858",
+   "names": [
+    "EN 22858",
+    "DIN EN 22858"
+   ]
+  },
+  "DIN24256": {
+   "kind": "standard",
+   "label": "DIN24256",
+   "names": [
+    "DIN 24256"
+   ]
+  },
+  "ISO2858": {
+   "kind": "standard",
+   "label": "ISO2858",
+   "names": [
+    "ISO 2858"
+   ]
+  },
+  "ISO5199": {
+   "kind": "standard",
+   "label": "ISO5199",
+   "names": [
+    "ISO 5199"
+   ]
+  },
+  "IS5600": {
+   "kind": "standard",
+   "label": "IS5600",
+   "names": [
+    "IS 5600"
+   ]
+  },
+  "BS4504-16": {
+   "kind": "standard",
+   "label": "BS4504-16",
+   "names": [
+    "BS 4504-16"
+   ]
+  },
+  "IS210": {
+   "kind": "standard",
+   "label": "IS210",
+   "names": [
+    "IS 210",
+    "IS: 210"
+   ]
+  },
+  "ASTMA48": {
+   "kind": "standard",
+   "label": "ASTMA48",
+   "names": [
+    "ASTM A48"
+   ]
+  },
+  "DIN1691": {
+   "kind": "standard",
+   "label": "DIN1691",
+   "names": [
+    "DIN 1691"
+   ]
+  },
+  "IS1865": {
+   "kind": "standard",
+   "label": "IS1865",
+   "names": [
+    "IS 1865"
+   ]
+  },
+  "DIN1693": {
+   "kind": "standard",
+   "label": "DIN1693",
+   "names": [
+    "DIN1693"
+   ]
+  },
+  "IS1570": {
+   "kind": "standard",
+   "label": "IS1570",
+   "names": [
+    "IS 1570"
+   ]
+  },
+  "ASTMA107": {
+   "kind": "standard",
+   "label": "ASTMA107",
+   "names": [
+    "ASTM A107"
+   ]
+  },
+  "IS2062": {
+   "kind": "standard",
+   "label": "IS2062",
+   "names": [
+    "IS 2062"
+   ]
+  },
+  "ASTMA283": {
+   "kind": "standard",
+   "label": "ASTMA283",
+   "names": [
+    "ASTM-A283"
+   ]
+  },
+  "DIN1700": {
+   "kind": "standard",
+   "label": "DIN1700",
+   "names": [
+    "DIN 1700"
+   ]
+  },
+  "IS3444": {
+   "kind": "standard",
+   "label": "IS3444",
+   "names": [
+    "IS 3444"
+   ]
+  },
+  "DIN17445": {
+   "kind": "standard",
+   "label": "DIN17445",
+   "names": [
+    "DIN17445"
+   ]
+  },
+  "IS318": {
+   "kind": "standard",
+   "label": "IS318",
+   "names": [
+    "IS 318"
+   ]
+  },
+  "DIN1705": {
+   "kind": "standard",
+   "label": "DIN1705",
+   "names": [
+    "DIN 1705"
+   ]
+  },
+  "IS28": {
+   "kind": "standard",
+   "label": "IS28",
+   "names": [
+    "IS 28"
+   ]
+  },
+  "ISO45001": {
+   "kind": "standard",
+   "label": "ISO45001",
+   "names": [
+    "ISO 45001",
+    "ISO45001"
+   ]
+  },
+  "ANSIB16.5": {
+   "kind": "standard",
+   "label": "ANSIB16.5",
+   "names": [
+    "ANSI B16.5"
+   ]
+  },
+  "IEC60034-30": {
+   "kind": "standard",
+   "label": "IEC60034-30",
+   "names": [
+    "IEC 60034-30"
+   ]
+  },
+  "EN12756": {
+   "kind": "standard",
+   "label": "EN12756",
+   "names": [
+    "EN 12756"
+   ]
+  },
+  "IEC60072-1": {
+   "kind": "standard",
+   "label": "IEC60072-1",
+   "names": [
+    "IEC 60072-1"
+   ]
+  },
+  "EN10204": {
+   "kind": "standard",
+   "label": "EN10204",
+   "names": [
+    "EN 10204"
+   ]
+  },
+  "EN12953-6": {
+   "kind": "standard",
+   "label": "EN12953-6",
+   "names": [
+    "DIN EN 12953-6"
+   ]
+  },
+  "DIN19643": {
+   "kind": "standard",
+   "label": "DIN19643",
+   "names": [
+    "DIN 19643"
+   ]
+  },
+  "DIN4752": {
+   "kind": "standard",
+   "label": "DIN4752",
+   "names": [
+    "DIN 4752"
+   ]
+  },
+  "EN050-032-250.1": {
+   "kind": "standard",
+   "label": "EN050-032-250.1",
+   "names": [
+    "EN 050-032-250.1"
+   ]
+  },
+  "EN250-200-510": {
+   "kind": "standard",
+   "label": "EN250-200-510",
+   "names": [
+    "EN 250-200-510"
+   ]
+  },
+  "EN1092-3": {
+   "kind": "standard",
+   "label": "EN1092-3",
+   "names": [
+    "EN 1092-3"
+   ]
+  },
+  "EN1092-2": {
+   "kind": "standard",
+   "label": "EN1092-2",
+   "names": [
+    "EN 1092-2",
+    "EN1092-2"
+   ]
+  },
+  "ASMEB16.144": {
+   "kind": "standard",
+   "label": "ASMEB16.144",
+   "names": [
+    "ASME B16.144"
+   ]
+  },
+  "ASMEB16.5": {
+   "kind": "standard",
+   "label": "ASMEB16.5",
+   "names": [
+    "ASME B16.5"
+   ]
+  },
+  "ASMEB16.544": {
+   "kind": "standard",
+   "label": "ASMEB16.544",
+   "names": [
+    "ASME B16.544"
+   ]
+  },
+  "DIN24296": {
+   "kind": "standard",
+   "label": "DIN24296",
+   "names": [
+    "DIN 24296"
+   ]
+  },
+  "EN411.77": {
+   "kind": "standard",
+   "label": "EN411.77",
+   "names": [
+    "EN 411.77"
+   ]
+  },
+  "EN454": {
+   "kind": "standard",
+   "label": "EN454",
+   "names": [
+    "EN 454"
+   ]
+  },
+  "IEC34-1": {
+   "kind": "standard",
+   "label": "IEC34-1",
+   "names": [
+    "IEC 34-1"
+   ]
+  },
+  "EN1092": {
+   "kind": "standard",
+   "label": "EN1092",
+   "names": [
+    "EN 1092"
+   ]
+  },
+  "ASMEB16.1": {
+   "kind": "standard",
+   "label": "ASMEB16.1",
+   "names": [
+    "ASME B16.1"
+   ]
+  },
+  "JISB2238": {
+   "kind": "standard",
+   "label": "JISB2238",
+   "names": [
+    "JIS B2238"
+   ]
+  },
+  "ISO228-1": {
+   "kind": "standard",
+   "label": "ISO228-1",
+   "names": [
+    "EN ISO 228-1",
+    "ISO 228-1"
+   ]
+  },
+  "DIN32676": {
+   "kind": "standard",
+   "label": "DIN32676",
+   "names": [
+    "DIN 32676"
+   ]
+  },
+  "ISO7": {
+   "kind": "standard",
+   "label": "ISO7",
+   "names": [
+    "ISO 7"
+   ]
+  },
+  "IECT3": {
+   "kind": "standard",
+   "label": "IECT3",
+   "names": [
+    "IEC T3"
+   ]
+  },
+  "IECT4": {
+   "kind": "standard",
+   "label": "IECT4",
+   "names": [
+    "IEC T4"
+   ]
+  },
+  "NEMA56C": {
+   "kind": "standard",
+   "label": "NEMA56C",
+   "names": [
+    "NEMA 56C"
+   ]
+  },
+  "IEC071": {
+   "kind": "standard",
+   "label": "IEC071",
+   "names": [
+    "IEC 071"
+   ]
+  },
+  "IEC080": {
+   "kind": "standard",
+   "label": "IEC080",
+   "names": [
+    "IEC 080"
+   ]
+  },
+  "IEC090": {
+   "kind": "standard",
+   "label": "IEC090",
+   "names": [
+    "IEC 090"
+   ]
+  },
+  "IEC100": {
+   "kind": "standard",
+   "label": "IEC100",
+   "names": [
+    "IEC 100"
+   ]
+  },
+  "IEC112": {
+   "kind": "standard",
+   "label": "IEC112",
+   "names": [
+    "IEC 112"
+   ]
+  },
+  "IEC132": {
+   "kind": "standard",
+   "label": "IEC132",
+   "names": [
+    "IEC 132"
+   ]
+  },
+  "NEMA143TC": {
+   "kind": "standard",
+   "label": "NEMA143TC",
+   "names": [
+    "NEMA 143TC"
+   ]
+  },
+  "NEMA145TC": {
+   "kind": "standard",
+   "label": "NEMA145TC",
+   "names": [
+    "NEMA 145TC"
+   ]
+  },
+  "IEC160": {
+   "kind": "standard",
+   "label": "IEC160",
+   "names": [
+    "IEC 160"
+   ]
+  },
+  "IEC180": {
+   "kind": "standard",
+   "label": "IEC180",
+   "names": [
+    "IEC 180"
+   ]
+  },
+  "NEMA182TC": {
+   "kind": "standard",
+   "label": "NEMA182TC",
+   "names": [
+    "NEMA 182TC"
+   ]
+  },
+  "NEMA184TC": {
+   "kind": "standard",
+   "label": "NEMA184TC",
+   "names": [
+    "NEMA 184TC"
+   ]
+  },
+  "IEC200": {
+   "kind": "standard",
+   "label": "IEC200",
+   "names": [
+    "IEC 200"
+   ]
+  },
+  "NEMA215TC": {
+   "kind": "standard",
+   "label": "NEMA215TC",
+   "names": [
+    "NEMA 215TC"
+   ]
+  },
+  "IEC225": {
+   "kind": "standard",
+   "label": "IEC225",
+   "names": [
+    "IEC 225"
+   ]
+  },
+  "NEMA256TC": {
+   "kind": "standard",
+   "label": "NEMA256TC",
+   "names": [
+    "NEMA 256TC"
+   ]
+  },
+  "NEMA284TC": {
+   "kind": "standard",
+   "label": "NEMA284TC",
+   "names": [
+    "NEMA 284TC"
+   ]
+  },
+  "NEMA286TC": {
+   "kind": "standard",
+   "label": "NEMA286TC",
+   "names": [
+    "NEMA 286TC"
+   ]
+  },
+  "NEMA324TC": {
+   "kind": "standard",
+   "label": "NEMA324TC",
+   "names": [
+    "NEMA 324TC"
+   ]
+  },
+  "NEMA326TC": {
+   "kind": "standard",
+   "label": "NEMA326TC",
+   "names": [
+    "NEMA 326TC"
+   ]
+  },
+  "NEMA364TC": {
+   "kind": "standard",
+   "label": "NEMA364TC",
+   "names": [
+    "NEMA 364TC"
+   ]
+  },
+  "IEC50": {
+   "kind": "standard",
+   "label": "IEC50",
+   "names": [
+    "IEC: 50"
+   ]
+  },
+  "IEC60": {
+   "kind": "standard",
+   "label": "IEC60",
+   "names": [
+    "IEC: 60"
+   ]
+  },
+  "IEC230": {
+   "kind": "standard",
+   "label": "IEC230",
+   "names": [
+    "IEC: 230"
+   ]
+  },
+  "IEC0.37": {
+   "kind": "standard",
+   "label": "IEC0.37",
+   "names": [
+    "IEC: 0.37"
+   ]
+  },
+  "IEC400": {
+   "kind": "standard",
+   "label": "IEC400",
+   "names": [
+    "IEC: 400"
+   ]
+  },
+  "EN809": {
+   "kind": "standard",
+   "label": "EN809",
+   "names": [
+    "EN 809"
+   ]
+  },
+  "EN100": {
+   "kind": "standard",
+   "label": "EN100",
+   "names": [
+    "EN 100"
+   ]
+  },
+  "EN412.01": {
+   "kind": "standard",
+   "label": "EN412.01",
+   "names": [
+    "EN 412.01"
+   ]
+  },
+  "EN593": {
+   "kind": "standard",
+   "label": "EN593",
+   "names": [
+    "BS EN 593",
+    "BS EN593",
+    "EN593",
+    "EN 593"
+   ]
+  },
+  "ISO5211": {
+   "kind": "standard",
+   "label": "ISO5211",
+   "names": [
+    "DIN EN ISO 5211",
+    "EN ISO 5211",
+    "ISO 5211"
+   ]
+  },
+  "API609": {
+   "kind": "standard",
+   "label": "API609",
+   "names": [
+    "API 609"
+   ]
+  },
+  "EN558-1": {
+   "kind": "standard",
+   "label": "EN558-1",
+   "names": [
+    "BS EN 558-1"
+   ]
+  },
+  "ISO5752": {
+   "kind": "standard",
+   "label": "ISO5752",
+   "names": [
+    "ISO 5752"
+   ]
+  },
+  "MSSSP67": {
+   "kind": "standard",
+   "label": "MSSSP67",
+   "names": [
+    "MSS SP 67"
+   ]
+  },
+  "ASMEB16.10": {
+   "kind": "standard",
+   "label": "ASMEB16.10",
+   "names": [
+    "ASME B16.10"
+   ]
+  },
+  "ASTMA126": {
+   "kind": "standard",
+   "label": "ASTMA126",
+   "names": [
+    "ASTM A126"
+   ]
+  },
+  "ASTMA395": {
+   "kind": "standard",
+   "label": "ASTMA395",
+   "names": [
+    "ASTM A395"
+   ]
+  },
+  "ASTMA216": {
+   "kind": "standard",
+   "label": "ASTMA216",
+   "names": [
+    "ASTM A216"
+   ]
+  },
+  "ASTMA351": {
+   "kind": "standard",
+   "label": "ASTMA351",
+   "names": [
+    "ASTM A351"
+   ]
+  },
+  "ASTMA995": {
+   "kind": "standard",
+   "label": "ASTMA995",
+   "names": [
+    "ASTM A995"
+   ]
+  },
+  "ASTMB148": {
+   "kind": "standard",
+   "label": "ASTMB148",
+   "names": [
+    "ASTM B148"
+   ]
+  },
+  "ASTMA479": {
+   "kind": "standard",
+   "label": "ASTMA479",
+   "names": [
+    "ASTM A479"
+   ]
+  },
+  "ASTMA564": {
+   "kind": "standard",
+   "label": "ASTMA564",
+   "names": [
+    "ASTM A564"
+   ]
+  },
+  "ASTMA182": {
+   "kind": "standard",
+   "label": "ASTMA182",
+   "names": [
+    "ASTM A182"
+   ]
+  },
+  "IS2507": {
+   "kind": "standard",
+   "label": "IS2507",
+   "names": [
+    "IS 2507"
+   ]
+  },
+  "ASTMA240": {
+   "kind": "standard",
+   "label": "ASTMA240",
+   "names": [
+    "ASTM A240"
+   ]
+  },
+  "IS1367": {
+   "kind": "standard",
+   "label": "IS1367",
+   "names": [
+    "IS 1367"
+   ]
+  },
+  "ISO3506": {
+   "kind": "standard",
+   "label": "ISO3506",
+   "names": [
+    "ISO 3506"
+   ]
+  },
+  "BS970": {
+   "kind": "standard",
+   "label": "BS970",
+   "names": [
+    "BS 970"
+   ]
+  },
+  "BS1400": {
+   "kind": "standard",
+   "label": "BS1400",
+   "names": [
+    "BS 1400"
+   ]
+  },
+  "EN12266-1": {
+   "kind": "standard",
+   "label": "EN12266-1",
+   "names": [
+    "BS EN 12266-1",
+    "EN 12266-1",
+    "BS EN12266-1"
+   ]
+  },
+  "API598": {
+   "kind": "standard",
+   "label": "API598",
+   "names": [
+    "API 598",
+    "API-598"
+   ]
+  },
+  "ASMEB16.47": {
+   "kind": "standard",
+   "label": "ASMEB16.47",
+   "names": [
+    "ASME B16.47"
+   ]
+  },
+  "ANSI61": {
+   "kind": "standard",
+   "label": "ANSI61",
+   "names": [
+    "ANSI 61"
+   ]
+  },
+  "ANSI372": {
+   "kind": "standard",
+   "label": "ANSI372",
+   "names": [
+    "ANSI 372"
+   ]
+  },
+  "ASTMA684": {
+   "kind": "standard",
+   "label": "ASTMA684",
+   "names": [
+    "ASTM A684"
+   ]
+  },
+  "ASMEB16.34": {
+   "kind": "standard",
+   "label": "ASMEB16.34",
+   "names": [
+    "ASME B16.34"
+   ]
+  },
+  "EN150": {
+   "kind": "standard",
+   "label": "EN150",
+   "names": [
+    "EN 150"
+   ]
+  },
+  "MSSSP68": {
+   "kind": "standard",
+   "label": "MSSSP68",
+   "names": [
+    "MSS SP-68"
+   ]
+  },
+  "ISO15156": {
+   "kind": "standard",
+   "label": "ISO15156",
+   "names": [
+    "ISO 15156"
+   ]
+  },
+  "API607": {
+   "kind": "standard",
+   "label": "API607",
+   "names": [
+    "API 607"
+   ]
+  },
+  "API6FA": {
+   "kind": "standard",
+   "label": "API6FA",
+   "names": [
+    "API 6FA"
+   ]
+  },
+  "ISO15848": {
+   "kind": "standard",
+   "label": "ISO15848",
+   "names": [
+    "ISO 15848"
+   ]
+  },
+  "EN558": {
+   "kind": "standard",
+   "label": "EN558",
+   "names": [
+    "BS EN 558",
+    "BS EN558"
+   ]
+  },
+  "ASTMA16": {
+   "kind": "standard",
+   "label": "ASTMA16",
+   "names": [
+    "ASTM A16"
+   ]
+  },
+  "ASTMA32": {
+   "kind": "standard",
+   "label": "ASTMA32",
+   "names": [
+    "ASTM A32"
+   ]
+  },
+  "ASTMA351CF": {
+   "kind": "standard",
+   "label": "ASTMA351CF",
+   "names": [
+    "ASTM A351CF"
+   ]
+  },
+  "ASTMA313": {
+   "kind": "standard",
+   "label": "ASTMA313",
+   "names": [
+    "ASTM A313"
+   ]
+  },
+  "ASTMA516": {
+   "kind": "standard",
+   "label": "ASTMA516",
+   "names": [
+    "ASTM A516"
+   ]
+  },
+  "ASTMA105": {
+   "kind": "standard",
+   "label": "ASTMA105",
+   "names": [
+    "ASTM A105"
+   ]
+  },
+  "ASTMA322": {
+   "kind": "standard",
+   "label": "ASTMA322",
+   "names": [
+    "ASTM A322"
+   ]
+  },
+  "ASTMA193": {
+   "kind": "standard",
+   "label": "ASTMA193",
+   "names": [
+    "ASTM A193"
+   ]
+  },
+  "ASTMA1082": {
+   "kind": "standard",
+   "label": "ASTMA1082",
+   "names": [
+    "ASTM A1082"
+   ]
+  },
+  "ASTMA666": {
+   "kind": "standard",
+   "label": "ASTMA666",
+   "names": [
+    "ASTM A666"
+   ]
+  },
+  "ASTMA194": {
+   "kind": "standard",
+   "label": "ASTMA194",
+   "names": [
+    "ASTM A194"
+   ]
+  },
+  "ASTMA47": {
+   "kind": "standard",
+   "label": "ASTMA47",
+   "names": [
+    "ASTM A47"
+   ]
+  },
+  "ASTMA580": {
+   "kind": "standard",
+   "label": "ASTMA580",
+   "names": [
+    "ASTM A580"
+   ]
+  },
+  "API641": {
+   "kind": "standard",
+   "label": "API641",
+   "names": [
+    "API 641"
+   ]
+  },
+  "ASTMA352": {
+   "kind": "standard",
+   "label": "ASTMA352",
+   "names": [
+    "ASTM A352"
+   ]
+  },
+  "IS09001": {
+   "kind": "standard",
+   "label": "IS09001",
+   "names": [
+    "IS09001"
+   ]
+  },
+  "API6D": {
+   "kind": "standard",
+   "label": "API6D",
+   "names": [
+    "API 6D",
+    "API-6D"
+   ]
+  },
+  "IS13095": {
+   "kind": "standard",
+   "label": "IS13095",
+   "names": [
+    "IS 13095"
+   ]
+  },
+  "BS5155": {
+   "kind": "standard",
+   "label": "BS5155",
+   "names": [
+    "BS 5155",
+    "BS-5155"
+   ]
+  },
+  "ISO5208": {
+   "kind": "standard",
+   "label": "ISO5208",
+   "names": [
+    "BS EN ISO 5208",
+    "ISO 5208"
+   ]
+  },
+  "ISO17292": {
+   "kind": "standard",
+   "label": "ISO17292",
+   "names": [
+    "ISO 17292",
+    "BSEN ISO 17292"
+   ]
+  },
+  "API608": {
+   "kind": "standard",
+   "label": "API608",
+   "names": [
+    "API 608"
+   ]
+  },
+  "API600": {
+   "kind": "standard",
+   "label": "API600",
+   "names": [
+    "API 600"
+   ]
+  },
+  "BS1873": {
+   "kind": "standard",
+   "label": "BS1873",
+   "names": [
+    "BS 1873",
+    "BS-1873"
+   ]
+  },
+  "BS1868": {
+   "kind": "standard",
+   "label": "BS1868",
+   "names": [
+    "BS 1868",
+    "BS-1868"
+   ]
+  },
+  "API602": {
+   "kind": "standard",
+   "label": "API602",
+   "names": [
+    "API 602"
+   ]
+  },
+  "API594": {
+   "kind": "standard",
+   "label": "API594",
+   "names": [
+    "API 594"
+   ]
+  },
+  "API6DX": {
+   "kind": "standard",
+   "label": "API6DX",
+   "names": [
+    "API 6DX"
+   ]
+  },
+  "EN15714-3": {
+   "kind": "standard",
+   "label": "EN15714-3",
+   "names": [
+    "EN15714-3"
+   ]
+  },
+  "BS5351": {
+   "kind": "standard",
+   "label": "BS5351",
+   "names": [
+    "BS-5351"
+   ]
+  },
+  "BS5159": {
+   "kind": "standard",
+   "label": "BS5159",
+   "names": [
+    "BS-5159"
+   ]
+  },
+  "MSSSP81": {
+   "kind": "standard",
+   "label": "MSSSP81",
+   "names": [
+    "MSS-SP-81"
+   ]
+  },
+  "IS778": {
+   "kind": "standard",
+   "label": "IS778",
+   "names": [
+    "IS 778"
+   ]
+  },
+  "BS5352": {
+   "kind": "standard",
+   "label": "BS5352",
+   "names": [
+    "BS-5352",
+    "BS 5352"
+   ]
+  },
+  "IS5312": {
+   "kind": "standard",
+   "label": "IS5312",
+   "names": [
+    "IS 5312"
+   ]
+  },
+  "BS10": {
+   "kind": "standard",
+   "label": "BS10",
+   "names": [
+    "BS 10"
+   ]
+  },
+  "ISO5210": {
+   "kind": "standard",
+   "label": "ISO5210",
+   "names": [
+    "ISO 5210"
+   ]
+  },
+  "DIN2401": {
+   "kind": "standard",
+   "label": "DIN2401",
+   "names": [
+    "DIN 2401"
+   ]
+  },
+  "EN131.2": {
+   "kind": "standard",
+   "label": "EN131.2",
+   "names": [
+    "EN 131.2"
+   ]
+  },
+  "ISO9692-1": {
+   "kind": "standard",
+   "label": "ISO9692-1",
+   "names": [
+    "DIN EN ISO 9692-1"
+   ]
+  },
+  "EN12627": {
+   "kind": "standard",
+   "label": "EN12627",
+   "names": [
+    "EN 12627"
+   ]
+  },
+  "ASTMA350": {
+   "kind": "standard",
+   "label": "ASTMA350",
+   "names": [
+    "ASTM A350"
+   ]
+  },
+  "ASME7235.1": {
+   "kind": "standard",
+   "label": "ASME7235.1",
+   "names": [
+    "ASME 7235.1"
+   ]
+  },
+  "ASMEB1.20.1": {
+   "kind": "standard",
+   "label": "ASMEB1.20.1",
+   "names": [
+    "ASME B1.20.1"
+   ]
+  },
+  "ASMEB16.11": {
+   "kind": "standard",
+   "label": "ASMEB16.11",
+   "names": [
+    "ASME B16.11"
+   ]
+  },
+  "ASTMA217": {
+   "kind": "standard",
+   "label": "ASTMA217",
+   "names": [
+    "ASTM A217"
+   ]
+  },
+  "API623": {
+   "kind": "standard",
+   "label": "API623",
+   "names": [
+    "API 623"
+   ]
+  },
+  "ASMEB16.25": {
+   "kind": "standard",
+   "label": "ASMEB16.25",
+   "names": [
+    "ASME B16.25"
+   ]
+  },
+  "ASME7246.1": {
+   "kind": "standard",
+   "label": "ASME7246.1",
+   "names": [
+    "ASME 7246.1"
+   ]
+  },
+  "EN570": {
+   "kind": "standard",
+   "label": "EN570",
+   "names": [
+    "EN 570"
+   ]
+  },
+  "ASME7243.1": {
+   "kind": "standard",
+   "label": "ASME7243.1",
+   "names": [
+    "ASME 7243.1"
+   ]
+  },
+  "IS2002-2": {
+   "kind": "standard",
+   "label": "IS2002-2",
+   "names": [
+    "IS 2002-2"
+   ]
+  },
+  "EN554": {
+   "kind": "standard",
+   "label": "EN554",
+   "names": [
+    "EN 554"
+   ]
+  },
+  "API603": {
+   "kind": "standard",
+   "label": "API603",
+   "names": [
+    "API 603"
+   ]
+  },
+  "BS1414": {
+   "kind": "standard",
+   "label": "BS1414",
+   "names": [
+    "BS 1414"
+   ]
+  },
+  "MSSSP55": {
+   "kind": "standard",
+   "label": "MSSSP55",
+   "names": [
+    "MSS SP55"
+   ]
+  },
+  "ASTME350": {
+   "kind": "standard",
+   "label": "ASTME350",
+   "names": [
+    "ASTM E350"
+   ]
+  },
+  "ASTMA370": {
+   "kind": "standard",
+   "label": "ASTMA370",
+   "names": [
+    "ASTM A370"
+   ]
+  },
+  "ASTME709": {
+   "kind": "standard",
+   "label": "ASTME709",
+   "names": [
+    "ASTM E709"
+   ]
+  },
+  "ASTME165": {
+   "kind": "standard",
+   "label": "ASTME165",
+   "names": [
+    "ASTM E165"
+   ]
+  },
+  "ASTMA388": {
+   "kind": "standard",
+   "label": "ASTMA388",
+   "names": [
+    "ASTM A388"
+   ]
+  },
+  "BS6755": {
+   "kind": "standard",
+   "label": "BS6755",
+   "names": [
+    "BS 6755"
+   ]
+  },
+  "MSSSP44": {
+   "kind": "standard",
+   "label": "MSSSP44",
+   "names": [
+    "MSS SP 44"
+   ]
+  },
+  "API605": {
+   "kind": "standard",
+   "label": "API605",
+   "names": [
+    "API 605"
+   ]
+  },
+  "ASTMA308": {
+   "kind": "standard",
+   "label": "ASTMA308",
+   "names": [
+    "ASTM A308"
+   ]
+  },
+  "ASTMA439": {
+   "kind": "standard",
+   "label": "ASTMA439",
+   "names": [
+    "ASTM A439"
+   ]
+  },
+  "ASTMA563": {
+   "kind": "standard",
+   "label": "ASTMA563",
+   "names": [
+    "ASTM A563"
+   ]
+  },
+  "ANSIB16.25": {
+   "kind": "standard",
+   "label": "ANSIB16.25",
+   "names": [
+    "ANSI B16.25"
+   ]
+  },
+  "BS6364": {
+   "kind": "standard",
+   "label": "BS6364",
+   "names": [
+    "BS 6364"
+   ]
+  },
+  "MSSSP84": {
+   "kind": "standard",
+   "label": "MSSSP84",
+   "names": [
+    "MSS SP 84"
+   ]
+  },
+  "BS21": {
+   "kind": "standard",
+   "label": "BS21",
+   "names": [
+    "BS 21"
+   ]
+  },
+  "BS2779": {
+   "kind": "standard",
+   "label": "BS2779",
+   "names": [
+    "BS 2779"
+   ]
+  },
+  "ISO228": {
+   "kind": "standard",
+   "label": "ISO228",
+   "names": [
+    "ISO 228"
+   ]
+  },
+  "BS2080": {
+   "kind": "standard",
+   "label": "BS2080",
+   "names": [
+    "BS 2080"
+   ]
+  },
+  "ASME16.34": {
+   "kind": "standard",
+   "label": "ASME16.34",
+   "names": [
+    "ASME 16.34"
+   ]
+  },
+  "ASTMA276": {
+   "kind": "standard",
+   "label": "ASTMA276",
+   "names": [
+    "ASTM A276"
+   ]
+  },
+  "ASTMA582": {
+   "kind": "standard",
+   "label": "ASTMA582",
+   "names": [
+    "ASTM A582"
+   ]
+  },
+  "ASTMA312": {
+   "kind": "standard",
+   "label": "ASTMA312",
+   "names": [
+    "ASTM A312"
+   ]
+  },
+  "ASTMA320": {
+   "kind": "standard",
+   "label": "ASTMA320",
+   "names": [
+    "ASTM A320"
+   ]
+  },
+  "IS1875": {
+   "kind": "standard",
+   "label": "IS1875",
+   "names": [
+    "IS 1875"
+   ]
+  },
+  "ASMEB16": {
+   "kind": "standard",
+   "label": "ASMEB16",
+   "names": [
+    "ASME B16"
+   ]
+  },
+  "ISO10497": {
+   "kind": "standard",
+   "label": "ISO10497",
+   "names": [
+    "ISO 10497"
+   ]
+  },
+  "IEC61508": {
+   "kind": "standard",
+   "label": "IEC61508",
+   "names": [
+    "IEC 61508"
+   ]
+  },
+  "ISO14313": {
+   "kind": "standard",
+   "label": "ISO14313",
+   "names": [
+    "ISO 14313"
+   ]
+  },
+  "API50": {
+   "kind": "standard",
+   "label": "API50",
+   "names": [
+    "API -50"
+   ]
+  },
+  "IEC61511": {
+   "kind": "standard",
+   "label": "IEC61511",
+   "names": [
+    "IEC 61511"
+   ]
+  },
+  "EN12266": {
+   "kind": "standard",
+   "label": "EN12266",
+   "names": [
+    "BSEN 12266"
+   ]
+  },
+  "IS4038": {
+   "kind": "standard",
+   "label": "IS4038",
+   "names": [
+    "IS 4038"
+   ]
+  },
+  "IS14846": {
+   "kind": "standard",
+   "label": "IS14846",
+   "names": [
+    "IS 14846"
+   ]
+  },
+  "IS12615": {
+   "kind": "standard",
+   "label": "IS12615",
+   "names": [
+    "IS 12615"
+   ]
+  },
+  "IS3043": {
+   "kind": "standard",
+   "label": "IS3043",
+   "names": [
+    "IS 3043"
+   ]
+  },
+  "IS6392": {
+   "kind": "standard",
+   "label": "IS6392",
+   "names": [
+    "IS 6392"
+   ]
+  },
+  "IS6911": {
+   "kind": "standard",
+   "label": "IS6911",
+   "names": [
+    "IS 6911"
+   ]
+  },
+  "IS9137": {
+   "kind": "standard",
+   "label": "IS9137",
+   "names": [
+    "IS 9137"
+   ]
+  },
+  "IS9283": {
+   "kind": "standard",
+   "label": "IS9283",
+   "names": [
+    "IS:9283"
+   ]
+  },
+  "IS2148": {
+   "kind": "standard",
+   "label": "IS2148",
+   "names": [
+    "IS-2148",
+    "IS 2148"
+   ]
+  },
+  "IS1231": {
+   "kind": "standard",
+   "label": "IS1231",
+   "names": [
+    "IS: 1231"
+   ]
+  },
+  "IEC60072": {
+   "kind": "standard",
+   "label": "IEC60072",
+   "names": [
+    "IEC 60072"
+   ]
+  },
+  "IEC60034": {
+   "kind": "standard",
+   "label": "IEC60034",
+   "names": [
+    "IEC 60034"
+   ]
+  },
+  "API682": {
+   "kind": "standard",
+   "label": "API682",
+   "names": [
+    "API standard 682",
+    "API 682"
+   ]
+  },
+  "API671": {
+   "kind": "standard",
+   "label": "API671",
+   "names": [
+    "API standard 671"
+   ]
+  },
+  "ISO21049": {
+   "kind": "standard",
+   "label": "ISO21049",
+   "names": [
+    "ISO 21049"
+   ]
+  },
+  "ISO10438-3": {
+   "kind": "standard",
+   "label": "ISO10438-3",
+   "names": [
+    "ISO 10438-3"
+   ]
+  },
+  "API614": {
+   "kind": "standard",
+   "label": "API614",
+   "names": [
+    "API standard 614"
+   ]
+  }
+ },
+ "links": [
+  {
+   "source": "EN22858",
+   "target": "ISO2858",
+   "relation": "named_together",
+   "seen_in": [
+    "kirloskar/process-pump-catalogue.pdf page 12",
+    "kirloskar/process-pump-catalogue.pdf page 15"
+   ]
+  },
+  {
+   "source": "EN1092-1",
+   "target": "EN1092-2",
+   "relation": "named_together",
+   "seen_in": [
+    "ksb/movitec-50hz-type-series-booklet.pdf page 23"
+   ]
+  },
+  {
+   "source": "ASMEB16.10",
+   "target": "MSSSP67",
+   "relation": "named_together",
+   "seen_in": [
+    "delval/delval-series-50-52.pdf page 3"
+   ]
+  },
+  {
+   "source": "API607",
+   "target": "API6FA",
+   "relation": "named_together",
+   "seen_in": [
+    "duncan/duncan-series-b.pdf page 9",
+    "l_and_t/lt-trunnion-mounted-ball-valves.pdf page 4"
+   ]
+  },
+  {
+   "source": "API598",
+   "target": "EN12266-1",
+   "relation": "named_together",
+   "seen_in": [
+    "intervalve/product-portfolio.pdf page 5",
+    "intervalve/product-portfolio.pdf page 7"
+   ]
+  },
+  {
+   "source": "API6D",
+   "target": "ISO5208",
+   "relation": "named_together",
+   "seen_in": [
+    "intervalve/product-portfolio.pdf page 7"
+   ]
+  },
+  {
+   "source": "API598",
+   "target": "ISO5208",
+   "relation": "named_together",
+   "seen_in": [
+    "intervalve/product-portfolio.pdf page 7",
+    "l_and_t/lt-process-ball-valves.pdf page 6",
+    "leader/cf8m013-cast-stainless-ball-valve.pdf page 1",
+    "leader/fcs017-forged-steel-ball-valve.pdf page 1",
+    "leader/wcb013-cast-steel-ball-valve.pdf page 1"
+   ]
+  },
+  {
+   "source": "API600",
+   "target": "BS1873",
+   "relation": "named_together",
+   "seen_in": [
+    "intervalve/product-portfolio.pdf page 8",
+    "l_and_t/lt-gate-globe-check-valves-api-600.pdf page 2",
+    "l_and_t/lt-gate-globe-check-valves-api-600.pdf page 6",
+    "l_and_t/lt-gate-globe-check-valves-api-600.pdf page 7",
+    "l_and_t/lt-gate-globe-check-valves-api-600.pdf page 8",
+    "l_and_t/lt-gate-globe-check-valves-api-600.pdf page 9",
+    "l_and_t/lt-gate-globe-check-valves-api-600.pdf page 10",
+    "l_and_t/lt-gate-globe-check-valves-api-600.pdf page 11",
+    "l_and_t/lt-gate-globe-check-valves-api-600.pdf page 12",
+    "l_and_t/lt-gate-globe-check-valves-api-600.pdf page 13",
+    "l_and_t/lt-gate-globe-check-valves-api-600.pdf page 14",
+    "l_and_t/lt-gate-globe-check-valves-api-600.pdf page 15"
+   ]
+  },
+  {
+   "source": "API598",
+   "target": "API600",
+   "relation": "named_together",
+   "seen_in": [
+    "l_and_t/lt-gate-globe-check-valves-api-600.pdf page 4"
+   ]
+  },
+  {
+   "source": "ASTMA105",
+   "target": "ASTMA216",
+   "relation": "named_together",
+   "seen_in": [
+    "l_and_t/lt-gate-globe-check-valves-api-600.pdf page 10",
+    "l_and_t/lt-gate-globe-check-valves-api-600.pdf page 11",
+    "l_and_t/lt-gate-globe-check-valves-api-600.pdf page 12"
+   ]
+  },
+  {
+   "source": "API602",
+   "target": "BS5352",
+   "relation": "named_together",
+   "seen_in": [
+    "l_and_t/lt-gate-globe-check-valves-api-602.pdf page 2",
+    "l_and_t/lt-gate-globe-check-valves-api-602.pdf page 3"
+   ]
+  },
+  {
+   "source": "ASMEB16.34",
+   "target": "MSSSP84",
+   "relation": "named_together",
+   "seen_in": [
+    "l_and_t/lt-gate-globe-check-valves-api-602.pdf page 2"
+   ]
+  },
+  {
+   "source": "BS21",
+   "target": "ISO7",
+   "relation": "named_together",
+   "seen_in": [
+    "l_and_t/lt-gate-globe-check-valves-api-602.pdf page 3"
+   ]
+  },
+  {
+   "source": "BS2779",
+   "target": "ISO228",
+   "relation": "named_together",
+   "seen_in": [
+    "l_and_t/lt-gate-globe-check-valves-api-602.pdf page 3"
+   ]
+  },
+  {
+   "source": "ASMEB16.10",
+   "target": "BS2080",
+   "relation": "named_together",
+   "seen_in": [
+    "l_and_t/lt-gate-globe-check-valves-api-602.pdf page 7",
+    "l_and_t/lt-gate-globe-check-valves-api-602.pdf page 8"
+   ]
+  },
+  {
+   "source": "API6D",
+   "target": "ISO17292",
+   "relation": "named_together",
+   "seen_in": [
+    "l_and_t/lt-process-ball-valves.pdf page 1"
+   ]
+  },
+  {
+   "source": "API607",
+   "target": "ISO10497",
+   "relation": "named_together",
+   "seen_in": [
+    "l_and_t/lt-process-ball-valves.pdf page 6"
+   ]
+  },
+  {
+   "source": "API6D",
+   "target": "ISO14313",
+   "relation": "named_together",
+   "seen_in": [
+    "l_and_t/lt-trunnion-mounted-ball-valves.pdf page 4"
+   ]
+  },
+  {
+   "source": "API6D",
+   "target": "ASMEB16.10",
+   "relation": "named_together",
+   "seen_in": [
+    "l_and_t/lt-trunnion-mounted-ball-valves.pdf page 4"
+   ]
+  },
+  {
+   "source": "ASMEB16.47",
+   "target": "ASMEB16.5",
+   "relation": "named_together",
+   "seen_in": [
+    "l_and_t/lt-trunnion-mounted-ball-valves.pdf page 4"
+   ]
+  },
+  {
+   "source": "API598",
+   "target": "API6D",
+   "relation": "named_together",
+   "seen_in": [
+    "l_and_t/lt-trunnion-mounted-ball-valves.pdf page 4"
+   ]
+  },
+  {
+   "source": "BS21",
+   "target": "ISO228",
+   "relation": "named_together",
+   "seen_in": [
+    "leader/cf8m013-cast-stainless-ball-valve.pdf page 1",
+    "leader/fcs017-forged-steel-ball-valve.pdf page 1",
+    "leader/wcb013-cast-steel-ball-valve.pdf page 1"
+   ]
+  },
+  {
+   "source": "API682",
+   "target": "ISO21049",
+   "relation": "named_together",
+   "seen_in": [
+    "tender GeM-Bidding-9987635 page 8"
+   ]
+  },
+  {
+   "source": "API614",
+   "target": "ISO10438-3",
+   "relation": "named_together",
+   "seen_in": [
+    "tender GeM-Bidding-9987635 page 45"
+   ]
+  }
+ ]
+}

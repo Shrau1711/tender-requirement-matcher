@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 from app.extraction.atomize import AtomicRequirement
 from app.extraction.evidence import Evidence
+from app.graph.standards import KNOWLEDGE_GRAPH, link_between, standards_graph
 from app.judging.condition import check_condition, stated_by_tender
 from app.judging.measure import convert, unit_in
 from app.judging.scales import scale_verdict
@@ -177,6 +178,28 @@ def names_a_reference(req: AtomicRequirement, items: list[str]) -> bool:
     return all(any(c.isdigit() for c in i) and not kind_words(i) & wanted for i in items)
 
 
+# With the knowledge graph on (KNOWLEDGE_GRAPH=on): a standard asked for and not stated by that name.
+def standards_verdict(req: AtomicRequirement, heard: list[str]) -> Verdict | None:
+    """A standard stated under another body's name is the one asked for ("BS EN ISO 5208" is ISO 5208). A standard that a
+    document only names together with the one asked for goes to a person, and only when the tender accepts an equivalent:
+    being named side by side does not make two standards equivalent."""
+    if req.operator != "one_of" and len(req.values) != 1:
+        return None  # several standards all required: one link cannot settle them
+    together = None
+    for wanted in req.values:
+        for stated in heard:
+            link = link_between(standards_graph(), wanted, stated)
+            if link and link[0] == "same":
+                return Verdict(score=100, reason=f"states {link[2]}, which is {link[1]} under another body's name")
+            together = together or link
+    if together and "equivalent" in req.source_value.lower():
+        _, wanted, stated, seen = together
+        return Verdict(score=CANNOT_COMPARE, flags=[EQUIVALENT], reason=(
+            f"states {stated}; the tender accepts an equivalent, and {stated} is named together with {wanted} in "
+            f"{'; '.join(seen[:2])}; whether it is equivalent needs a person"))
+    return None
+
+
 # Judges a text requirement (material, type, standard). Scores the closeness, and flags 'reference only', 'equivalent
 # grade', 'only part stated' or 'grade not stated' instead of guessing.
 def items_verdict(req: AtomicRequirement, ev: Evidence) -> Verdict:
@@ -188,6 +211,9 @@ def items_verdict(req: AtomicRequirement, ev: Evidence) -> Verdict:
     closest = [best_closeness(req, w, heard) for w in req.values]
     scores = [score for score, _ in closest]
     score = combine(scores, req.operator)
+    linked = standards_verdict(req, heard) if not score and req.kind == "standard" and KNOWLEDGE_GRAPH == "on" else None
+    if linked:
+        return linked
     if not score and names_a_reference(req, items):
         return Verdict(score=CANNOT_COMPARE, reason=f"states {', '.join(items)}, which names a reference but not the thing asked for", flags=[REFERENCE_ONLY])
     if not score and "equivalent" in req.source_value.lower() and any(kind_words(w) & kind_words(i) for w in req.values for i in heard):

@@ -33,3 +33,11 @@ Nothing here has been run. Each entry says what it would measure, why it cannot 
 **Why it is not free to run here.** Counting asks no question of the model, but it is a request to Google that needs the API key, and Google's token page does not say whether it is billed or rate limited. So it obeys `LLM_MAX_CALLS` like a model call, and with the limit at 0 it falls back to the estimate.
 
 **How to run it, once approved.** `TOKEN_COUNTER=gemini LLM_MAX_CALLS=<number of new questions> python -m scripts.cost.estimate_cost <tender folder> ../data/categories/<category>`, then the same without `TOKEN_COUNTER`, and compare the two token figures. The questions themselves are only counted, never asked.
+
+## Phase 6: the standards graph on tenders that cite linked standards
+
+**What it would measure.** Whether `KNOWLEDGE_GRAPH=on` changes any outcome where it could: tender 9840129 asks for API 598, ASME B16.10 and ASME B16.34, which the graph links to other standards that catalogues name with them. On the two labelled tenders it changed nothing (0 of 405 outcomes), because no evidence there states a different standard.
+
+**Why it costs money.** The graph asks no question itself, but 9840129's evidence is not saved yet: the free estimate is 123 new questions, about 606,000 input tokens, about 61 rupees at the app's own rate. (The other tender citing linked standards, 9987635, would need 1,406 new questions, about 7.2 million tokens, over the per-tender budget, and it is a hold-out tender; it is not worth it for this check.) There is no answer key for 9840129, so a person would have to judge the rows that change.
+
+**How to run it, once approved.** Run 9840129 once with the default settings and `LLM_MAX_CALLS=130` to save its answers, then score it with `KNOWLEDGE_GRAPH=off` and `KNOWLEDGE_GRAPH=on`; the second scoring costs nothing, because the questions are the same. Compare the rows for the standard requirements.
