@@ -25,7 +25,7 @@ from app.vectorstore.base import StoredDoc, VectorStore
 from app.vectorstore.chroma import ChromaStore
 from app.vectorstore.memory import MemoryStore
 
-VECTOR_STORE = text_setting("VECTOR_STORE", "memory")
+VECTOR_STORE = text_setting("VECTOR_STORE", "chroma")  # exact scores either way (see Index.meanings); chroma also keeps documents between starts
 CHROMA_DIR = path_setting("CHROMA_DIR", cache_dir() / "chroma")  # inside the cache folder, which git ignores
 WRITING = threading.Lock()  # two tenders started together may store the same file; one write at a time keeps the store whole
 CODE = [Path(__file__).resolve().parents[1] / name for name in ("reading", "chunking")]  # the code that decides a file's chunks

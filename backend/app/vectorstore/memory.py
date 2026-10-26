@@ -35,6 +35,10 @@ class MemoryStore:
         self.docs[doc.id], self.stored_chunks[doc.id] = doc, chunks
         self.matrix = None
 
+    def vectors(self, ids: list[str]) -> np.ndarray:
+        row = {chunk_id: i for i, chunk_id in enumerate(self.ids)}
+        return np.stack([self.rows[row[i]] for i in ids])
+
     def nearest(self, queries: np.ndarray, n: int, where: Where) -> list[dict[str, float]]:
         check_where(where)
         if not self.rows:

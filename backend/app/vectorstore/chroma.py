@@ -1,7 +1,8 @@
 """A store kept on disk with Chroma, so a document is read, chunked and embedded once and found again at the next start.
 
-Chroma finds the nearest vectors with an approximate index (HNSW), so on large collections its order can differ slightly
-from the exact NumPy store. Two collections are kept: one row per chunk (its vector, its fields to filter on, and the
+Chroma finds the nearest vectors with an approximate index (HNSW), and its arithmetic differs from NumPy's in the last
+digits, so its order can differ for near-equal chunks. The search therefore uses it to pick candidates and scores them
+again itself from the stored vectors (see Index.meanings). Two collections are kept: one row per chunk (its vector, its fields to filter on, and the
 whole chunk as JSON so it can be rebuilt without reading the PDF), and one row per document (its content hash and settings).
 
 Chroma kept in a folder like this is for one process at a time. The app is one process; two scripts run at once on the same
@@ -34,7 +35,9 @@ class ChromaStore:
 
         folder.mkdir(parents=True, exist_ok=True)
         client = chromadb.PersistentClient(path=str(folder), settings=Settings(anonymized_telemetry=False))
-        self.chunk_rows = client.get_or_create_collection("chunks", configuration={"hnsw": {"space": "cosine"}})
+        # Inner product, not cosine: the vectors are already unit length, so the two are the same. In cosine mode Chroma
+        # gives the vectors back with some last digits changed (measured), which would change the exact scores.
+        self.chunk_rows = client.get_or_create_collection("chunks", configuration={"hnsw": {"space": "ip"}})
         self.doc_rows = client.get_or_create_collection("documents")
 
     def stored(self, doc: StoredDoc) -> bool:
@@ -54,6 +57,13 @@ class ChromaStore:
             self.chunk_rows.add(ids=ids[start:end], embeddings=vectors[start:end], metadatas=metadatas[start:end])
         # the document row goes last, so a run stopped halfway leaves the file marked as not stored
         self.doc_rows.upsert(ids=[doc.id], metadatas=[{"sha256": doc.sha256, "settings": doc.settings}], embeddings=[[0.0]])
+
+    def vectors(self, ids: list[str]) -> np.ndarray:
+        rows = {}
+        for start in range(0, len(ids), BATCH):
+            found = self.chunk_rows.get(ids=ids[start:start + BATCH], include=["embeddings"])
+            rows.update(zip(found["ids"], found["embeddings"], strict=True))
+        return np.stack([np.asarray(rows[i], dtype=np.float32) for i in ids])
 
     def nearest(self, queries: np.ndarray, n: int, where: Where) -> list[dict[str, float]]:
         check_where(where)

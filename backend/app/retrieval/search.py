@@ -16,6 +16,7 @@ from app.vectorstore.base import StoredDoc, VectorStore, chunk_ids
 from app.vectorstore.memory import MemoryStore
 
 TABLE_ROWS_PER_PAGE = 2  # one big table must not fill every result slot
+EXTRA_CANDIDATES = 20    # asked of the store beyond the chunks needed, so one an approximate store ranks too low is still scored
 
 # Letters and numbers are split apart so "DN125", "DN 125" and "dn-125" all
 # become the same two tokens. A number stays whole, so 13095 never matches 3095.
@@ -41,7 +42,8 @@ class Index:
     """Keyword search (BM25) over the chunks, and meaning search through a vector store, merged by rank.
 
     With no store given, the chunks are embedded into a new in-memory store, as in the first version. A given store must
-    already hold these chunks under `category` (see app.vectorstore.ingest)."""
+    already hold these chunks under `category` (see app.vectorstore.ingest). Either way the index keeps the chunks' vectors
+    in one matrix, in the chunks' order, to score the store's candidates exactly."""
 
     def __init__(self, chunks: list[Chunk], embed: Embedder = embed_cached, store: VectorStore | None = None, category: str = "") -> None:
         self.chunks = chunks
@@ -53,12 +55,20 @@ class Index:
             store = MemoryStore()
             store.put(StoredDoc(category=category, manufacturer="", file=""), chunks, embed([c.text for c in chunks]))
         self.store = store
+        self.vectors = store.vectors(list(self.position)) if chunks else None
 
-    # Cosine similarity of every allowed chunk to each query, by chunk position. The store may leave some out.
+    # Cosine similarity of the allowed chunks to each query, by chunk position. The store picks the candidates; the
+    # scores are worked out here with the same matrix product as the first version, because the last digits of a
+    # product depend on how many rows are multiplied and in what order, and a different last digit can swap two
+    # passages and so change a question to the model.
     def meanings(self, queries: list[str], allowed: list[int], manufacturer: str | None) -> list[dict[int, float]]:
+        if self.vectors is None:
+            return [{} for _ in queries]
         where = {"category": self.category} | ({"manufacturer": manufacturer} if manufacturer else {})
-        found = self.store.nearest(self.embed(queries), len(allowed), where)
-        return [{self.position[chunk_id]: score for chunk_id, score in scores.items()} for scores in found]
+        asked = self.embed(queries)
+        found = self.store.nearest(asked, len(allowed) + EXTRA_CANDIDATES, where)
+        exact = self.vectors @ asked.T  # one column per query
+        return [{self.position[c]: float(exact[self.position[c], q]) for c in candidates} for q, candidates in enumerate(found)]
 
     # Finds the best passages for one query.
     def search(

@@ -79,3 +79,11 @@ def test_the_chroma_store_is_still_there_after_a_restart(tmp_path):
     ChromaStore(tmp_path / "chroma").put(KSB, [chunk("ksb", "k.pdf", 1, "gate valve")], np.stack([unit(1, 0, 0)]))
     again = ChromaStore(tmp_path / "chroma")
     assert again.stored(KSB) and [c.text for c in again.chunks(KSB)] == ["gate valve"]
+
+
+def test_vectors_come_back_exactly_in_the_order_asked(store):
+    rng = np.random.default_rng(0)
+    vectors = rng.standard_normal((40, 3)).astype(np.float32)  # enough values that a changed last digit would show
+    store.put(KSB, [chunk("ksb", "k.pdf", p, "x") for p in range(40)], vectors)
+    order = list(rng.permutation(40))
+    assert np.array_equal(store.vectors([f"valves/ksb/k.pdf#{i}" for i in order]), vectors[order])

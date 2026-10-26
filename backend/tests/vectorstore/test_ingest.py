@@ -71,8 +71,7 @@ def test_the_index_over_a_store_finds_what_the_index_over_the_chunks_finds(categ
     over_store = Index(chunks, fake_embed, store=store, category="pumps")
     alone = Index(load_chunks(category), fake_embed)
     for query, maker in [("booster pump impeller", "clausemaker"), ("slurry valve", "flowmaker"), ("motor", None)]:
-        expected = [(h.chunk.file, h.chunk.pdf_page, h.chunk.text) for h in alone.search(query, maker, 5)]
-        assert [(h.chunk.file, h.chunk.pdf_page, h.chunk.text) for h in over_store.search(query, maker, 5)] == expected
+        assert over_store.search(query, maker, 5) == alone.search(query, maker, 5)  # chunks, order and every score, exactly
 
 
 def test_an_unknown_store_is_refused():

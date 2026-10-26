@@ -161,3 +161,24 @@ The search itself keeps BM25 for keywords and RRF to merge the rankings; only th
 **In an interview.** "The vectors used to be rebuilt in memory on every run, so I put a vector store interface in front of them, with the old exact NumPy search as one implementation and Chroma as the other. With Chroma, each file is read and embedded once and skipped while its content hash is unchanged, and search can be narrowed by category, manufacturer, file and page. Before making it the default I checked every question the pipeline would ask, and 3 in 1,273 changed order because Chroma's approximate search ranks near-ties differently, so I kept the exact store as the default and wrote down the cost of switching."
 
 **Files to read.** `backend/app/vectorstore/base.py`, then `memory.py` and `chroma.py` side by side, `ingest.py`, and `Index.meanings` in `backend/app/retrieval/search.py`.
+
+## Phase 3, follow-up: exact scores with Chroma, and Chroma as the default
+
+**What changed.** The store now only picks the candidates; the index scores them itself. Each store's `nearest` returns candidate chunks (the index asks for 20 more than it needs, so a chunk an approximate search ranks too low is still scored), a new `vectors(ids)` gives back the stored vectors, and `Index.meanings` multiplies the category's vectors, in the index's chunk order, by the queries: the same product as the first version. Chroma's collection uses inner product instead of cosine (the vectors are unit length, so the two are the same).
+
+**Why it had to be this exact.** Measured with NumPy: the last digits of a dot product depend on how many rows are multiplied together and in what order (with one query, reordering the same 2,099 rows changed 35 of the results). So scoring only the candidates, or scoring in Chroma's order, would not reproduce the saved questions. Chroma in cosine mode also gave the vectors back with some last digits changed (on a test of 40 vectors, 180 values changed even when the vectors were already unit length); in inner-product mode they come back unchanged. A test now checks that stored vectors come back exactly, and fails in cosine mode.
+
+**One limit.** The rank merge (RRF) uses the whole meaning ranking of a manufacturer's chunks, and the 3 differences in phase 3 came from places far down it. So the candidates are all of that manufacturer's chunks, and Chroma's approximate search saves no work at this size. What Chroma gives is storage between starts, filters and reading each document once.
+
+**Measured, free.**
+- The fingerprint of every chunk and every ranked result is identical to phase 2 with both stores.
+- The 225 queries: the top 10 identical in all three modes, and the whole meaning ranking identical, scores included to the last digit, for all 225 (before: 109 of 141 and 43 of 84).
+- Every question the pipeline would ask for the five dev tenders in the cache, at both search depths: 1,273 of 1,273 identical (before: 1,270).
+
+**So Chroma is now the default** (`VECTOR_STORE=chroma`), and `memory` remains as the option. Switching costs nothing: no question changes. The entry in `docs/NEEDS_PAID_RUN.md` is removed. A Chroma folder made before this change used cosine mode; it is only a cache, so delete `backend/.cache/chroma` once.
+
+**Tests.** 386 passed.
+
+**In an interview.** "Chroma first changed the order of two passages in 3 of 1,273 questions, because its arithmetic differs from NumPy's in the last digits. So I let Chroma propose the candidates and score them myself with the same matrix product as before; I also found that Chroma's cosine mode changes stored vectors slightly, so I store them in inner-product mode. After that every question was identical, so Chroma became the default."
+
+**Files to read.** `Index.meanings` in `backend/app/retrieval/search.py`, `vectors` and the collection setup in `backend/app/vectorstore/chroma.py`.

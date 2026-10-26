@@ -46,7 +46,14 @@ class VectorStore(Protocol):
         ...
 
     def nearest(self, queries: np.ndarray, n: int, where: Where) -> list[dict[str, float]]:
-        """For each query vector, up to n chunk ids that match `where`, each with its cosine similarity."""
+        """For each query vector, up to n chunk ids that match `where`, each with its cosine similarity.
+
+        An approximate store may rank near-equal chunks in another order, so the search treats these as candidates and
+        scores them again exactly (see Index.meanings)."""
+        ...
+
+    def vectors(self, ids: list[str]) -> np.ndarray:
+        """The stored vectors of these chunks, one row each, in the order asked."""
         ...
 
 
