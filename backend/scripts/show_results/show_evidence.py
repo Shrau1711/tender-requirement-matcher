@@ -5,13 +5,13 @@ Usage: python -m scripts.show_results.show_evidence <tender folder or pdf> <cate
 import sys
 import time
 
-from app.chunking.corpus import load_chunks, manufacturers
+from app.chunking.corpus import manufacturers
 from app.extraction.evidence import evidence_table
 from app.llm.llm_factory import make_llm
 from app.pipeline.pipeline import read_atoms
 from app.reading.ocr import reader_for
 from app.retrieval.queries import load_unit_views
-from app.retrieval.search import Index
+from app.vectorstore.ingest import open_index
 
 
 def lap(label: str, since: float) -> float:
@@ -24,10 +24,9 @@ def main(tender: str, category_dir: str) -> None:
     started = clock = time.time()
     llm, views = make_llm(), load_unit_views()
     read_image = reader_for(llm)
-    chunks = load_chunks(category_dir, read_image)
-    clock = lap(f"read and chunk {len(chunks)} chunks", clock)
-    index = Index(chunks)
-    clock = lap("build the search indexes", clock)
+    index = open_index(category_dir, read_image)
+    chunks = index.chunks
+    clock = lap(f"read, chunk and index {len(chunks)} chunks", clock)
     atoms, _ = read_atoms(llm, tender, read_image)
     clock = lap("read the tender", clock)
     makers = manufacturers(category_dir)

@@ -8,7 +8,7 @@ The manufacturers' scanned pages are read the same way the real run reads them (
 import sys
 import threading
 
-from app.chunking.corpus import load_chunks, manufacturers
+from app.chunking.corpus import manufacturers
 from app.extraction.evidence import TOP_K, evidence_table
 from app.llm.llm import Reply
 from app.llm.llm_cache import MAX_CALLS, CachedLLM
@@ -16,7 +16,7 @@ from app.llm.llm_factory import make_llm
 from app.pipeline.pipeline import read_atoms
 from app.reading.ocr import reader_for
 from app.retrieval.queries import load_unit_views
-from app.retrieval.search import Index
+from app.vectorstore.ingest import open_index
 
 CHARS_PER_TOKEN = 4  # a rough rule for English technical text
 
@@ -40,7 +40,7 @@ def main(tender: str, category_dir: str) -> None:
     atoms, _ = read_atoms(llm, tender, read_image)
     print(f"reading the tender and the scanned pages: {llm.summary()}")
     dry = DryRun(llm)
-    evidence_table(dry, Index(load_chunks(category_dir, read_image)), atoms, manufacturers(category_dir), load_unit_views())
+    evidence_table(dry, open_index(category_dir, read_image), atoms, manufacturers(category_dir), load_unit_views())
     new = [chars for cached, chars in dry.asked if not cached]
     print(f"\nreading the manufacturers' documents ({TOP_K} passages per question):")
     print(f"  {len(dry.asked)} questions, {len(dry.asked) - len(new)} already answered in the cache")

@@ -4,7 +4,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
-from app.chunking.corpus import load_chunks, manufacturers
+from app.chunking.corpus import manufacturers
 from app.cost.budget import plan
 from app.cost.estimate import Estimate, make_estimate
 from app.extraction.atomize import AtomicRequirement, atomize_tender, contradictions
@@ -17,9 +17,9 @@ from app.llm.llm import LLM
 from app.reading.ocr import ImageReader
 from app.reporting.report import Report, assemble
 from app.retrieval.queries import load_unit_views
-from app.retrieval.search import Index
 from app.tender.items import Item
 from app.tender.reader import read_tender
+from app.vectorstore.ingest import open_index
 
 
 @dataclass
@@ -57,12 +57,13 @@ def gather(
     ask, if given, is shown what the search will cost before it is paid for, and stops the job by raising if the person says no.
     """
     progress("Reading the manufacturers' documents")
-    chunks = load_chunks(category_dir, read_image)
+    index = open_index(category_dir, read_image)
+    chunks = index.chunks
     progress("Reading the tender and splitting it into requirements")
     atoms, notes = read_atoms(llm, tender, read_image)
     makers = manufacturers(category_dir)
     progress(f"Checking what reading the documents for {len(atoms)} requirements would cost")
-    index, views = Index(chunks), load_unit_views()
+    views = load_unit_views()
     chosen = plan(llm, index, atoms, makers, views)
     if ask:
         ask(make_estimate(len(chosen.atoms), chosen.questions, chosen.tokens, notes + chosen.notes))

@@ -4,12 +4,11 @@ Usage: python -m scripts.run.search <category_dir> "<query>" [manufacturer]
 """
 import sys
 
-from app.chunking.corpus import load_chunks
-from app.retrieval.search import Index
+from app.vectorstore.ingest import open_index
 
 
 def main(category_dir: str, query: str, manufacturer: str | None) -> None:
-    index = Index(load_chunks(category_dir))
+    index = open_index(category_dir)
     for hit in index.search(query, manufacturer):
         c = hit.chunk
         print(f"\nkeyword {hit.keyword:5.2f}  meaning {hit.meaning:.2f}  {c.manufacturer} p{c.pdf_page} [{c.kind}]")

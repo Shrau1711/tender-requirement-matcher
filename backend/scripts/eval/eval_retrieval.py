@@ -10,9 +10,9 @@ import json
 import sys
 from pathlib import Path
 
-from app.chunking.corpus import load_chunks
 from app.chunking.router import CHUNKER
 from app.retrieval.search import Index, Mode
+from app.vectorstore.ingest import open_index
 
 MODES: list[Mode] = ["keyword", "meaning", "hybrid"]
 TOP_K = 5
@@ -26,7 +26,7 @@ def rank(index: Index, case: dict, mode: Mode) -> int | None:
 
 def main(category_dir: str, cases_file: str, chunker: str = CHUNKER) -> None:
     cases = json.loads(Path(cases_file).read_text(encoding="utf-8"))
-    index = Index(load_chunks(category_dir, chunker=chunker))
+    index = open_index(category_dir, chunker=chunker)
     ranks = {m: [] for m in MODES}
     print(f"{'query':45} {'maker':11}" + "".join(f"{m:>9}" for m in MODES))
     for case in cases:

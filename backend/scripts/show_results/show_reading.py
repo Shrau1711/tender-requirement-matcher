@@ -6,7 +6,6 @@ When several items have the attribute, the first item's requirement is shown.
 """
 import sys
 
-from app.chunking.corpus import load_chunks
 from app.extraction.evidence import (
     SYSTEM,
     Found,
@@ -20,13 +19,13 @@ from app.llm.llm_factory import make_llm
 from app.pipeline.pipeline import read_atoms
 from app.reading.ocr import reader_for
 from app.retrieval.queries import load_unit_views
-from app.retrieval.search import Index
+from app.vectorstore.ingest import open_index
 
 
 def main(tender: str, category_dir: str, manufacturer: str, attribute: str) -> None:
     llm, views = make_llm(), load_unit_views()
     read_image = reader_for(llm)
-    index = Index(load_chunks(category_dir, read_image))
+    index = open_index(category_dir, read_image)
     atoms, _ = read_atoms(llm, tender, read_image)
     req = next(a for a in atoms if a.attribute == attribute)
     hits = usable(req, retrieve(index, req, manufacturer, views))

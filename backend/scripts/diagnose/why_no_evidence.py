@@ -11,7 +11,6 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from app.chunking.corpus import load_chunks
 from app.evaluation.gold import GOLD_DIR, cited, load_gold
 from app.extraction.evidence import (
     SYSTEM,
@@ -27,7 +26,7 @@ from app.llm.llm_factory import make_llm
 from app.pipeline.pipeline import read_atoms
 from app.reading.ocr import reader_for
 from app.retrieval.queries import load_unit_views
-from app.retrieval.search import Index
+from app.vectorstore.ingest import open_index
 
 SNIPPET = 90
 PAGE_SNIPPET = 280
@@ -50,7 +49,7 @@ def main(tender: str, category_dir: str, out: str = "reports/why_no_evidence.txt
     llm = make_llm()
     read_image = reader_for(llm)
     atoms, _ = read_atoms(llm, tender, read_image)
-    index, views = Index(load_chunks(category_dir, read_image)), load_unit_views()
+    index, views = open_index(category_dir, read_image), load_unit_views()
     lead: dict[tuple, object] = {}
     for a in atoms:
         lead.setdefault(question(a), a)  # a requirement that several items share was asked once, with the first item's wording

@@ -12,6 +12,8 @@ from rank_bm25 import BM25Okapi
 from app.chunking.base import Chunk
 from app.embedding.embed_cache import embed_cached
 from app.retrieval.fusion import rrf
+from app.vectorstore.base import StoredDoc, VectorStore, chunk_ids
+from app.vectorstore.memory import MemoryStore
 
 TABLE_ROWS_PER_PAGE = 2  # one big table must not fill every result slot
 
@@ -36,12 +38,27 @@ def tokenize(text: str) -> list[str]:
 
 
 class Index:
-    # Builds the keyword index (BM25) and the embedding matrix for all passages.
-    def __init__(self, chunks: list[Chunk], embed: Embedder = embed_cached) -> None:
+    """Keyword search (BM25) over the chunks, and meaning search through a vector store, merged by rank.
+
+    With no store given, the chunks are embedded into a new in-memory store, as in the first version. A given store must
+    already hold these chunks under `category` (see app.vectorstore.ingest)."""
+
+    def __init__(self, chunks: list[Chunk], embed: Embedder = embed_cached, store: VectorStore | None = None, category: str = "") -> None:
         self.chunks = chunks
         self.embed = embed
         self.bm25 = BM25Okapi([tokenize(c.text) for c in chunks])
-        self.vectors = embed([c.text for c in chunks])
+        self.category = category
+        self.position = {chunk_id: i for i, chunk_id in enumerate(chunk_ids(category, chunks))}
+        if store is None:
+            store = MemoryStore()
+            store.put(StoredDoc(category=category, manufacturer="", file=""), chunks, embed([c.text for c in chunks]))
+        self.store = store
+
+    # Cosine similarity of every allowed chunk to each query, by chunk position. The store may leave some out.
+    def meanings(self, queries: list[str], allowed: list[int], manufacturer: str | None) -> list[dict[int, float]]:
+        where = {"category": self.category} | ({"manufacturer": manufacturer} if manufacturer else {})
+        found = self.store.nearest(self.embed(queries), len(allowed), where)
+        return [{self.position[chunk_id]: score for chunk_id, score in scores.items()} for scores in found]
 
     # Finds the best passages for one query.
     def search(
@@ -58,19 +75,19 @@ class Index:
             i for i, c in enumerate(self.chunks)
             if manufacturer is None or c.manufacturer == manufacturer
         ]
-        meanings = self.vectors @ self.embed(queries).T  # one column per query
+        meanings = self.meanings(queries, allowed, manufacturer) if queries else []
         keyword = np.zeros(len(self.chunks))
         rankings: list[list[int]] = []
         for q, query in enumerate(queries):
             scores = self.bm25.get_scores(tokenize(query))
             keyword = np.maximum(keyword, scores)
             by_keyword = [i for i in sorted(allowed, key=lambda i: -scores[i]) if scores[i] > 0]
-            by_meaning = sorted(allowed, key=lambda i: -meanings[i, q])
+            by_meaning = sorted(meanings[q], key=lambda i: (-meanings[q][i], i))  # ties keep the chunks' order
             rankings += {"keyword": [by_keyword], "meaning": [by_meaning], "hybrid": [by_keyword, by_meaning]}[mode]
         rankings = [self.spread(ranking) for ranking in rankings]
         files = {self.chunks[i].file for i in allowed}
         return [
-            Hit(score=score, keyword=float(keyword[i]), meaning=float(meanings[i].max()), chunk=self.chunks[i])
+            Hit(score=score, keyword=float(keyword[i]), meaning=max((m.get(i, 0.0) for m in meanings), default=0.0), chunk=self.chunks[i])
             for i, score in self.share_between_files(rrf(rankings), top_k, max(1, len(files)) if manufacturer else 1)
         ]
 
