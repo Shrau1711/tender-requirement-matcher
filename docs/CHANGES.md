@@ -182,3 +182,40 @@ The search itself keeps BM25 for keywords and RRF to merge the rankings; only th
 **In an interview.** "Chroma first changed the order of two passages in 3 of 1,273 questions, because its arithmetic differs from NumPy's in the last digits. So I let Chroma propose the candidates and score them myself with the same matrix product as before; I also found that Chroma's cosine mode changes stored vectors slightly, so I store them in inner-product mode. After that every question was identical, so Chroma became the default."
 
 **Files to read.** `Index.meanings` in `backend/app/retrieval/search.py`, `vectors` and the collection setup in `backend/app/vectorstore/chroma.py`.
+
+## Phase 4: Categories and extraction
+
+**What changed.**
+- **Per-category config.** Each category folder now has a `category.json` beside its `manufacturers/` folder, with the category's own `product_words`, `type_attributes`, `filler_words` and `extraction_rules` (described in the README). What used to be written into the code or into shared files moved there:
+  - the word-to-category table (`backend/config/product_categories.json`, now deleted);
+  - `pump_type` and `valve_type` from the shared "defining" names;
+  - "valve" from the filler words in `app/vocabulary/words.py`;
+  - the pump duty-point rule from the tender-reading prompt in `app/extraction/atomize.py`.
+
+  A new category is a new folder with its PDFs and a `category.json`; nothing in the code names a category. Units, abbreviations and other shared vocabulary stay in `backend/config/`.
+- **One vocabulary for all.** The vocabulary is the union over all categories, and the prompt for reading a tender's rows is the shared rules with every category's rules in place. So a mixed tender is read with everything, and the prompt does not depend on which items a tender has. A test pins the prompt to the exact text the saved answers were made with (SHA-256 `49cee02f…`). The flip side: adding a rule to any category changes the questions for every tender, so their saved answers no longer match. A category without rules changes nothing.
+- **Category optional on upload.** `POST /runs` no longer needs a category, and the upload page now defaults to "Find it in the tender". Such a run reads the tender's items and sends each to a category (`app/categories/routing.py`):
+  - first by product words: a title that names exactly one category's word goes there;
+  - otherwise by the categories' own documents: the title is compared in meaning with every category's chunks, and the category whose 5 closest chunks are most alike wins.
+
+  No model is asked. A tender of one category is then matched whole, exactly as if the category had been chosen.
+- **Mixed tenders.** A tender with items of several categories gets one run per category. The run started takes the first category, and the others are created next to it, each with its own copy of the tender so its links to tender pages work. Each run matches only its own items and says in its notes which items were matched elsewhere. Each report stays a normal one-category report, so the scoring, ranking and report code did not change. Runs waiting for approval of their estimate pass that on to the runs made from them.
+
+**Why.** Reviewers said a new product category should need no code changes, and that one category per upload is not enough because a tender can buy pumps and valves together.
+
+**The default did not change.**
+- The tender-reading prompt is byte-identical (the test above).
+- The defining names (`product_type`, `pump_type`, `valve_type`) and the filler words (`body`, `connection`, `end`, `ends`, `type`, `valve`) are the same sets as before.
+- Chunking and search are untouched: `eval_retrieval` on valves is unchanged (top 5: keyword 6/7, meaning 4/7, hybrid 6/7; first result 4/7, 3/7, 4/7).
+
+**Measured, free (cached tender readings, local embeddings).** I routed every item of every tender whose reading is in the cache (5 dev, 4 hold-out; nothing was tuned on the hold-out tenders).
+- `data/tenders/sources.csv` records a category for 7 of these tenders, with 11 items between them. All 11 went to the recorded category: 10 by words, and 1 ("SITE VISIT FOR SUPERVISION", in a pump tender) by documents.
+- Routed by the documents alone, as if no word had matched, the same 11 items also all went to the recorded category.
+- Two hold-out tenders are not in `sources.csv`. Their 3 items went to valves ("PFA lined ball valves") and pumps ("Submersible pumpsets", "Submersible pump starters") by words; there is no recorded label to score them against.
+- No tender here is mixed, so the split into several runs is tested with a fake router in `tests/api/test_api.py`, not measured on a real tender.
+
+**Tests.** 398 passed (386 before): `tests/categories/test_categories.py` (configs, the optional file, the union, words first and documents for the rest, the documents not read when words decide), three API tests (one-category tender matched whole, two categories give two runs with their own tender copies, a routing failure is reported), `tests/pipeline/test_pipeline.py` (only the given items are kept, with a note), and the prompt test. Frontend: 74 passed (73 before), and `vite build` succeeds. `docker compose build` builds both images, and inside the backend image both categories load and the prompt hash matches.
+
+**In an interview.** "Category knowledge used to be spread through the code: a word table, a filler word, a pump rule inside the prompt. Now each category is a folder with its documents and a small JSON file, and a tender's items are routed to categories by their product words, or by which category's documents they resemble most, so a mixed tender becomes one run per category. I checked that the prompt is byte-identical to before, so every saved answer still matches, and the routing put all 11 labelled items in the right category."
+
+**Files to read.** `data/categories/pumps/category.json`, `backend/app/categories/config.py`, `backend/app/categories/routing.py`, `execute_routed` in `backend/app/pipeline/runner.py`, and the top of `backend/app/extraction/atomize.py`.

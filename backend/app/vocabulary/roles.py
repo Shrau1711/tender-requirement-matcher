@@ -5,6 +5,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from app.categories.config import union
 from app.extraction.atomize import AtomicRequirement
 
 if TYPE_CHECKING:
@@ -25,7 +26,7 @@ def load_roles(path: Path = ROLES_FILE) -> dict[str, list[str]]:
 
 def wrong_type(outcomes: list[Outcome]) -> str | None:
     """Why the judged product is not the kind of product the tender asks for, when the requirement that names the kind is stated and not met."""
-    defining = set(load_roles()["defining"])
+    defining = set(load_roles()["defining"]) | set(union("type_attributes"))  # shared names, and each category's own
     return next((o.reason for o in outcomes if o.requirement.attribute in defining and o.status == "missing capability" and o.found), None)
 
 

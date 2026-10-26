@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import json
 import re
 from pathlib import Path
 
-CATEGORIES_FILE = Path(__file__).resolve().parents[2] / "config" / "product_categories.json"
+from app.categories.config import CATEGORIES_DIR, category_by_words
+
 MAX_PRODUCT = 200
 
 
@@ -29,10 +29,10 @@ def item_category(lines: list[str]) -> str:
     return ""
 
 
-def category_of(product: str, words: dict[str, str] | None = None) -> str:
-    """The product category by the first known word the product mentions, e.g. "pump" -> pumps. Blank when none."""
-    words = json.loads(CATEGORIES_FILE.read_text(encoding="utf-8")) if words is None else words
-    return next((category for word, category in words.items() if word in product.lower()), "")
+def category_of(product: str, root: Path = CATEGORIES_DIR) -> str:
+    """The first category whose product word the product mentions, e.g. "pump" -> pumps (see category.json). Blank when none."""
+    found = category_by_words(product, root)
+    return found[0] if found else ""
 
 
 def parse_bid_details(text: str) -> dict[str, str]:

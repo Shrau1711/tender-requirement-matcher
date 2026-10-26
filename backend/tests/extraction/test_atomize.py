@@ -1,8 +1,9 @@
+import hashlib
 import json
 
 import pytest
 
-from app.extraction.atomize import atomize, atomize_tender, uncovered_rows
+from app.extraction.atomize import SYSTEM, atomize, atomize_tender, uncovered_rows
 from app.tender.items import Item, Requirement
 
 ITEM = Item(title="Valves", quantity=5)
@@ -65,3 +66,8 @@ def test_two_files_that_state_an_item_differently_are_reported():
     assert "pressure" in note and "a.pdf" in note and "b.pdf" in note
     assert contradictions([atom("a.pdf", "0.4"), atom("b.pdf", "0.4")]) == []
     assert contradictions([atom("a.pdf", "15"), atom("a.pdf", "20")]) == []
+
+
+def test_the_prompt_built_from_the_category_files_is_the_one_the_saved_answers_were_made_with():
+    # A saved answer belongs to the exact prompt; this is the prompt before the pump rule moved to pumps/category.json.
+    assert hashlib.sha256(SYSTEM.encode()).hexdigest() == "49cee02f6e42da68e2c2cd1ea63b621103a8c1065a75546b6481d6b79a0cd6c2"

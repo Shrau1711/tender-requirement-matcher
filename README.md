@@ -1,6 +1,6 @@
 # Tender Requirement Matching
 
-Upload a GeM tender (PDF) and pick a category. The system reads the tender, breaks it into individual requirements, searches each manufacturer's catalogue documents for evidence, compares them, and returns a report: a status and score per requirement per manufacturer, an overall compatibility ranking, and a cited page for every claim.
+Upload a GeM tender (PDF), and pick a category or let the system find each item's category. The system reads the tender, breaks it into individual requirements, searches each manufacturer's catalogue documents for evidence, compares them, and returns a report: a status and score per requirement per manufacturer, an overall compatibility ranking, and a cited page for every claim.
 
 An LLM (Gemini) only reads text and pulls out structured facts. The comparison and scoring are plain code, and every quoted piece of evidence is checked programmatically against the page it came from.
 
@@ -18,7 +18,7 @@ docker run -d --name tm-frontend -p 3000:80 -e API_URL=http://localhost:8000 shr
 
 **How the two images connect:** the frontend is a static site served by nginx. The page you open on port 3000 runs in your browser, and your browser calls the backend directly at `API_URL` (default `http://localhost:8000`). The containers do not talk to each other, so no shared network is needed. Start the backend first and keep both ports published. If you run the images on another machine, set `API_URL` on the frontend to the address your browser should use to reach the backend (for example `http://my-server:8000`).
 
-Open http://localhost:3000, choose a category and upload the tender PDF(s). The system reads the tender, then **stops and shows an estimate before it spends anything**: how many new Gemini questions it needs, roughly what they cost in rupees, and about how long they take, with **Proceed** and **Cancel** buttons. Nothing is charged for matching until you press Proceed; the only Gemini calls made before it are the few that read the tender itself.
+Open http://localhost:3000, upload the tender PDF(s), and choose a category or leave it to be found in the tender (a tender that buys, say, pumps and valves then gets one run for each). The system reads the tender, then **stops and shows an estimate before it spends anything**: how many new Gemini questions it needs, roughly what they cost in rupees, and about how long they take, with **Proceed** and **Cancel** buttons. Nothing is charged for matching until you press Proceed; the only Gemini calls made before it are the few that read the tender itself.
 
 - **Answers it already has are free.** The images ship with the answers for five example tenders (GeM 9933225, 9968695 and 10016383 for valves; 9935891 and 9604147 for pumps), so those show "everything is already saved" and finish with no Gemini calls. In my runs that took 1 to 6 minutes (the pump tenders are the slow ones), because the manufacturers' documents are still read and searched. Every answer from your own runs is kept in the `tender-data` volume, so repeating a run is also free.
 - **A tender it has not seen** makes live Gemini calls. Expect a few minutes and roughly ₹6 for a small tender up to ₹60-90 for one with 8-16 requirements, and never more than the budget below. On one checked tender the estimate said about ₹26 and AI Studio showed ₹26.
@@ -75,6 +75,7 @@ Frontend: `API_URL`, the backend address.
 
 ```
 curl -F "category=pumps" -F "files=@tender.pdf" http://localhost:8000/runs
+curl -F "files=@tender.pdf" http://localhost:8000/runs        # no category: each item goes to its own, one run per category
 curl -F "category=pumps" -F "files=@tender.pdf" -F "ask_first=true" http://localhost:8000/runs   # stops at the estimate (status "awaiting")
 curl -X POST http://localhost:8000/runs/<id>/proceed     # or /cancel
 curl http://localhost:8000/runs/<id>/report        # machine-readable JSON
@@ -88,7 +89,23 @@ Other routes: `GET /health`, `/categories`, `/runs`, `PATCH`/`DELETE /runs/{id}`
 
 ## Categories
 
-Categories live in `data/categories/<category>/manufacturers/<maker>/` as PDFs plus source notes. Add a folder of PDFs and it appears in the category list; no code changes are needed.
+Categories live in `data/categories/<category>/manufacturers/<maker>/` as PDFs plus source notes, with a `category.json` next to `manufacturers/` holding the category's own words and rules. Add a folder of PDFs and a `category.json` and it appears in the category list; no code changes are needed (the words and rules are read when the server starts).
+
+```json
+{
+  "product_words": ["pump"],
+  "type_attributes": ["pump_type"],
+  "filler_words": [],
+  "extraction_rules": ["A duty point the pump must deliver (head, flow) is also at_least, ..."]
+}
+```
+
+- `product_words`: an item whose title says one of these belongs to the category. An item whose title names no category's word, or several, goes to the category whose documents are most alike in meaning.
+- `type_attributes`: requirement names that say which kind of product it is; a product that fails one is the wrong kind.
+- `filler_words`: words that say nothing about which kind it is ("valve" in "gate valve").
+- `extraction_rules`: extra rules for reading the tender's rows, added to the shared ones. Every category's rules are in every prompt, so adding a rule changes the questions for all tenders and their saved answers no longer match.
+
+Every field may be left out. Units, abbreviations and other shared vocabulary stay in `backend/config/`.
 
 Collecting catalogues by hand does not scale, so there is an optional crawler that lists, and with `--download` saves, the PDFs a manufacturer publishes, recording each file's address, the page it was found on, the date and a hash in `crawl_sources.csv` next to them. It obeys `robots.txt`, waits between requests, stays on the manufacturer's site, and does nothing unless asked:
 

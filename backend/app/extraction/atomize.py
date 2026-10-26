@@ -6,19 +6,26 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from app.categories.config import union
 from app.llm.llm import LLM, ask
 from app.tender.items import Item, Requirement, by_item
 
-SYSTEM = """You turn rows of a tender's technical specification into atomic requirements.
+RULES_BEFORE = """You turn rows of a tender's technical specification into atomic requirements.
 Rules:
 - The input has "known_attributes" (names already used for other items) and "rows", each with an index, a name and a value. Cover every row at least once, using its index in "row".
 - Split a row into several requirements only when it states independent conditions. Never split one value.
 - Copy values exactly as printed. Never convert units or do arithmetic. If the name or value gives a unit, put it in "unit".
 - attribute: a short snake_case name for what is specified, such as nominal_size or end_connection. If a known attribute means the same thing, reuse its exact name.
 - kind: number, choice, text, standard (an identifier such as IS 13095), or yes_no.
-- operator: equals, at_least, at_most, or one_of when any of several listed values is acceptable. Judge it by what the product must be able to do: a figure the product has to reach, withstand or handle (rated pressure, rated temperature, capacity) is at_least; a figure the product must stay under (noise, weight, leakage) is at_most. "Operating pressure limit 30 bar" for a seal means the seal must withstand 30 bar, so at_least. A duty point the pump must deliver (head, flow) is also at_least, even when the row is called min or max: a pump that cannot reach the upper figure does not meet it. For example \"Head 100 - 110 m\" gives two requirements, 100 and 110, both at_least. A fixed characteristic of a machine (speed, voltage, frequency, size, power rating) is equals.
+- operator: equals, at_least, at_most, or one_of when any of several listed values is acceptable. Judge it by what the product must be able to do: a figure the product has to reach, withstand or handle (rated pressure, rated temperature, capacity) is at_least; a figure the product must stay under (noise, weight, leakage) is at_most. "Operating pressure limit 30 bar" for a seal means the seal must withstand 30 bar, so at_least. """
+RULES_AFTER = """A fixed characteristic of a machine (speed, voltage, frequency, size, power rating) is equals.
 - evidence: "product" if a manufacturer's product brochure could show it, including the standard the product is made to (such as IS 13095). "paperwork" if it needs a certificate, test report, licence, undertaking or similar document.
 """
+# The shared rules, with each category's own rules for reading rows (category.json, "extraction_rules") where the
+# operator rule asks for them. Every category's rules are always in: the prompt must not depend on which items a
+# tender has, and a saved answer belongs to the exact prompt.
+SYSTEM = RULES_BEFORE + "".join(f"{rule} " for rule in union("extraction_rules")) + RULES_AFTER
+
 
 
 class Atom(BaseModel):

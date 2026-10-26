@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import json
 import re
-from functools import lru_cache
+from functools import cache, lru_cache
 from pathlib import Path
 
+from app.categories.config import union
 from app.retrieval.search import tokenize
 from app.vocabulary.abbreviations import canonical
 
-FILLER = {"valve", "type", "body", "end", "ends", "connection"}  # words that say nothing about which kind it is
+FILLER = {"type", "body", "end", "ends", "connection"}  # words that say nothing about which kind it is; each category adds its own
 LINKING = {"a", "an", "and", "as", "by", "for", "in", "is", "of", "on", "or", "per", "the", "to", "with", "equivalent"}  # words that never say which kind it is
 
 
@@ -16,8 +17,14 @@ def singular(word: str) -> str:
     return word[:-1] if word.endswith("s") and len(word) > 3 else word
 
 
+@cache
+def filler() -> frozenset[str]:
+    """The shared filler words and every category's own ("valve" in "gate valve"), read once."""
+    return frozenset(FILLER | set(union("filler_words")))
+
+
 def kind_words(text: str) -> set[str]:
-    return {singular(w) for w in tokenize(canonical(text))} - FILLER - LINKING
+    return {singular(w) for w in tokenize(canonical(text))} - filler() - LINKING
 
 
 def is_stated(word: str, have: set[str]) -> bool:

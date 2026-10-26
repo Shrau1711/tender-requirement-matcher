@@ -47,7 +47,7 @@ export default function ReportPage({ run, report, tab, makerName, onDelete }) {
       <div className="page-head">
         <div>
           <h1 id="report-title" tabIndex={-1}>{run.tender}</h1>
-          <p>{report.tender === run.tender ? "" : `${report.tender} · `}Matched against {run.category} on {shortDate(run.finished_at ?? run.created_at)}</p>
+          <p>{report.tender === run.tender ? "" : `${report.tender} · `}Matched against {run.category || "…"} on {shortDate(run.finished_at ?? run.created_at)}</p>
         </div>
         <div className="actions">
           <a className="button secondary" href={api.downloadUrl(run.id, "xlsx")} download><Icon name="download" />Excel</a>

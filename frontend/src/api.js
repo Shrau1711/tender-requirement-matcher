@@ -29,7 +29,7 @@ export const api = {
   start: async ({ files, category, name }) => {
     const form = new FormData();
     files.forEach((file) => form.append("files", file));
-    form.append("category", category);
+    if (category) form.append("category", category);  // left out, the server finds it in the tender
     if (name) form.append("name", name);
     form.append("ask_first", "true");  // the run stops with its estimate until the person says yes
     return (await request("/runs", { method: "POST", body: form })).json();

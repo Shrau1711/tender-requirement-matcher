@@ -148,3 +148,46 @@ def test_a_run_not_asked_to_wait_starts_at_once_and_has_nothing_to_answer(folder
     assert c.get(f"/runs/{run_id}").json()["status"] == "done"
     assert c.post(f"/runs/{run_id}/proceed").status_code == 409
     assert c.post("/runs/nope/cancel").status_code == 404
+
+
+def routed_client(folders, groups, seen):
+    """A client whose router finds `groups` in every tender, and whose runner notes what each run was asked to match."""
+    (folders[0] / "valves" / "manufacturers" / "beta").mkdir(parents=True)
+
+    def runner(run_id, tender_dir, category_dir, name, progress, items=None):
+        seen.append((category_dir.name, items, sorted(p.name for p in tender_dir.glob("*.pdf"))))
+        return fake_runner(run_id, tender_dir, category_dir, name, progress)
+
+    def route(tender_dir, categories_dir):
+        if groups is None:
+            raise RuntimeError("the tender could not be read")
+        return groups
+
+    return TestClient(create_app(folders[0], folders[1], runner, route=route))
+
+
+def test_without_a_category_a_one_category_tender_is_matched_whole(folders):
+    seen = []
+    c = routed_client(folders, {"pumps": ["Booster pump"]}, seen)
+    run_id = upload(c, category="").json()["id"]
+    info = c.get(f"/runs/{run_id}").json()
+    assert (info["status"], info["category"], info["tender"]) == ("done", "pumps", "bid")
+    assert seen == [("pumps", None, ["bid.pdf"])]  # no item list: the same job as choosing pumps by hand
+
+
+def test_a_tender_with_two_categories_gets_a_run_for_each(folders):
+    seen = []
+    c = routed_client(folders, {"pumps": ["Booster pump"], "valves": ["Gate valve", "Check valve"]}, seen)
+    run_id = upload(c, category="").json()["id"]
+    runs = {r["category"]: r for r in c.get("/runs").json()}
+    assert set(runs) == {"pumps", "valves"} and runs["pumps"]["id"] == run_id
+    assert {r["tender"] for r in runs.values()} == {"bid (pumps)", "bid (valves)"}
+    assert all(r["status"] == "done" for r in runs.values())
+    assert seen == [("pumps", ["Booster pump"], ["bid.pdf"]), ("valves", ["Gate valve", "Check valve"], ["bid.pdf"])]
+    assert (folders[1] / runs["valves"]["id"] / "tender" / "bid.pdf").exists()  # its own copy, so its tender links work
+
+
+def test_a_tender_that_cannot_be_routed_fails_with_the_reason(folders):
+    c = routed_client(folders, None, [])
+    info = c.get(f"/runs/{upload(c, category='').json()['id']}").json()
+    assert info["status"] == "failed" and "could not be read" in info["error"]

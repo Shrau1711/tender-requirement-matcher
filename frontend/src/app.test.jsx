@@ -129,6 +129,17 @@ describe("the other pages", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("not a PDF");
     fireEvent.change(input, { target: { files: [new File(["%PDF"], "bid.pdf", { type: "application/pdf" })] } });
     expect(screen.getByRole("button", { name: "Start matching" })).toBeEnabled();
+    expect(screen.getByLabelText("Product category")).toHaveValue("");  // by default each item's category is found in the tender
+    expect(screen.getByRole("option", { name: /Find it in the tender/ })).toBeInTheDocument();
+  });
+
+  it("starts a run with a chosen category, or without one so the server finds it", async () => {
+    const start = vi.spyOn(api, "start").mockResolvedValue(run);
+    open("#/new");
+    await screen.findByText(/at most 300 per run/);
+    fireEvent.change(document.querySelector("input[type=file]"), { target: { files: [new File(["%PDF"], "bid.pdf", { type: "application/pdf" })] } });
+    fireEvent.click(screen.getByRole("button", { name: "Start matching" }));
+    await waitFor(() => expect(start).toHaveBeenCalledWith(expect.objectContaining({ category: "" })));
   });
 
   it("lists, searches and compares runs", async () => {

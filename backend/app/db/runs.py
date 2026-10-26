@@ -83,6 +83,11 @@ class RunStore:
         with self.connect() as db:
             db.execute("UPDATE runs SET status = ? WHERE id = ?", (status, run_id))
 
+    def set_category(self, run_id: str, category: str) -> None:
+        """For a run started without a category, once the tender says which one."""
+        with self.connect() as db:
+            db.execute("UPDATE runs SET category = ? WHERE id = ?", (category, run_id))
+
     def set_progress(self, run_id: str, text: str) -> None:
         with self.connect() as db:
             db.execute("UPDATE runs SET progress = ? WHERE id = ?", (text, run_id))

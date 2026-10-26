@@ -41,7 +41,7 @@ export default function RunsPage({ runs, refresh }) {
   const columns = useMemo(() => [
     { key: "pick", label: "Compare", sortable: false, render: (r) => <input type="checkbox" disabled={r.status !== "done"} checked={picked.includes(r.id)} onChange={() => toggle(r.id)} aria-label={`Select ${r.tender} to compare`} /> },
     { key: "tender", label: "Tender", render: (r) => (editing === r.id ? <RenameForm run={r} onSave={(name) => rename(r, name)} onCancel={() => setEditing(null)} /> : <a href={links.run(r.id)}>{r.tender}</a>) },
-    { key: "category", label: "Category" },
+    { key: "category", label: "Category", render: (r) => r.category || <span className="hint">finding it</span> },
     { key: "status", label: "Status", render: (r) => <span className={`badge ${STATUS_BADGE[r.status]}`}>{r.status}</span> },
     { key: "created_at", label: "Started", render: (r) => <span style={{ whiteSpace: "nowrap" }}>{shortDate(r.created_at)}</span> },
     { key: "model_calls", label: "Model calls", render: (r) => <span className="cell-sub" style={{ whiteSpace: "nowrap" }}>{callsSummary(r.model_calls)}</span> },

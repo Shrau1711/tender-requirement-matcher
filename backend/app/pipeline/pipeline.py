@@ -45,22 +45,32 @@ def read_atoms(llm: LLM, tender: str | Path, read_image: ImageReader | None = No
     return atoms, read.notes + contradictions(atoms)
 
 
+def only_items(atoms: list[AtomicRequirement], notes: list[str], items: list[str]) -> tuple[list[AtomicRequirement], list[str]]:
+    """The requirements of the given items, and a note saying the tender's other items are matched in other runs."""
+    others = sorted({a.item.title for a in atoms} - set(items))
+    note = f"This tender also has items of other product categories, matched in runs of their own: {'; '.join(others)}." if others else None
+    return [a for a in atoms if a.item.title in items], notes + ([note] if note else [])
+
+
 # Reads the manufacturers' documents and the tender, estimates the cost (and asks the person if asked to), then finds
 # evidence for every requirement. This is the only step that costs money.
 def gather(
     llm: LLM, tender: str | Path, category_dir: str | Path, read_image: ImageReader | None = None, progress: Callable[[str], None] = lambda _: None,
-    ask: Callable[[Estimate], None] | None = None,
+    ask: Callable[[Estimate], None] | None = None, items: list[str] | None = None,
 ) -> Gathered:
     """Read the tender and the manufacturers' documents, and find the evidence for every requirement.
 
     read_image reads the pages of the tender's and the manufacturers' documents that are only pictures. progress is told each stage as it starts.
     ask, if given, is shown what the search will cost before it is paid for, and stops the job by raising if the person says no.
+    items, if given, are the titles of the only items to match here, when the tender's other items belong to other categories.
     """
     progress("Reading the manufacturers' documents")
     index = open_index(category_dir, read_image)
     chunks = index.chunks
     progress("Reading the tender and splitting it into requirements")
     atoms, notes = read_atoms(llm, tender, read_image)
+    if items is not None:
+        atoms, notes = only_items(atoms, notes, items)
     makers = manufacturers(category_dir)
     progress(f"Checking what reading the documents for {len(atoms)} requirements would cost")
     views = load_unit_views()
