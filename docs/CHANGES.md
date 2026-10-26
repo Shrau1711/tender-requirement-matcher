@@ -96,3 +96,37 @@ How to read this: the samples are small (7 retrieval cases, 25 and 158 items), s
 **In an interview.** "Chunking used to be one function tuned to table-heavy catalogues. I put an interface in front of it, kept the original as the default, and added four strategies plus a router that picks one from what the document looks like, such as numbered clauses, drawn boxes or tables. I compared them on the retrieval checks I could run for free, and since none was clearly better on these small samples, I kept the default and wrote down the paid check that would settle it."
 
 **Files to read.** `backend/app/chunking/base.py`, `backend/app/chunking/strategies/__init__.py`, `backend/app/chunking/router.py`, then any one strategy (`structure.py` is the most interesting); `backend/tests/chunking/test_strategies.py`.
+
+## Phase 2, follow-up: test documents that are not tables, and a flowchart check that holds
+
+**(a) Retrieval cases for documents that are not tables.** There were none: the 7 retrieval cases all point at valve catalogues, which are mostly tables. `scripts/eval/make_samples.py` now writes two small invented documents, committed under `data/eval/samples/`:
+- `clausemaker/pump-specification.pdf`, 6 pages of numbered clauses with no tables. Clause 2.2 starts on page 2 and runs onto page 3, where nothing on the page says it is about the booster pump.
+- `flowmaker/valve-selection-guide.pdf`, 3 pages, the middle one a real flowchart: separate boxes joined by lines.
+
+`data/eval/retrieval_cases_samples.json` holds 10 cases for them. On documents this short almost any search finds the right page somewhere in the top 5, so `eval_retrieval` now also counts how often the first result is on a right page. The top-5 line is printed as before.
+
+| strategy | top 5 (keyword, meaning, hybrid) | first result (keyword, meaning, hybrid) |
+|---|---|---|
+| `table_rows` (default) | 10/10, 10/10, 10/10 | 9/10, 7/10, 8/10 |
+| `recursive` | 10/10, 10/10, 10/10 | 9/10, 7/10, 8/10 |
+| `sections` | 10/10, 10/10, 10/10 | 9/10, 8/10, 9/10 |
+| `parent_child` | 10/10, 10/10, 10/10 | 9/10, 7/10, 8/10 |
+| `structure` | 10/10, 10/10, 10/10 | 9/10, 9/10, 10/10 |
+| `auto` (picks `structure` for both) | 10/10, 10/10, 10/10 | 9/10, 9/10, 10/10 |
+
+The gain is where expected: "booster pump impeller material" and "booster pump motor efficiency class" are answered on page 3, which only `structure` labels with "2. Booster pump > 2.2 Construction". These documents and cases were written knowing what each strategy does, so they show that the strategies work as designed, not how they do on real documents. On the valve catalogues, the default's first-result count is keyword 4/7, meaning 3/7, hybrid 4/7 (not counted before).
+
+**(b) The flowchart check.** The 2 catalogue pages it accepted were not flowcharts: Grundfos CR data booklet page 18 is a type-key code table, and L&T API 600 page 17 is an ordering-information grid. Tightening the box test (a box must stand apart from other rectangles, since table cells share their edges) turned up a third, L&T trunnion ball valves page 24, another ordering-code grid. All three are tables whose cells are drawn as separate boxes, which the table finder missed. What none of them has is a line drawn from one box to another. So:
+- `app/reading/boxes.py` (new) finds the boxes on a page, and the lines that join two boxes. The reader stores both on each page (`PageRecord.boxes`, `PageRecord.links`).
+- A page is a flowchart when it has no table, at least 6 boxes with text, at least 70% of them short, and at least half of them joined to another box by a line.
+- Result on the real catalogues: 0 of 562 pages are flowcharts (it was 50 pages with the first version of the test in phase 2, then 2). On the invented guide, the flowchart page is found.
+- Flowchart chunks now follow the lines, not the reading order. Reading order put "Slurry" next to "Steam"; following the lines, the chunk for the "Slurry" box is `What does the line carry? -> / Slurry / -> Knife gate valve`.
+- Lines are matched to boxes by position, because PDF readers often merge a row of boxes into one text block (the invented flowchart's three boxes in a row came out as one block).
+
+`tests/chunking/test_flowchart_pdf.py` builds the two PDFs, reads them with the real reader and checks the boxes, the 10 lines, the router's choice and the chunks.
+
+**The default did not change.** The fingerprint of every chunk and every ranked search result is identical to phase 2.
+
+**In an interview.** "My first flowchart test also accepted three catalogue pages, and when I looked, all three were tables whose cells are drawn as separate boxes. The thing a flowchart has and a table does not is lines between the boxes, so the reader now records them, and the chunks follow them: each box comes with the box before and after it. I also made a small specification and a selection guide to test on, because all my real documents were tables."
+
+**Files to read.** `backend/app/reading/boxes.py`, `is_flowchart` and `flow_chunks` in `backend/app/chunking/strategies/structure.py`, `backend/scripts/eval/make_samples.py`, `backend/tests/chunking/test_flowchart_pdf.py`.

@@ -1,7 +1,8 @@
 """Score the search index against hand-labelled queries.
 
 Each case says: for this query and manufacturer, a correct chunk is on one of these pages.
-A case passes if any of the top results comes from one of them.
+A case passes if any of the top results comes from one of them. The first result is counted too, because on a short
+document almost any search finds the right page somewhere in the top 5.
 
 Usage: python -m scripts.eval.eval_retrieval <category_dir> <cases.json> [chunking strategy or auto]
 """
@@ -17,22 +18,24 @@ MODES: list[Mode] = ["keyword", "meaning", "hybrid"]
 TOP_K = 5
 
 
-def passes(index: Index, case: dict, mode: Mode) -> bool:
+# How far down the results the first right page is (1 is first), or None if it is not in the top TOP_K.
+def rank(index: Index, case: dict, mode: Mode) -> int | None:
     hits = index.search(case["query"], case["manufacturer"], TOP_K, mode)
-    return any(h.chunk.pdf_page in case["pages"] for h in hits)
+    return next((i for i, h in enumerate(hits, start=1) if h.chunk.pdf_page in case["pages"]), None)
 
 
 def main(category_dir: str, cases_file: str, chunker: str = CHUNKER) -> None:
     cases = json.loads(Path(cases_file).read_text(encoding="utf-8"))
     index = Index(load_chunks(category_dir, chunker=chunker))
-    totals = dict.fromkeys(MODES, 0)
+    ranks = {m: [] for m in MODES}
     print(f"{'query':45} {'maker':11}" + "".join(f"{m:>9}" for m in MODES))
     for case in cases:
-        results = {m: passes(index, case, m) for m in MODES}
+        found = {m: rank(index, case, m) for m in MODES}
         for m in MODES:
-            totals[m] += results[m]
-        print(f"{case['query']:45} {case['manufacturer']:11}" + "".join(f"{'yes' if results[m] else 'NO':>9}" for m in MODES))
-    print(f"\nfound in top {TOP_K}: " + ", ".join(f"{m} {totals[m]}/{len(cases)}" for m in MODES))
+            ranks[m].append(found[m])
+        print(f"{case['query']:45} {case['manufacturer']:11}" + "".join(f"{found[m] or 'NO':>9}" for m in MODES))
+    print(f"\nfound in top {TOP_K}: " + ", ".join(f"{m} {sum(r is not None for r in ranks[m])}/{len(cases)}" for m in MODES))
+    print("found first: " + ", ".join(f"{m} {ranks[m].count(1)}/{len(cases)}" for m in MODES))
 
 
 if __name__ == "__main__":

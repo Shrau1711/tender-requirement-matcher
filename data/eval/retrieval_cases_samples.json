@@ -1,0 +1,12 @@
+[
+  {"query": "booster pump impeller material", "manufacturer": "clausemaker", "pages": [3]},
+  {"query": "booster pump motor efficiency class", "manufacturer": "clausemaker", "pages": [3]},
+  {"query": "transfer pump casing material", "manufacturer": "clausemaker", "pages": [4]},
+  {"query": "hydrostatic test pressure", "manufacturer": "clausemaker", "pages": [5]},
+  {"query": "performance test standard ISO 9906", "manufacturer": "clausemaker", "pages": [1]},
+  {"query": "warranty period", "manufacturer": "clausemaker", "pages": [6]},
+  {"query": "valve for slurry service", "manufacturer": "flowmaker", "pages": [2]},
+  {"query": "which valve for steam lines", "manufacturer": "flowmaker", "pages": [2]},
+  {"query": "how to prevent reverse flow", "manufacturer": "flowmaker", "pages": [2]},
+  {"query": "body material for sea water", "manufacturer": "flowmaker", "pages": [3]}
+]

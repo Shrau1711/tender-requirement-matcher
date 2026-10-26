@@ -7,7 +7,7 @@ from app.chunking.strategies import STRATEGIES, strategy
 from app.chunking.strategies.parent_child import CHILD_CHARS, ParentChild, children
 from app.chunking.strategies.recursive import Recursive, overlap, split
 from app.chunking.strategies.sections import Sections
-from app.chunking.strategies.structure import Structure, clause_of, flow_windows
+from app.chunking.strategies.structure import Structure, clause_of, flow_chunks
 from app.reading.pdf_reader import Line, PageRecord, RawTable
 
 
@@ -15,8 +15,12 @@ def line(text, block, y0=0.0, x0=0.0, size=10.0, bold=False):
     return Line(text=text, x0=x0, y0=y0, x1=x0 + 200, y1=y0 + 9, size=size, bold=bold, block=block)
 
 
-def page(lines, number=2, text="", tables=(), n_boxes=0) -> PageRecord:
-    return PageRecord(pdf_page=number, text=text, n_chars=len(text), n_images=0, needs_ocr=False, lines=lines, tables=list(tables), n_boxes=n_boxes)
+def page(lines, number=2, text="", tables=(), boxes=(), links=()) -> PageRecord:
+    return PageRecord(pdf_page=number, text=text, n_chars=len(text), n_images=0, needs_ocr=False, lines=lines, tables=list(tables), boxes=list(boxes), links=list(links))
+
+
+def box_around(l):
+    return (l.x0 - 4, l.y0 - 4, l.x1 + 4, l.y1 + 4)
 
 
 def test_every_strategy_is_registered_by_its_name():
@@ -89,15 +93,26 @@ def test_a_clause_continued_on_the_next_page_keeps_its_whole_path():
     assert (last.pdf_page, last.text) == (2, "1. Pumps > 1.1 Casing\nImpeller SS 304")
 
 
-def test_a_flowchart_page_is_chunked_as_boxes_with_their_neighbours():
-    steps = ["Receive order", "Check stock", "Pick valve", "Test valve", "Pack", "Ship"]
-    lines = [line(s, i, y0=100 * i, x0=50 * (i % 2)) for i, s in enumerate(steps)]
-    chunks = Structure().chunk([page(lines, n_boxes=6)], maker("ksb", "k.pdf"))
-    assert [c.text for c in chunks][:2] == ["Receive order\nCheck stock\nPick valve", "Check stock\nPick valve\nTest valve"]
-    assert flow_windows(lines[:2]) == ["Receive order\nCheck stock"]
+STEPS = ["Receive order", "Check stock", "Pick valve", "Test valve", "Pack", "Ship"]
+
+
+def boxed_page(links):
+    lines = [line(s, 0, y0=100 * i, x0=50 * (i % 2)) for i, s in enumerate(STEPS)]  # one text block, as PDF readers often give
+    return page([*lines, line("Order flow", 1, y0=900)], boxes=map(box_around, lines), links=links)
+
+
+def test_a_flowchart_box_is_a_chunk_with_the_boxes_joined_to_it():
+    chunks = Structure().chunk([boxed_page([(i, i + 1) for i in range(5)])], maker("ksb", "k.pdf"))
+    assert [c.text for c in chunks][:3] == ["Order flow", "Receive order\n-> Check stock", "Receive order ->\nCheck stock\n-> Pick valve"]
+    assert flow_chunks(["Fluid?", "Slurry", "Knife gate"], [(0, 1), (1, 2)])[1] == "Fluid? ->\nSlurry\n-> Knife gate"
+
+
+def test_boxes_with_no_lines_between_them_are_not_a_flowchart():
+    chunks = Structure().chunk([boxed_page([])], maker("ksb", "k.pdf"))  # an ordering-code grid looks like this
+    assert len(chunks) == 1 and chunks[0].text.startswith("Receive order\nCheck stock")
 
 
 def test_short_texts_without_drawn_boxes_are_not_a_flowchart():
     lines = [line(s, i, y0=100 * i) for i, s in enumerate(["Size", "DN 50", "Pressure", "PN 16", "Body", "Steel"])]
-    chunks = Structure().chunk([page(lines, n_boxes=0)], maker("ksb", "k.pdf"))
+    chunks = Structure().chunk([page(lines)], maker("ksb", "k.pdf"))
     assert len(chunks) == 1 and chunks[0].text == "Size\nDN 50\nPressure\nPN 16\nBody\nSteel"

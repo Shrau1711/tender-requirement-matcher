@@ -7,14 +7,13 @@ import pymupdf
 from pydantic import BaseModel
 
 from app.llm.parallel import run_parallel
+from app.reading.boxes import box_links, text_boxes
 from app.reading.ocr import ImageReader, render_page
 
 MIN_TEXT_CHARS = 40
 MIN_DRAWINGS = 20     # a page with no text but this many vector shapes is text drawn as shapes, not a blank page
 LINE_HEIGHT = 12      # pretend geometry for lines that were read from a picture
 BOLD_FLAG = 16  # PyMuPDF span flag bit for bold
-BOX_WIDTH = (15, 300)   # a drawn rectangle this wide and this high can be a box around a few words, as in a flowchart
-BOX_HEIGHT = (8, 120)
 
 
 class Line(BaseModel):
@@ -43,7 +42,8 @@ class PageRecord(BaseModel):
     ocr: bool = False  # its text was read from the picture by the model, so it may contain misreadings
     lines: list[Line]
     tables: list[RawTable] = []
-    n_boxes: int = 0  # text blocks drawn inside a rectangle of their own, as the steps of a flowchart are
+    boxes: list[tuple[float, float, float, float]] = []  # the boxes of a flowchart, in reading order (see app.reading.boxes)
+    links: list[tuple[int, int]] = []  # (from, to) positions in boxes, for each line drawn between two of them
 
 
 class ReadDocument(BaseModel):
@@ -115,15 +115,6 @@ def with_text(record: PageRecord, text: str) -> PageRecord:
     return record.model_copy(update={"text": text, "n_chars": len(text), "lines": lines_from_text(text)})
 
 
-# How many text blocks sit inside a drawn rectangle of about their size: the boxes of a flowchart.
-def boxed_blocks(page: pymupdf.Page) -> int:
-    (low_w, high_w), (low_h, high_h) = BOX_WIDTH, BOX_HEIGHT
-    rects = [d["rect"] for d in page.get_drawings()
-             if any(item[0] == "re" for item in d["items"]) and low_w < d["rect"].width < high_w and low_h < d["rect"].height < high_h]
-    blocks = [pymupdf.Rect(b[:4]) for b in page.get_text("blocks") if b[6] == 0]  # type 0 is text
-    return sum(any(r.contains(b) for r in rects) for b in blocks)
-
-
 # Finds the tables on a page with PyMuPDF.
 def extract_tables(page: pymupdf.Page) -> list[RawTable]:
     found = page.find_tables().tables
@@ -158,6 +149,7 @@ def read_pdf(path: str | Path, read_image: ImageReader | None = None) -> ReadDoc
             n_images = len(page.get_images(full=True))
             unreadable = needs_ocr(page, text, n_images)
             ocr = unreadable and read_image is not None
+            boxes = [] if ocr else text_boxes(page)
             if ocr:
                 pictures[i] = render_page(page)
             records.append(
@@ -171,7 +163,8 @@ def read_pdf(path: str | Path, read_image: ImageReader | None = None) -> ReadDoc
                     ocr=ocr,
                     lines=[] if ocr else extract_lines(page),
                     tables=[] if ocr else extract_tables(page),
-                    n_boxes=0 if ocr else boxed_blocks(page),
+                    boxes=boxes,
+                    links=box_links(page, boxes) if boxes else [],
                 )
             )
         n_pages = doc.page_count
