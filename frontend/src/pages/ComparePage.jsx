@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { api } from "../api";
-import DataTable from "../components/DataTable";
-import { ErrorState } from "../components/States";
+import DataTable from "../components/common/DataTable";
+import { ErrorState } from "../components/common/States";
 import { useAsync } from "../hooks/useAsync";
 import { percent } from "../lib/format";
 

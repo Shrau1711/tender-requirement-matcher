@@ -8,7 +8,7 @@ from typing import Literal
 
 from pydantic import BaseModel, field_validator
 
-from app.services.estimate import Estimate
+from app.cost.estimate import Estimate
 
 Status = Literal["queued", "awaiting", "running", "done", "failed", "cancelled"]  # awaiting: the person has an estimate to approve
 

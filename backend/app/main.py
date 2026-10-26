@@ -12,7 +12,7 @@ from app.api.routes import router
 from app.config import path_setting
 from app.db.reviews import ReviewStore
 from app.db.runs import RunStore
-from app.services.runner import Runner, run_pipeline
+from app.pipeline.runner import Runner, run_pipeline
 
 BACKEND = Path(__file__).resolve().parents[1]
 

@@ -7,7 +7,7 @@ from typing import Literal
 from pydantic import BaseModel, Field, model_validator
 
 from app.db.runs import now
-from app.services.match import Status
+from app.judging.match import Status
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS reviews (

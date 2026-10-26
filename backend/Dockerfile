@@ -21,7 +21,7 @@ COPY backend/app app
 COPY backend/config config
 COPY backend/scripts scripts
 COPY data/categories /app/data/categories
-# Model answers for the example tenders, so running them costs nothing (see scripts/export_demo_cache.py).
+# Model answers for the example tenders, so running them costs nothing (see scripts/cost/export_demo_cache.py).
 COPY data/demo_cache /app/data/demo_cache
 
 # The vectors of the manufacturers' passages and of the example tenders' questions, as computed where the answers above were saved.

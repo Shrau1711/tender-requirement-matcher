@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "./api";
-import { NotifyProvider } from "./components/Notifier";
-import { Sidebar, Topbar } from "./components/Shell";
+import { NotifyProvider } from "./components/shell/Notifier";
+import { Sidebar, Topbar } from "./components/shell/Shell";
 import { go, useRoute } from "./hooks/useRoute";
 import { useRun } from "./hooks/useRun";
 import { useTheme } from "./hooks/useTheme";

@@ -1,6 +1,6 @@
 import pytest
 
-from app.services.llm import Reply
+from app.llm.llm import Reply
 
 
 class FakeLLM:

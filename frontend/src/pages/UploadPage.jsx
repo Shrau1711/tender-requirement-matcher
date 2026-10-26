@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { api } from "../api";
-import Icon from "../components/Icon";
-import { ErrorState } from "../components/States";
+import Icon from "../components/common/Icon";
+import { ErrorState } from "../components/common/States";
 import { useAsync } from "../hooks/useAsync";
 import { fileSize } from "../lib/format";
 

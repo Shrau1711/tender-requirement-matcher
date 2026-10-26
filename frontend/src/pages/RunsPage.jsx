@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { api } from "../api";
-import DataTable from "../components/DataTable";
-import { EmptyState } from "../components/States";
-import { useNotify } from "../components/Notifier";
+import DataTable from "../components/common/DataTable";
+import { EmptyState } from "../components/common/States";
+import { useNotify } from "../components/shell/Notifier";
 import { go } from "../hooks/useRoute";
 import { callsSummary, shortDate } from "../lib/format";
 import { links } from "../lib/route";

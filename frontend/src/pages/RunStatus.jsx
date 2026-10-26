@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
-import { ErrorState } from "../components/States";
+import { ErrorState } from "../components/common/States";
 
 const seconds = (since) => Math.max(0, Math.round((Date.now() - new Date(since).getTime()) / 1000));
 const clock = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;

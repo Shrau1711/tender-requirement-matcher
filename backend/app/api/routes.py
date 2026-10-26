@@ -4,18 +4,18 @@ import shutil
 from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, Form, HTTPException, Request, UploadFile
-from pydantic import BaseModel, Field
 from fastapi.responses import Response
+from pydantic import BaseModel, Field
 
 from app.api.categories import Category, list_categories
 from app.api.uploads import MAX_UPLOAD_MB, save_tender
+from app.cost.approval import APPROVALS
 from app.db.runs import RunInfo, RunStore
-from app.services.approval import APPROVALS
-from app.services.llm_cache import MAX_CALLS
-from app.services.report import Report
-from app.services.report_xlsx import build_workbook
-from app.services.report_markdown import to_markdown
-from app.services.runner import Runner, execute
+from app.llm.llm_cache import MAX_CALLS
+from app.pipeline.runner import Runner, execute
+from app.reporting.report import Report
+from app.reporting.report_markdown import to_markdown
+from app.reporting.report_xlsx import build_workbook
 
 router = APIRouter()
 
