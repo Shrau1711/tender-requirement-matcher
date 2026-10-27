@@ -339,3 +339,23 @@ The search itself keeps BM25 for keywords and RRF to merge the rankings; only th
 **In an interview.** "Before spending anything on the open questions, I priced each one from data I already had. The saved answers record the real tokens of every call, so a re-run under another model or temperature could be priced from what the same run used, and comparing those counts with my characters-divided-by-four estimate showed the estimate is about 30% low, which answered one of the paid questions for free. The recommended plan tests a lighter model and Google's recommended temperature on the smaller labelled tender for about ₹60, and waits for approval."
 
 **Files to read.** `docs/NEEDS_PAID_RUN.md` (the table and the plan), the "Switching the settings" section of `README.md`, `docker-compose.yml`.
+
+## Phase 7, follow-up: shipped answers in subfolders, data folders documented, model id checked
+
+**What changed.**
+- **Shipped answers in subfolders.** The 610 shipped answers in `data/demo_cache/` moved into subfolders named by the first two characters of each file's name (`3f/3f….json`), 236 subfolders in all. Only the folder's README stays at the top; the README was the 611th tracked file there. One function, `shipped_path` in `app/llm/llm_cache.py`, says where an answer lives. The cache lookup and the export script both use it, and two cache tests now ship their answer the way the export script does.
+- **Exemptions documented.** `docs/architecture.md` now states which folders are exempt from the 7-file rule and why: `frontend/`'s root config files; the manufacturers' documents (KSB's 8 valve catalogues), whose folder and file names are part of every chunk and question; and the shipped answers.
+- **Model id checked for the approved paid step 1.** Google's models page lists `gemini-3.5-flash-lite` as "Stable", and its thinking page lists it as supporting "minimal, low, medium, high", so `LLM_THINKING` stays at `LOW` and only the model changes. Nothing was run; the owner confirms the id in AI Studio first.
+
+**Measured, free (`LLM_MAX_CALLS=0`).**
+- **Every answer is still found.** All 610 file names from the last commit are found by `CachedLLM.saved` in their new place, and git records all 610 moves as unchanged (R100).
+- **Fresh-install runs, before and after the move.** The five example tenders were run end to end as a fresh install would: an empty cache folder, so no store and no live answers, with only the shipped answers and vectors.
+  - Before and after, the runs used the same answers: 84, 97, 121, 254 and 50. That is 606 answers in all, with 0 model calls and 0 misses.
+  - The other 4 shipped answers were not used before the move either. They are evidence answers exported on 19 October for questions that later changes to tender reading no longer ask. They are left in place; deleting them is the owner's choice.
+- **Inside the rebuilt backend image** all 610 answers are found by the same rule.
+
+**Checks.** Backend 432 passed, frontend 74 passed, and `docker compose build` succeeds; ruff shows only the 5 old findings.
+
+**Still over 7 files.** Two subfolders hold 8 and 9 answers (`84/`, `c5/`), because 610 names spread over 236 two-character subfolders are not even. Three characters, or two levels of two, would keep every subfolder well under 7; that is a one-line change to `shipped_path` plus moving the files again.
+
+**Files to read.** `shipped_path` and `saved` in `backend/app/llm/llm_cache.py`, `copy_answers` in `backend/scripts/cost/export_demo_cache.py`, and the 7-file rule in `docs/architecture.md`.

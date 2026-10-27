@@ -118,6 +118,11 @@ flowchart TD
 
 **One shared tender-reading prompt.** Each category can add rules for reading tender rows (`extraction_rules` in `category.json`), and every category's rules are in every prompt, so the prompt does not depend on which items a tender has. The trade-off: adding a rule to any category changes the prompt for every tender, so all their saved answers stop matching. A test pins the prompt to the text the saved answers were made with.
 
+**At most 7 files in a folder, for code.** The rule applies to code, tests, scripts and config. Three places are exempt, on purpose:
+- `frontend/`'s root config files (8), which tools expect at the root;
+- the manufacturers' documents, such as `data/categories/valves/manufacturers/ksb/` with KSB's 8 valve catalogues. They are data: each folder holds one manufacturer's documents as published, and its folder and file names become the manufacturer and file of every chunk and appear in the questions sent to the model. Splitting a maker's folder would change those names, so the saved answers would no longer match;
+- the shipped answers in `data/demo_cache/`. These are split into subfolders by the first two characters of each file's name (`data/demo_cache/3f/3f…json`, see `shipped_path` in `app/llm/llm_cache.py`). With 611 answers spread over the possible two-character names, most subfolders hold 1 to 4 files and two hold 8 and 9.
+
 **One run per category.** A tender that buys pumps and valves becomes two runs, each a normal one-category report with its own ranking. Comparing a pump maker with a valve maker would mean nothing, and this kept the scoring and report code unchanged. The price is that a mixed tender is read as several reports, not one.
 
 **Items are routed without the model.** Product words first, then the categories' own documents by meaning. It is free and explainable, and it put all 11 labelled items in the right category, but no labelled tender mixes categories yet.

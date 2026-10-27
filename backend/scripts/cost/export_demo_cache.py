@@ -8,6 +8,7 @@ import shutil
 import sys
 from pathlib import Path
 
+from app.llm.llm_cache import shipped_path
 from app.llm.llm_factory import SEED_DIR, make_llm
 from app.pipeline.pipeline import build_report, gather
 from app.reading.ocr import reader_for
@@ -27,12 +28,13 @@ class NoCalls:
 
 
 def copy_answers(paths: set[Path], out: Path) -> int:
-    """Copies each saved answer into out, keeping its file name. Returns how many are there afterwards."""
-    out.mkdir(parents=True, exist_ok=True)
+    """Copies each saved answer into out, keeping its file name, in the subfolder shipped_path gives. Returns how many are there afterwards."""
     for path in paths:
-        if not (out / path.name).exists():
-            shutil.copy2(path, out / path.name)
-    return len(list(out.glob("*.json")))
+        target = shipped_path(out, path.name)
+        if not target.exists():
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(path, target)
+    return len(list(out.rglob("*.json")))
 
 
 def main(category_dir: str, *tenders: str) -> None:

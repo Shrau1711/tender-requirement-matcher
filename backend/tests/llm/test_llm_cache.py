@@ -38,9 +38,18 @@ def test_a_changed_setting_does_not_reuse_old_answers(fake_llm, tmp_path):
     assert CachedLLM(second, tmp_path, max_calls=CALLS).generate("s", "u").text == "b"
 
 
+def ship(fake_llm, seed, replies, user):
+    """Answers a question in a cache of its own, then ships that answer into seed the way the export script does."""
+    from scripts.cost.export_demo_cache import copy_answers
+
+    made = CachedLLM(fake_llm(replies), seed.parent / "made", max_calls=CALLS)
+    made.generate("s", user)
+    copy_answers(made.used, seed)
+
+
 def test_a_shipped_answer_is_used_without_calling_the_model_and_is_never_written_to(fake_llm, tmp_path):
     seed, live = tmp_path / "seed", tmp_path / "live"
-    CachedLLM(fake_llm(["shipped"]), seed, max_calls=CALLS).generate("s", "u")
+    ship(fake_llm, seed, ["shipped"], "u")
     inner = fake_llm([])  # no reply left: any real call would fail
     llm = CachedLLM(inner, live, max_calls=CALLS, seed_dir=seed)
     assert llm.generate("s", "u").text == "shipped"
@@ -50,7 +59,7 @@ def test_a_shipped_answer_is_used_without_calling_the_model_and_is_never_written
 
 def test_has_looks_in_the_live_cache_and_in_the_shipped_answers(fake_llm, tmp_path):
     seed, live = tmp_path / "seed", tmp_path / "live"
-    CachedLLM(fake_llm(["shipped"]), seed, max_calls=CALLS).generate("s", "shipped")
+    ship(fake_llm, seed, ["shipped"], "shipped")
     llm = CachedLLM(fake_llm(["mine"]), live, max_calls=CALLS, seed_dir=seed)
     llm.generate("s", "mine")
     assert llm.has("s", "shipped") and llm.has("s", "mine") and not llm.has("s", "never asked")
@@ -70,6 +79,6 @@ def test_exported_answers_keep_their_names_and_are_not_copied_twice(tmp_path):
     made.parent.mkdir()
     made.write_text("{}", encoding="utf-8")
     out = tmp_path / "ship"
-    assert copy_answers({made}, out) == 1 and (out / "abc.json").exists()
+    assert copy_answers({made}, out) == 1 and (out / "ab" / "abc.json").exists()  # in the subfolder named by its first two characters
     made.write_text('{"changed": 1}', encoding="utf-8")
-    assert copy_answers({made}, out) == 1 and (out / "abc.json").read_text(encoding="utf-8") == "{}"
+    assert copy_answers({made}, out) == 1 and (out / "ab" / "abc.json").read_text(encoding="utf-8") == "{}"

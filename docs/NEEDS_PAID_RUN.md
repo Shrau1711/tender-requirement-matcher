@@ -28,7 +28,7 @@ How the prices were worked out (phase 7, all free, `LLM_MAX_CALLS=0`):
 
 9933225 is the smaller labelled tender. Two runs, one after the other, each scored against the answer key:
 
-1. **The lighter model, ≈ ₹19.** First check on Google's models page that the model id is `gemini-3.5-flash-lite` and that it accepts the thinking level `LOW`; if it does not, add `LLM_THINKING=DEFAULT` and say so in the results.
+1. **The lighter model, ≈ ₹19. Approved by the owner; waiting for the owner to confirm the model id in AI Studio before it runs.** The id is `gemini-3.5-flash-lite`: Google's models page (checked 27 October 2026) lists it as "Stable" with no shutdown date, and its thinking page lists it as supporting "minimal, low, medium, high" with thinking on by default at "minimal". So `LLM_THINKING` stays at the default `LOW`, as in every saved answer, and only the model changes.
    ```
    cd backend
    $env:LLM_MODEL="gemini-3.5-flash-lite"; $env:LLM_MAX_CALLS="70"

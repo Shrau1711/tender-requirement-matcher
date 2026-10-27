@@ -11,6 +11,11 @@ from app.llm.llm import LLM, Reply
 MAX_CALLS = number_setting("LLM_MAX_CALLS", 400)  # real model calls allowed per run; a safety net against runaway loops
 
 
+def shipped_path(seed_dir: Path, name: str) -> Path:
+    """Where a shipped answer lives: in a subfolder named by the first two characters of its name, so no folder holds hundreds of files."""
+    return seed_dir / name[:2] / name
+
+
 class CachedLLM:
     """Wraps any LLM: repeats of a request are answered from disk, and real calls are counted."""
 
@@ -30,7 +35,7 @@ class CachedLLM:
     def saved(self, system: str, user: str) -> Path | None:
         """Where the answer to this request is already saved: the live cache first, then the answers shipped with the code. None if it is nowhere."""
         path = self.path_for(system, user)
-        return next((p for p in (path, self.seed_dir / path.name if self.seed_dir else None) if p and p.exists()), None)
+        return next((p for p in (path, shipped_path(self.seed_dir, path.name) if self.seed_dir else None) if p and p.exists()), None)
 
     def has(self, system: str, user: str) -> bool:
         return self.saved(system, user) is not None
