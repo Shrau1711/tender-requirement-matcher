@@ -1,0 +1,112 @@
+[
+ {
+  "item": "Butterfly Valves (V2) As Per IS 13095",
+  "file": "GeM-Bidding-9933225.pdf",
+  "page": 5,
+  "name": "Bis Required",
+  "value": "Yes",
+  "keys": [
+   "bis_required"
+  ]
+ },
+ {
+  "item": "Butterfly Valves (V2) As Per IS 13095",
+  "file": "GeM-Bidding-9933225.pdf",
+  "page": 5,
+  "name": "Conformity to Governing Specification (ISS)",
+  "value": "IS 13095",
+  "keys": [
+   "governing_specification"
+  ]
+ },
+ {
+  "item": "Butterfly Valves (V2) As Per IS 13095",
+  "file": "GeM-Bidding-9933225.pdf",
+  "page": 5,
+  "name": "Application",
+  "value": "Tight Shut Off",
+  "keys": [
+   "application"
+  ]
+ },
+ {
+  "item": "Butterfly Valves (V2) As Per IS 13095",
+  "file": "GeM-Bidding-9933225.pdf",
+  "page": 5,
+  "name": "Valve End Connection",
+  "value": "Flangeless Wafer Valve",
+  "keys": [
+   "valve_end_connection"
+  ]
+ },
+ {
+  "item": "Butterfly Valves (V2) As Per IS 13095",
+  "file": "GeM-Bidding-9933225.pdf",
+  "page": 5,
+  "name": "Face to Face Dimension (In this context, the final decision made by the consignee/ Buyer shall be binding)",
+  "value": "Wafer Short (PN 2.5) Class 125/150",
+  "keys": [
+   "face_to_face_dimension"
+  ]
+ },
+ {
+  "item": "Butterfly Valves (V2) As Per IS 13095",
+  "file": "GeM-Bidding-9933225.pdf",
+  "page": 5,
+  "name": "Nominal Size (DN) (mm)",
+  "value": "125",
+  "keys": [
+   "nominal_size"
+  ]
+ },
+ {
+  "item": "Butterfly Valves (V2) As Per IS 13095",
+  "file": "GeM-Bidding-9933225.pdf",
+  "page": 5,
+  "name": "Nominal Pressure (PN) (MPa)",
+  "value": "1.6",
+  "keys": [
+   "nominal_pressure"
+  ]
+ },
+ {
+  "item": "Butterfly Valves (V2) As Per IS 13095",
+  "file": "GeM-Bidding-9933225.pdf",
+  "page": 5,
+  "name": "Availability of Test Report from type of Lab, to prove the conformity of product to the specification (Hint: Select \"\"NA\"\"If test report not available)",
+  "value": "From Central Govt. Lab, NABL Accredited Lab, ILAC Accredited Lab",
+  "keys": [
+   "test_report_lab_type"
+  ]
+ },
+ {
+  "item": "Butterfly Valves (V2) As Per IS 13095",
+  "file": "GeM-Bidding-9933225.pdf",
+  "page": 5,
+  "name": "Agree to provide all relevant documents including supporting document / reports etc to the buyer at the time of bidding or on demand",
+  "value": "Yes",
+  "keys": [
+   "agree_to_provide_documents"
+  ]
+ },
+ {
+  "item": "Butterfly Valves (V2) As Per IS 13095",
+  "file": "GeM-Bidding-9933225.pdf",
+  "page": 5,
+  "name": "Handle Type: Lever/Handle Operated",
+  "value": "Valve shall be supplied complete with operating handle (lever) assembly.",
+  "keys": [
+   "handle_type"
+  ]
+ },
+ {
+  "item": "Butterfly Valves (V2) As Per IS 13095",
+  "file": "GeM-Bidding-9933225.pdf",
+  "page": 6,
+  "name": "Nominal Size (DN) (mm)",
+  "value": "80",
+  "keys": [
+   "nominal_size"
+  ]
+ }
+]

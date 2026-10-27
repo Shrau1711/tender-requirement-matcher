@@ -9,7 +9,8 @@ import sys
 from pathlib import Path
 
 from app.evaluation.evaluation import to_markdown
-from app.evaluation.gold import GOLD_DIR, compare, load_gold
+from app.evaluation.gold import answer_keys
+from app.evaluation.rows import score_against_key
 from app.llm.llm_factory import make_llm
 from app.pipeline.pipeline import match_tender, read_atoms
 from app.reading.ocr import reader_for
@@ -20,7 +21,7 @@ def main(tenders_dir: str, categories_dir: str, out: str = "reports/evaluation.m
     llm = make_llm()
     read_image = reader_for(llm)
     by_tender = {}
-    for gold_file in sorted(GOLD_DIR.glob("*.json")):
+    for gold_file in answer_keys():
         tender = Path(tenders_dir) / gold_file.stem
         if not tender.exists():
             print(f"skipped {gold_file.stem}: no tender folder in {tenders_dir}")
@@ -31,7 +32,7 @@ def main(tenders_dir: str, categories_dir: str, out: str = "reports/evaluation.m
             print(f"skipped {gold_file.stem}: no category folder for '{category or 'unknown'}'")
             continue
         _, _, outcomes = match_tender(llm, tender, Path(categories_dir) / category, read_image)
-        by_tender[gold_file.stem] = compare(outcomes, load_gold(gold_file))
+        by_tender[gold_file.stem], _ = score_against_key(outcomes, gold_file.stem)
         print(f"scored {gold_file.stem} ({category}): {len(by_tender[gold_file.stem])} labelled rows")
     Path(out).parent.mkdir(parents=True, exist_ok=True)
     Path(out).write_text(to_markdown(by_tender), encoding="utf-8")

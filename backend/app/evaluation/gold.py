@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from pathlib import Path
 
 from pydantic import BaseModel
@@ -10,6 +11,11 @@ from app.judging.match import Outcome, Status
 from app.tender.items import Item
 
 GOLD_DIR = Path(__file__).resolve().parents[3] / "data" / "eval" / "gold"
+
+
+def answer_keys(folder: Path = GOLD_DIR) -> list[Path]:
+    """Every answer key in the folder: <tender>.json, not the <tender>.rows.json anchors beside it."""
+    return sorted(f for f in folder.glob("*.json") if not f.name.endswith(".rows.json"))
 
 
 class Label(BaseModel):
@@ -77,13 +83,17 @@ def load_gold(path: Path) -> Gold:
     return {attribute: {m: Label(**label) for m, label in labels.items()} for attribute, labels in data.items()}
 
 
-def compare(outcomes: list[Outcome], gold: Gold) -> list[Row]:
-    """Our outcome next to the person's label, for every labelled row of a manufacturer we could read."""
+def compare(outcomes: list[Outcome], gold: Gold, key_of: Callable[[AtomicRequirement], str | None] | None = None) -> list[Row]:
+    """Our outcome next to the person's label, for every labelled row of a manufacturer we could read.
+
+    key_of gives the label sheet's entry for a requirement. By default it is the attribute name the model gave; see
+    app.evaluation.rows for finding it by the tender row instead, which does not depend on how the model named it."""
     rows, seen = [], set()
     several = has_several([o.requirement.item for o in outcomes])
+    key_of = key_of or (lambda r: key_for(r.item, r.attribute, several))
     for o in outcomes:
-        key = key_for(o.requirement.item, o.requirement.attribute, several)
-        label = gold.get(key, {}).get(o.manufacturer)
+        key = key_of(o.requirement)
+        label = gold.get(key, {}).get(o.manufacturer) if key else None
         if label and label.status and o.assessed and o.status != "unsupported requirement" and (key, o.manufacturer) not in seen:
             seen.add((key, o.manufacturer))  # a label is compared once, even if the same product is listed twice
             rows.append(Row(

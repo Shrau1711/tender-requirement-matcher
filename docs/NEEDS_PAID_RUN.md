@@ -54,6 +54,7 @@ How the prices were worked out (phase 7, all free, `LLM_MAX_CALLS=0`):
    | Rejected as about another type of product | 134 | 6 |
    | Findings kept | 97 | 93 |
 
+   - **All 35 rows, scored later by tender row** (`score_gold` now matches the answer key by the tender row; see `docs/CHANGES.md`): Flash-Lite 28 of 35 statuses and 19 of 21 pages, against 31 of 35 and 23 of 23 for the current model.
    - **The 5 rows Flash-Lite did not score** are one requirement, `valve_end_connection` for five makers. Flash-Lite named it `end_connection` when splitting the tender's rows into requirements, so the answer key, which is keyed by attribute name, had nothing to compare. It read the same 11 rows.
    - **The rows that differ:** Flash-Lite is wrong where the current model is right in 4 (face-to-face for Duncan and Intervalve, handle type for Duncan, nominal pressure for Delval). It is right where the current model is wrong in 2 (nominal pressure for King, nominal size for Intervalve).
    - **Findings:** Flash-Lite returned far fewer findings that were then set aside as another type of product, and one quote that was not word for word.
@@ -84,6 +85,7 @@ How the prices were worked out (phase 7, all free, `LLM_MAX_CALLS=0`):
    | Output tokens per call: median, largest | 236, 2,600 | 192, 2,477 |
 
    - **No sign of looping.** There were no retries, no empty or truncated replies and no errors, and replies were no longer than at temperature 0. The most repeated line in any reply (8 times) is the field `"operator": "equals",` in a normal list; temperature 0 has one with 9.
+   - **Scored by tender row**, as `score_gold` now does with no manual mapping: 29 of 35 statuses and 21 of 21 pages, the same as the figures above.
    - **How all 35 rows were scored.** At temperature 1.0 the model named the IS 13095 requirement `conformity_to_governing_specification` instead of `governing_specification`, so `score_gold` as it stands scores 30 rows (24 of 30 statuses, 20 of 20 pages). The 35-row figures above treat that one name as the answer key's. Its five rows came out the same at both temperatures, and all five agree with the key.
    - **The rows that differ:** temperature 1.0 is wrong where 0 is right in 3: face-to-face and handle type for Duncan, now "no evidence found", and end connection for KSB. It is right where 0 is wrong in 1: nominal size for Intervalve.
    - **What this says, on one tender:** the same cost as temperature 0, 2 fewer statuses agreeing, and no looping. Not enough to change the default, which stays 0.

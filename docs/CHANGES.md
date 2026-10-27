@@ -396,3 +396,41 @@ The owner approved step 2: `LLM_TEMPERATURE=DEFAULT` (1.0, as Google advises for
 - **Default unchanged:** on one tender, temperature 1.0 is no better and no cheaper, so the default stays 0.
 
 **Something to fix later, free:** two of two paid runs lost labelled rows only because the model chose another attribute name. Matching the answer key by the tender row (file, page, row name) instead of by attribute name would make such runs comparable without a manual mapping.
+
+## Scoring against the answer key by tender row
+
+**What changed.** `score_gold` and `eval_all` now find each requirement's answer-key entry by the tender row it was read from, not by the attribute name the model gave it.
+- The answer keys are keyed by the names the current model chose when the labels were made. In both paid runs, the model named one requirement differently (`end_connection`, `conformity_to_governing_specification`), so 5 labelled rows had nothing to compare with.
+- **The anchors files.** Each labelled tender now has `data/eval/gold/<tender>.rows.json` beside its answer key. It lists, for every tender row (item, file, page, row name and value), the answer-key entries that row produced, in order. `scripts/gold/make_row_anchors.py` makes it, free, from the saved reading the labels were made from, and checks that every answer-key entry is covered (7 of 7 for 9933225, 74 of 74 for 9935891).
+- **Scoring** (`app/evaluation/rows.py`):
+  - a row that produced one entry gives it to every requirement read from that row;
+  - a row that produced several (12 rows of 9935891 did) pairs them in order;
+  - only otherwise does it fall back to the attribute name. The script says how many were found each way.
+- `compare` takes the entry rule as a parameter, so the code that builds scoring rows is not duplicated.
+- `eval_all` no longer takes every `.json` in the gold folder for an answer key; `answer_keys()` skips the anchors files.
+
+**Proof that nothing else changed** (saved answers only, no model call):
+- On the current model's saved answers, row matching gives exactly the same rows as name matching, every field in the same order, for both labelled tenders.
+- 9933225: 31 of 35 statuses, 23 of 23 pages. 9935891: 203 of 296 statuses, 69 of 113 pages. Every entry was found by row.
+
+**The paid runs on all 35 rows of 9933225**, now with no manual mapping:
+
+| | Statuses agree | Pages agree |
+|---|---|---|
+| Current model, temperature 0 | 31 of 35 | 23 of 23 |
+| Temperature 1.0 | 29 of 35 | 21 of 21 |
+| Gemini 3.5 Flash-Lite | 28 of 35 | 19 of 21 |
+
+The temperature result equals the one from the manual mapping earlier, which cross-checks the row matching.
+
+**Tests.** 438 passed (432 before). The new tests are in `tests/evaluation/test_rows.py`:
+- with the original names, rows and names give the same result;
+- a renamed requirement is found by its row;
+- a split row is paired in order even when both names change;
+- a row split differently, or unknown to the anchors, falls back to the name;
+- anchors survive saving and are not taken for answer keys;
+- every shipped answer key's entries are covered by its anchors.
+
+One run of the full suite had one failing test, which I did not see; it did not come back in 8 more runs. It is not explained yet.
+
+**Files to read.** `backend/app/evaluation/rows.py`, `backend/scripts/gold/make_row_anchors.py`, `data/eval/gold/GeM-Bidding-9933225.rows.json`.
