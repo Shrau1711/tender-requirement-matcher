@@ -284,3 +284,58 @@ The search itself keeps BM25 for keywords and RRF to merge the rankings; only th
 **In an interview.** "The knowledge graph is deliberately small: standards and a tender's structure, built by a script from data I already had, saved as JSON a person can check. Before trusting 'A / B' in a catalogue as equivalence I looked at the pairs, and many were not, so only the naming rule for adopted standards can count as a match, and everything else only sends a requirement to a person. It is off by default, and on the labelled tenders it changed nothing, which I report as it is rather than claiming an improvement."
 
 **Files to read.** `backend/app/graph/standards.py`, `backend/app/graph/tender.py`, `standards_verdict` in `backend/app/judging/compare.py`, `data/graph/standards.json`.
+
+## Phase 7: Re-measure and price the paid checks, and finish v3
+
+**What changed.**
+- **Every paid check is priced** in a table at the top of `docs/NEEDS_PAID_RUN.md`, with what each would tell us and a priority, and a recommended plan follows it. Nothing paid was run.
+  - Whole runs (a new model or temperature) are priced from the tokens the same run really used at today's settings. Every saved answer records them, so this is measured, not estimated.
+  - Partial runs (another chunker, the graph on 9840129) are priced from the free estimate, corrected by the measurement below.
+  - Rupees use the app's own rate. Lighter models are priced with Google's current price list on the same token mix, so no exchange rate was assumed.
+- **The token estimate was checked for free.** For every saved question of the two labelled tenders, characters / 4 was compared with the input tokens Gemini reported: 74% (valves) and 69% (pumps) of the real count, from 45% to 91% per question. So the estimate shown before a run is about 30% low on input tokens, and output tokens come on top. This answers the phase 5 paid check without paying. The default counter is unchanged, as agreed; the README now says how rough the estimate is.
+- **Recommended plan, under ₹100**, on the smaller labelled tender 9933225, scored against its answer key with `score_gold` and `LLM_MAX_CALLS=70`:
+  1. Gemini 3.5 Flash-Lite, ≈ ₹19.
+  2. Temperature 1.0 on the current model, ≈ ₹41, before 1 January 2027, when Google doubles its price.
+
+  Expected total ≈ ₹60. Today's result to compare with: 31 of 35 statuses and 23 of 23 pages agree, from 59 saved answers.
+- **Script fixes found while pricing:**
+  - `score_gold` now prints the calls and tokens a run used, so a paid run's real cost can be compared with its price.
+  - The paid-run instructions now use `score_gold` on one tender, because `eval_all` would also spend on the other labelled tender.
+- **README for v3:** what is new, how to switch the settings (which ones change the questions and so cost money, and which do not), Docker Compose commands, the free checks, and corrected statements about the estimate and about reading documents once.
+- **Docker:**
+  - `docker-compose.yml` now passes the model, thinking, temperature, chunker, passages, store, counter and graph settings through, each defaulting to today's value.
+  - The backend image now includes `data/graph/standards.json`, which phase 6 had left out: inside the image the graph had 0 standards, and now it has 246 and 24 links.
+
+**Measured, free (`LLM_MAX_CALLS=0`).**
+- **Cost of whole runs at today's settings** (read from the saved answers):
+
+  | Tender | Calls | Input tokens | Output tokens | At ₹100 per million |
+  |---|---|---|---|---|
+  | 9933225 | 64 (59 for `score_gold`) | 385,355 | 28,109 | ≈ ₹41 |
+  | 9935891 | 214 | 1,568,873 | 65,297 | ≈ ₹163 |
+
+  Reading the manufacturers' documents cost 0 calls, because the store holds them.
+- **New questions per chunker** (`estimate_cost` with the memory store, so the Chroma store was not disturbed):
+
+  | Tender | `recursive` | `sections` | `parent_child` | `structure` | `auto` |
+  |---|---|---|---|---|---|
+  | 9933225 | 56 | 56 | 55 | 41 | 41 |
+  | 9935891 | 204 | 204 | 203 | 141 | 0 |
+
+  `auto` costs nothing on the pump tender because it keeps `table_rows` for every pump catalogue.
+- **Today's baseline on 9933225:** 31 of 35 statuses and 23 of 23 pages agree with the answer key.
+
+**Checks.**
+- Backend: 432 tests passed. ruff shows only the 5 findings that were there before v3.
+- Frontend: 74 tests passed, and `vite build` succeeds.
+- `docker compose build` builds both images. Inside the backend image the defaults are unchanged (store `chroma`, graph `off`, counter `estimate`, temperature 0 with the old cache key), both categories load, and the graph has 246 standards.
+- **Folders:** no tracked folder holds more than 7 files, except three.
+  - `frontend/` holds the root config files (8), kept there as agreed in phase 1.
+  - `data/demo_cache/` holds the shipped answers (611 files).
+  - `data/categories/valves/manufacturers/ksb/` holds KSB's 8 valve catalogues.
+
+  The last two are data, not code. Their file and folder names are part of the saved answers' prompts and the chunk names, so moving them would make saved answers miss; they are left as they are, for the owner to decide.
+
+**In an interview.** "Before spending anything on the open questions, I priced each one from data I already had. The saved answers record the real tokens of every call, so a re-run under another model or temperature could be priced from what the same run used, and comparing those counts with my characters-divided-by-four estimate showed the estimate is about 30% low, which answered one of the paid questions for free. The recommended plan tests a lighter model and Google's recommended temperature on the smaller labelled tender for about ₹60, and waits for approval."
+
+**Files to read.** `docs/NEEDS_PAID_RUN.md` (the table and the plan), the "Switching the settings" section of `README.md`, `docker-compose.yml`.

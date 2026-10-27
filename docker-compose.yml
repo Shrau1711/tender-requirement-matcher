@@ -11,6 +11,15 @@ services:
       LLM_MAX_CALLS: ${LLM_MAX_CALLS:-400}
       TENDER_TOKEN_BUDGET: ${TENDER_TOKEN_BUDGET:-1500000}
       LLM_WORKERS: ${LLM_WORKERS:-4}
+      # The settings below default to what the saved answers were made with; see "Switching the settings" in the README.
+      LLM_MODEL: ${LLM_MODEL:-gemini-3.8-flash}
+      LLM_THINKING: ${LLM_THINKING:-LOW}
+      LLM_TEMPERATURE: ${LLM_TEMPERATURE:-0}
+      CHUNKER: ${CHUNKER:-table_rows}
+      EVIDENCE_TOP_K: ${EVIDENCE_TOP_K:-16}
+      VECTOR_STORE: ${VECTOR_STORE:-chroma}
+      TOKEN_COUNTER: ${TOKEN_COUNTER:-estimate}
+      KNOWLEDGE_GRAPH: ${KNOWLEDGE_GRAPH:-off}
     ports:
       - "8000:8000"
     volumes:

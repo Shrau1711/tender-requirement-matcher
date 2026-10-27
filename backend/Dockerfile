@@ -21,6 +21,8 @@ COPY backend/app app
 COPY backend/config config
 COPY backend/scripts scripts
 COPY data/categories /app/data/categories
+# The standards graph (scripts/run/build_graph.py), used only with KNOWLEDGE_GRAPH=on.
+COPY data/graph /app/data/graph
 # Model answers for the example tenders, so running them costs nothing (see scripts/cost/export_demo_cache.py).
 COPY data/demo_cache /app/data/demo_cache
 

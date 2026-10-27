@@ -4,6 +4,16 @@ Upload a GeM tender (PDF), and pick a category or let the system find each item'
 
 How the parts fit together, with diagrams and the design decisions, is in [docs/architecture.md](docs/architecture.md). An LLM (Gemini) only reads text and pulls out structured facts. The comparison and scoring are plain code, and every quoted piece of evidence is checked programmatically against the page it came from.
 
+### What is new in v3
+
+- The code is split into one package per pipeline stage (reading, chunking, embedding, vector store, retrieval, extraction, judging, reporting, and more), each replaceable on its own.
+- Five chunking strategies behind one interface, with a router that picks one per document (`CHUNKER`).
+- A vector store interface: Chroma on disk (the default, reads each document once) or the original in-memory store, with identical results.
+- Categories are folders with a `category.json`; the category is optional on upload, and a tender with items of several categories gets one run per category.
+- An exact token counter option, model, thinking and temperature as settings, and a small knowledge graph of standards (off by default).
+
+Every default is what the saved answers were made with, so they all still match. What changed, why and what was measured, phase by phase: [docs/CHANGES.md](docs/CHANGES.md). Checks that would need paid model calls, with their prices: [docs/NEEDS_PAID_RUN.md](docs/NEEDS_PAID_RUN.md).
+
 ## Run it (Docker, no build needed)
 
 You need Docker and a Gemini API key. The images are public on Docker Hub:
@@ -22,8 +32,8 @@ Open http://localhost:3000, upload the tender PDF(s), and choose a category or l
 
 - **Answers it already has are free.** The images ship with the answers for five example tenders (GeM 9933225, 9968695 and 10016383 for valves; 9935891 and 9604147 for pumps), so those show "everything is already saved" and finish with no Gemini calls. In my runs that took 1 to 6 minutes (the pump tenders are the slow ones), because the manufacturers' documents are still read and searched. Every answer from your own runs is kept in the `tender-data` volume, so repeating a run is also free.
 - **A tender it has not seen** makes live Gemini calls. Expect a few minutes and roughly ₹6 for a small tender up to ₹60-90 for one with 8-16 requirements, and never more than the budget below. On one checked tender the estimate said about ₹26 and AI Studio showed ₹26.
-- The estimate is a guess for time (the model's speed varies) and a close figure for money (it prices the input tokens of every question before asking it).
-- The manufacturers' documents are already indexed inside the image, so the first run on a fresh container does not spend minutes building a search index.
+- The estimate is a guess for time (the model's speed varies) and a rough figure for money. It counts the input tokens of every question as characters / 4. Measured against the counts Gemini reported for the two labelled tenders' saved questions, that is about 70% of the real input tokens, and the replies' output tokens come on top. `TOKEN_COUNTER=gemini` counts exactly.
+- The manufacturers' documents are read and embedded once into the Chroma store in the `tender-data` volume (about 1.5 minutes for valves and 4 for pumps on my machine); later runs take them from the store in about a second. The search vectors ship inside the image, so even the first run computes no embeddings for the shipped documents.
 
 Or with Docker Compose (from a clone of this repo, with a `.env` file next to `docker-compose.yml`):
 
@@ -37,7 +47,30 @@ docker compose pull
 docker compose up
 ```
 
-To build the images yourself instead, run `docker compose up --build`.
+To build the images yourself instead:
+
+```
+docker compose build          # both images
+docker compose up             # start them; add -d to run in the background
+docker compose logs -f backend
+docker compose down           # stop; the tender-data volume (runs, saved answers, Chroma store) is kept
+```
+
+## Switching the settings
+
+Settings are environment variables (the full list is below). Set them in `backend/.env` when running locally, with `-e NAME=value` on `docker run`, or in the `.env` next to `docker-compose.yml`, which passes the main ones through:
+
+```
+LLM_TEMPERATURE=DEFAULT
+KNOWLEDGE_GRAPH=on
+```
+
+Restart the backend after a change. Two kinds of setting behave differently:
+
+- **They change the questions sent to Gemini, so saved answers no longer match and runs cost money again:** `LLM_MODEL`, `LLM_THINKING`, `LLM_TEMPERATURE`, `CHUNKER`, `EVIDENCE_TOP_K`, and a category's `extraction_rules`. Before switching one, get the free estimate: `cd backend` then `python -m scripts.cost.estimate_cost <tender folder> ../data/categories/<category>`. It reads the saved answers and counts what would be new. With a new model or temperature even the tender's reading is new, so it stops and says so; the measured costs of whole runs are in `docs/NEEDS_PAID_RUN.md`.
+- **They do not change any question:** `VECTOR_STORE` (same results either way), `TOKEN_COUNTER` (only how the estimate counts), `KNOWLEDGE_GRAPH` (only how standards are judged, in plain code), `LLM_MAX_CALLS`, `TENDER_TOKEN_BUDGET`, `LLM_WORKERS`.
+
+To check a setting for free on a labelled tender, `python -m scripts.eval.score_gold ../data/tenders/dev/GeM-Bidding-9933225 ../data/categories/valves` with `LLM_MAX_CALLS=0` scores the saved answers against the answer key, and stops instead of spending if a question is new.
 
 ## Ports and settings
 
@@ -156,8 +189,20 @@ cd backend
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements-dev.txt
+set LLM_MAX_CALLS=0          # PowerShell: $env:LLM_MAX_CALLS=0 ; no test or check below needs a paid call
 pytest
 uvicorn app.main:create_app --factory --port 8000
+```
+
+Free checks, all with `LLM_MAX_CALLS=0` (they read saved answers and stop rather than spend):
+
+```
+python -m scripts.eval.eval_retrieval ../data/categories/valves ../data/eval/retrieval_cases.json [chunker]   # search quality
+python -m scripts.eval.eval_retrieval ../data/eval/samples ../data/eval/retrieval_cases_samples.json [chunker]
+python -m scripts.eval.score_gold ../data/tenders/dev/GeM-Bidding-9933225 ../data/categories/valves           # against the answer key
+python -m scripts.cost.estimate_cost ../data/tenders/dev/GeM-Bidding-9840129 ../data/categories/valves        # what a run would cost
+python -m scripts.run.build_graph                                                                              # rebuild the standards graph
+python -m scripts.run.show_graph ../data/tenders/dev/GeM-Bidding-9840129                                        # a tender as a graph
 ```
 
 ```

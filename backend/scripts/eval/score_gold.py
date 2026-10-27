@@ -24,6 +24,7 @@ def main(tender: str, category_dir: str) -> None:
     print(f"\nlabelled rows {len(rows)}")
     print(f"status agrees {share(sum(r.agrees for r in rows), len(rows))}")
     print(f"page agrees where both found something {share(sum(r.page_agrees for r in both), len(both))}")
+    print(llm.summary())  # what the run really cost: new calls and their tokens
 
 
 if __name__ == "__main__":
