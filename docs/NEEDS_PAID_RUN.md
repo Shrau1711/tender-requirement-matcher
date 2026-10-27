@@ -37,6 +37,28 @@ How the prices were worked out (phase 7, all free, `LLM_MAX_CALLS=0`):
    `RESERVED_CALLS=5` is needed. The budget keeps `RESERVED_CALLS` calls (60 by default) back for reading the tender and naming products, so with `LLM_MAX_CALLS=70` alone only 70 − 2 − 60 = 8 calls are left for evidence questions, and the plan evaluates only the first few requirements. With 5 held back, 63 are left for the 57 questions.
 
    **First attempt, 27 October 2026, without `RESERVED_CALLS`.** A one-call smoke test first, with one real evidence question (IS 13095 for Intervalve). The model accepted `LOW` thinking and returned a valid answer on the first try: the same reading the current model gives ("API 609, EN593, IS 13095"). It used 3,749 input and 825 output tokens, ≈ ₹0.25 ($0.0032). Then step 1 ran without errors, but with only 8 calls left for evidence, as described above. It made 9 calls (24,308 input and 940 output tokens, ≈ ₹1.12, $0.0096) and scored 5 of the 35 labelled rows: 5 of 5 statuses and 1 of 1 page agree. That slice is not comparable with today's 31 of 35. Flash-Lite read the tender exactly as the current model does: the same 11 rows and 11 requirements. Spent so far: ≈ ₹1.37 ($0.0128).
+
+   **Corrected run, 27 October 2026, with `RESERVED_CALLS=5`.** It ran without errors and under the in-run guard, which would have stopped any call once the spend passed the remaining ₹23.63.
+
+   | | Gemini 3.8 Flash (saved answers, no cost) | Gemini 3.5 Flash-Lite (this run) |
+   |---|---|---|
+   | Calls | 59 (saved) | 56 new, plus 5 answers from the first attempt |
+   | Tokens | 383,829 in / 27,848 out | 393,054 in / 13,602 out |
+   | Cost | ≈ ₹41 if asked again | ≈ ₹17.87 ($0.1519) |
+   | Labelled rows scored | 35 | 30 |
+   | Statuses agreeing with the answer key, all rows | 31 of 35 | 24 of 30 |
+   | **On the 30 rows both scored: statuses** | **26 of 30** | **24 of 30** |
+   | **On the 30 rows both scored: pages** | **18 of 18** | **14 of 16** |
+   | Findings returned by the model | 231 | 100 |
+   | Rejected by the verbatim-quote check | 0 | 1 |
+   | Rejected as about another type of product | 134 | 6 |
+   | Findings kept | 97 | 93 |
+
+   - **The 5 rows Flash-Lite did not score** are one requirement, `valve_end_connection` for five makers. Flash-Lite named it `end_connection` when splitting the tender's rows into requirements, so the answer key, which is keyed by attribute name, had nothing to compare. It read the same 11 rows.
+   - **The rows that differ:** Flash-Lite is wrong where the current model is right in 4 (face-to-face for Duncan and Intervalve, handle type for Duncan, nominal pressure for Delval). It is right where the current model is wrong in 2 (nominal pressure for King, nominal size for Intervalve).
+   - **Findings:** Flash-Lite returned far fewer findings that were then set aside as another type of product, and one quote that was not word for word.
+   - **Total spent on step 1:** smoke test ≈ ₹0.25, first attempt ≈ ₹1.12, this run ≈ ₹17.87: ≈ ₹19.24 ($0.1647). Step 2 was not run. `LLM_MAX_CALLS` is back at 0, in the shell and in `backend/.env`.
+   - **What this says, on one tender of 11 requirements:** Flash-Lite costs about 43% of the current model for this tender, and agrees with the answer key slightly less often: 24 against 26 of the same 30 rows, and 14 of 16 pages against 18 of 18. One small tender is not enough to decide; the pump tender (check #3, ≈ ₹73) would be the next evidence.
 2. **Temperature 1.0 on the current model, ≈ ₹41.** In a new shell, so the model is the default again:
    ```
    cd backend

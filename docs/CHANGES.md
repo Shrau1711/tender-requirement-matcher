@@ -359,3 +359,23 @@ The search itself keeps BM25 for keywords and RRF to merge the rankings; only th
 **Still over 7 files.** Two subfolders hold 8 and 9 answers (`84/`, `c5/`), because 610 names spread over 236 two-character subfolders are not even. Three characters, or two levels of two, would keep every subfolder well under 7; that is a one-line change to `shipped_path` plus moving the files again.
 
 **Files to read.** `shipped_path` and `saved` in `backend/app/llm/llm_cache.py`, `copy_answers` in `backend/scripts/cost/export_demo_cache.py`, and the 7-file rule in `docs/architecture.md`.
+
+## Phase 7, paid step 1: a lighter model on the smaller labelled tender
+
+The owner approved step 1 only: `gemini-3.5-flash-lite` on tender 9933225. The model id was confirmed on Google's model list.
+
+**What happened, in order.**
+1. **A one-call smoke test.** One real evidence question was sent with `LLM_MAX_CALLS=1`. The model accepted `LOW` thinking and returned a valid answer on the first try, for ≈ ₹0.25.
+2. **A first attempt.** It ran with `LLM_MAX_CALLS=70` alone. The budget's 60 reserved calls left 8 for evidence, so only part of the tender was evaluated (9 calls, ≈ ₹1.12). That was a mistake in the plan, not in the code: the reserve was not accounted for.
+3. **The corrected run, with `RESERVED_CALLS=5`.** 56 calls, ≈ ₹17.87, inside an in-run guard that stops before any call once the spend passes the approved amount.
+
+Total ≈ ₹19.24. Step 2 was not run. `LLM_MAX_CALLS` is 0 again, and `backend/.env` was changed from 400 to 0 so that 0 is also the default.
+
+**Result.** The full table is in `docs/NEEDS_PAID_RUN.md`. On the 30 labelled rows both models scored:
+
+| | Statuses agree | Pages agree | Cost for this tender |
+|---|---|---|---|
+| Gemini 3.8 Flash | 26 | 18 of 18 | ≈ ₹41 |
+| Gemini 3.5 Flash-Lite | 24 | 14 of 16 | ≈ ₹18 |
+
+The other 5 labelled rows were not scored for Flash-Lite because it named one requirement `end_connection` instead of `valve_end_connection`. The tender reading itself was identical. Verbatim-quote rejections: 1 of Flash-Lite's 100 findings, and 0 of the current model's 231. One tender of 11 requirements is not enough to choose a model; the default stays `gemini-3.8-flash`.
