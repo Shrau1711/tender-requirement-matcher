@@ -62,9 +62,32 @@ How the prices were worked out (phase 7, all free, `LLM_MAX_CALLS=0`):
 2. **Temperature 1.0 on the current model, ≈ ₹41.** In a new shell, so the model is the default again:
    ```
    cd backend
-   $env:LLM_TEMPERATURE="DEFAULT"; $env:LLM_MAX_CALLS="70"
+   $env:LLM_TEMPERATURE="DEFAULT"; $env:LLM_MAX_CALLS="70"; $env:RESERVED_CALLS="5"
    python -m scripts.eval.score_gold ../data/tenders/dev/GeM-Bidding-9933225 ../data/categories/valves
    ```
+
+   **Run on 27 October 2026, approved by the owner.** It used the current model, `LLM_TEMPERATURE=DEFAULT`, `RESERVED_CALLS=5`, `LLM_MAX_CALLS=70` and an in-run guard at ₹45. It ran without errors.
+
+   | | Temperature 0 (saved answers, no cost) | Temperature 1.0, the model's default (this run) |
+   |---|---|---|
+   | Calls | 59 (saved) | 58 new |
+   | Tokens | 383,829 in / 27,848 out | 380,016 in / 25,349 out |
+   | Cost | | ≈ ₹40.54 ($0.38) |
+   | **All 35 labelled rows: statuses agree** | **31 of 35** | **29 of 35** |
+   | **Pages agree** (where both found something) | **23 of 23** | **21 of 21** |
+   | Findings returned by the model | 231 | 222 |
+   | Rejected by the verbatim-quote check | 0 | 0 |
+   | Rejected as about another type of product | 134 | 114 |
+   | Findings kept | 97 | 108 |
+   | Retries (a reply sent back as invalid JSON) | 0 | 0 |
+   | Empty replies | 0 | 0 |
+   | Output tokens per call: median, largest | 236, 2,600 | 192, 2,477 |
+
+   - **No sign of looping.** There were no retries, no empty or truncated replies and no errors, and replies were no longer than at temperature 0. The most repeated line in any reply (8 times) is the field `"operator": "equals",` in a normal list; temperature 0 has one with 9.
+   - **How all 35 rows were scored.** At temperature 1.0 the model named the IS 13095 requirement `conformity_to_governing_specification` instead of `governing_specification`, so `score_gold` as it stands scores 30 rows (24 of 30 statuses, 20 of 20 pages). The 35-row figures above treat that one name as the answer key's. Its five rows came out the same at both temperatures, and all five agree with the key.
+   - **The rows that differ:** temperature 1.0 is wrong where 0 is right in 3: face-to-face and handle type for Duncan, now "no evidence found", and end connection for KSB. It is right where 0 is wrong in 1: nominal size for Intervalve.
+   - **What this says, on one tender:** the same cost as temperature 0, 2 fewer statuses agreeing, and no looping. Not enough to change the default, which stays 0.
+   - **Total spent on paid checks so far:** step 1 ≈ ₹19.24, step 2 ≈ ₹40.54, ≈ ₹59.78 in all. `LLM_MAX_CALLS` is back at 0 in the shell and in `backend/.env`.
 
 Expected total ≈ ₹60, leaving about ₹40 for retries or longer replies. `LLM_MAX_CALLS=70` stops either run before it can ask more than 11 questions over the 59 it should need. Two conditions:
 

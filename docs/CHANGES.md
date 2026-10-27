@@ -379,3 +379,20 @@ Total ≈ ₹19.24. Step 2 was not run. `LLM_MAX_CALLS` is 0 again, and `backend
 | Gemini 3.5 Flash-Lite | 24 | 14 of 16 | ≈ ₹18 |
 
 The other 5 labelled rows were not scored for Flash-Lite because it named one requirement `end_connection` instead of `valve_end_connection`. The tender reading itself was identical. Verbatim-quote rejections: 1 of Flash-Lite's 100 findings, and 0 of the current model's 231. One tender of 11 requirements is not enough to choose a model; the default stays `gemini-3.8-flash`.
+
+## Phase 7, paid step 2: temperature at the model's default on the smaller labelled tender
+
+The owner approved step 2: `LLM_TEMPERATURE=DEFAULT` (1.0, as Google advises for Gemini 3) with the current model on tender 9933225. It ran under an in-run guard at ₹45 and cost ≈ ₹40.54, with no errors.
+
+**Result, all 35 labelled rows** (the full table is in `docs/NEEDS_PAID_RUN.md`):
+
+| | Statuses agree | Pages agree |
+|---|---|---|
+| Temperature 0 | 31 of 35 | 23 of 23 |
+| Temperature 1.0 | 29 of 35 | 21 of 21 |
+
+- **No looping:** no retries, no empty or truncated replies, and no longer outputs than at temperature 0. No quote failed the verbatim check at either temperature.
+- **Naming again:** as with Flash-Lite, the model named one requirement differently (`conformity_to_governing_specification`), so the answer key, which matches by attribute name, needed that one name mapped to score all 35 rows.
+- **Default unchanged:** on one tender, temperature 1.0 is no better and no cheaper, so the default stays 0.
+
+**Something to fix later, free:** two of two paid runs lost labelled rows only because the model chose another attribute name. Matching the answer key by the tender row (file, page, row name) instead of by attribute name would make such runs comparable without a manual mapping.
