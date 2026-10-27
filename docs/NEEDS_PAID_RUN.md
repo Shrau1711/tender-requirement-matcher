@@ -31,9 +31,12 @@ How the prices were worked out (phase 7, all free, `LLM_MAX_CALLS=0`):
 1. **The lighter model, ≈ ₹19. Approved by the owner; waiting for the owner to confirm the model id in AI Studio before it runs.** The id is `gemini-3.5-flash-lite`: Google's models page (checked 27 October 2026) lists it as "Stable" with no shutdown date, and its thinking page lists it as supporting "minimal, low, medium, high" with thinking on by default at "minimal". So `LLM_THINKING` stays at the default `LOW`, as in every saved answer, and only the model changes.
    ```
    cd backend
-   $env:LLM_MODEL="gemini-3.5-flash-lite"; $env:LLM_MAX_CALLS="70"
+   $env:LLM_MODEL="gemini-3.5-flash-lite"; $env:LLM_MAX_CALLS="70"; $env:RESERVED_CALLS="5"
    python -m scripts.eval.score_gold ../data/tenders/dev/GeM-Bidding-9933225 ../data/categories/valves
    ```
+   `RESERVED_CALLS=5` is needed. The budget keeps `RESERVED_CALLS` calls (60 by default) back for reading the tender and naming products, so with `LLM_MAX_CALLS=70` alone only 70 − 2 − 60 = 8 calls are left for evidence questions, and the plan evaluates only the first few requirements. With 5 held back, 63 are left for the 57 questions.
+
+   **First attempt, 27 October 2026, without `RESERVED_CALLS`.** A one-call smoke test first, with one real evidence question (IS 13095 for Intervalve). The model accepted `LOW` thinking and returned a valid answer on the first try: the same reading the current model gives ("API 609, EN593, IS 13095"). It used 3,749 input and 825 output tokens, ≈ ₹0.25 ($0.0032). Then step 1 ran without errors, but with only 8 calls left for evidence, as described above. It made 9 calls (24,308 input and 940 output tokens, ≈ ₹1.12, $0.0096) and scored 5 of the 35 labelled rows: 5 of 5 statuses and 1 of 1 page agree. That slice is not comparable with today's 31 of 35. Flash-Lite read the tender exactly as the current model does: the same 11 rows and 11 requirements. Spent so far: ≈ ₹1.37 ($0.0128).
 2. **Temperature 1.0 on the current model, ≈ ₹41.** In a new shell, so the model is the default again:
    ```
    cd backend
