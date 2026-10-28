@@ -434,3 +434,34 @@ The temperature result equals the one from the manual mapping earlier, which cro
 One run of the full suite had one failing test, which I did not see; it did not come back in 8 more runs. It is not explained yet.
 
 **Files to read.** `backend/app/evaluation/rows.py`, `backend/scripts/gold/make_row_anchors.py`, `data/eval/gold/GeM-Bidding-9933225.rows.json`.
+
+## The flaky test: Chroma on Windows, and reopening a stuck client
+
+**What went wrong.** One store test failed now and then, about once in 20 to 47 runs of the store tests. The result was never wrong; Chroma raised `InternalError: Error executing plan: Internal error: Error creating hnsw segment reader: Nothing found on disk`. At first it appeared in a nearest-neighbour query; later also when only the stored vectors were read, which the app does every time it builds an index.
+
+**What was measured** (free, with `scripts/diagnose/chroma_repro.py`, a standalone script that uses Chroma alone: it writes a few vectors the way the store does, reads them back three ways, and at the first error checks whether the store recovers):
+- **Windows only, so far.** With Chroma 1.5.9 on Windows 11 it failed at attempts 5, 41 and 175 (and 87 earlier), in every folder tried: the temp folder, the home folder and the project folder. On Linux it never failed: 600 attempts in the app's Docker image on the same machine, and the owner's 600 attempts on a Linux machine.
+- **Not OneDrive.** A OneDrive work folder exists, but none of the folders tried is inside it or carries cloud-file attributes. Defender's real-time scanning is on; that was only read, not changed.
+- **The data is on disk, the open client is stuck.** After the error the same client kept failing, at once and 1, 6 and 36 seconds later. A newly opened client in the same process, and a separate process, read the same store without error, 3 times out of 3 (the failure at attempt 87 came before these checks were added).
+- **Not established:** the cause inside Chroma, and whether an older version behaves better. 1.5.9 is the newest release. 1.4.1 could not be installed in a scratch environment: the download timed out repeatedly and then the file was "being used by another process".
+
+**What changed.**
+- **The store filters, the index scores.** The store interface's `nearest(queries, n, where)` became `candidates(where)`, the ids of the chunks that match a filter. Chroma answers it with a filtered fetch and the memory store with a plain filter. Similarity is worked out exactly by the index from the stored vectors, as it already was.
+
+  Removed, because no longer used: the memory store's own scoring, Chroma's `query` call, the index's `EXTRA_CANDIDATES`, the `allowed` argument of `Index.meanings`, and the store test for "nearest first with its similarity".
+- **Reopening a stuck client.** When reading the stored vectors or the matching chunks fails with exactly this error, `ChromaStore.reading` logs a warning, closes the client, opens a new one and reads once more. Any other error is raised unchanged, and so is this one if the new client fails too. A first attempt that only waited and tried again (3 tries over 0.6 seconds) was tested and removed: all three tries failed in the same run.
+- **One limit, stated in the code.** Closing gives a fresh state only when no other client has the folder open. In the app there is one client per folder.
+
+**Checked, free (`LLM_MAX_CALLS=0`).**
+- **Stress loops** (the loop now stops at the first failure): the store tests passed 100 runs out of 100 and the full suite 30 out of 30 (441 tests each).
+- **The reopen in action:** in 40 further runs of the store tests, a stuck client was reopened 2 times, not counting the 2 reopens per run that the tests cause on purpose, and both reads then succeeded.
+- **Identical results:** the fingerprint of every chunk and every ranked result is unchanged from phase 2 with both stores. The 225 queries are identical to the last digit. Every question for the five dev tenders in the cache, at both depths, is byte-identical: 1,273 of 1,273, with the same counts of questions not in the cache as before.
+
+**Tests.** 441 passed (438 before).
+- The store tests now check `candidates` with every filter.
+- New tests:
+  - a stuck client is closed and a new one reads the store;
+  - any other Chroma error is raised without reopening;
+  - a store still stuck after reopening raises.
+
+**Files to read.** `ChromaStore.reading` and `candidates` in `backend/app/vectorstore/chroma.py`, `backend/scripts/diagnose/chroma_repro.py`, and the Chroma paragraphs in `docs/architecture.md`.

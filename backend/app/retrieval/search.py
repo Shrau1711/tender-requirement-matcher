@@ -16,7 +16,6 @@ from app.vectorstore.base import StoredDoc, VectorStore, chunk_ids
 from app.vectorstore.memory import MemoryStore
 
 TABLE_ROWS_PER_PAGE = 2  # one big table must not fill every result slot
-EXTRA_CANDIDATES = 20    # asked of the store beyond the chunks needed, so one an approximate store ranks too low is still scored
 
 # Letters and numbers are split apart so "DN125", "DN 125" and "dn-125" all
 # become the same two tokens. A number stays whole, so 13095 never matches 3095.
@@ -43,7 +42,7 @@ class Index:
 
     With no store given, the chunks are embedded into a new in-memory store, as in the first version. A given store must
     already hold these chunks under `category` (see app.vectorstore.ingest). Either way the index keeps the chunks' vectors
-    in one matrix, in the chunks' order, to score the store's candidates exactly."""
+    in one matrix, in the chunks' order, and scores the chunks the store's filter returns exactly."""
 
     def __init__(self, chunks: list[Chunk], embed: Embedder = embed_cached, store: VectorStore | None = None, category: str = "") -> None:
         self.chunks = chunks
@@ -57,18 +56,18 @@ class Index:
         self.store = store
         self.vectors = store.vectors(list(self.position)) if chunks else None
 
-    # Cosine similarity of the allowed chunks to each query, by chunk position. The store picks the candidates; the
-    # scores are worked out here with the same matrix product as the first version, because the last digits of a
-    # product depend on how many rows are multiplied and in what order, and a different last digit can swap two
-    # passages and so change a question to the model.
-    def meanings(self, queries: list[str], allowed: list[int], manufacturer: str | None) -> list[dict[int, float]]:
+    # Cosine similarity of the manufacturer's chunks to each query, by chunk position. The store says which chunks match
+    # the filter; the scores are worked out here with the same matrix product as the first version, because the last
+    # digits of a product depend on how many rows are multiplied and in what order, and a different last digit can swap
+    # two passages and so change a question to the model.
+    def meanings(self, queries: list[str], manufacturer: str | None) -> list[dict[int, float]]:
         if self.vectors is None:
             return [{} for _ in queries]
         where = {"category": self.category} | ({"manufacturer": manufacturer} if manufacturer else {})
         asked = self.embed(queries)
-        found = self.store.nearest(asked, len(allowed) + EXTRA_CANDIDATES, where)
+        candidates = self.store.candidates(where)
         exact = self.vectors @ asked.T  # one column per query
-        return [{self.position[c]: float(exact[self.position[c], q]) for c in candidates} for q, candidates in enumerate(found)]
+        return [{self.position[c]: float(exact[self.position[c], q]) for c in candidates} for q in range(len(queries))]
 
     # Finds the best passages for one query.
     def search(
@@ -85,7 +84,7 @@ class Index:
             i for i, c in enumerate(self.chunks)
             if manufacturer is None or c.manufacturer == manufacturer
         ]
-        meanings = self.meanings(queries, allowed, manufacturer) if queries else []
+        meanings = self.meanings(queries, manufacturer) if queries else []
         keyword = np.zeros(len(self.chunks))
         rankings: list[list[int]] = []
         for q, query in enumerate(queries):

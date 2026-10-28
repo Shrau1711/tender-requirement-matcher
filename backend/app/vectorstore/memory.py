@@ -1,4 +1,4 @@
-"""The original store: every vector in one NumPy matrix, compared with every query exactly. Nothing is kept on disk."""
+"""The original store: everything in memory, nothing kept on disk, so documents are read again at each start."""
 from __future__ import annotations
 
 import numpy as np
@@ -17,7 +17,6 @@ class MemoryStore:
         self.doc_of: list[str] = []
         self.fields: list[dict[str, str | int]] = []
         self.rows: list[np.ndarray] = []
-        self.matrix: np.ndarray | None = None  # self.rows stacked, made again after a put
 
     def stored(self, doc: StoredDoc) -> bool:
         return self.docs.get(doc.id) == doc
@@ -33,22 +32,11 @@ class MemoryStore:
         self.fields += [fields(doc.category, c) for c in chunks]
         self.rows += list(vectors)
         self.docs[doc.id], self.stored_chunks[doc.id] = doc, chunks
-        self.matrix = None
 
     def vectors(self, ids: list[str]) -> np.ndarray:
         row = {chunk_id: i for i, chunk_id in enumerate(self.ids)}
         return np.stack([self.rows[row[i]] for i in ids])
 
-    def nearest(self, queries: np.ndarray, n: int, where: Where) -> list[dict[str, float]]:
+    def candidates(self, where: Where) -> list[str]:
         check_where(where)
-        if not self.rows:
-            return [{} for _ in queries]
-        if self.matrix is None:
-            self.matrix = np.stack(self.rows)
-        scores = self.matrix @ queries.T  # one column per query; vectors are unit length, so this is cosine similarity
-        allowed = [i for i, f in enumerate(self.fields) if all(f[k] == v for k, v in where.items())]
-        out = []
-        for q in range(len(queries)):
-            best = sorted(allowed, key=lambda i: -scores[i, q])[:n]
-            out.append({self.ids[i]: float(scores[i, q]) for i in best})
-        return out
+        return [chunk_id for chunk_id, f in zip(self.ids, self.fields, strict=True) if all(f[k] == v for k, v in where.items())]

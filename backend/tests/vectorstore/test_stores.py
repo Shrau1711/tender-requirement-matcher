@@ -30,10 +30,9 @@ def store(request, tmp_path):
     return s
 
 
-def test_the_nearest_chunks_come_first_with_their_similarity(store):
-    found = store.nearest(np.stack([unit(1, 0, 0)]), 4, {})[0]
-    assert next(iter(found)) == "valves/ksb/k.pdf#0" and found["valves/ksb/k.pdf#0"] == pytest.approx(1.0, abs=1e-5)
-    assert len(found) == 4
+def test_with_no_filter_every_chunk_is_a_candidate(store):
+    # in no particular order: the index orders them by its own exact scores
+    assert set(store.candidates({})) == {"valves/ksb/k.pdf#0", "valves/ksb/k.pdf#1", "valves/l_and_t/l.pdf#0", "pumps/ksb/p.pdf#0"}
 
 
 @pytest.mark.parametrize(("where", "expected"), [
@@ -42,13 +41,13 @@ def test_the_nearest_chunks_come_first_with_their_similarity(store):
     ({"file": "p.pdf"}, {"pumps/ksb/p.pdf#0"}),
     ({"manufacturer": "ksb", "page": 2}, {"valves/ksb/k.pdf#1"}),
 ])
-def test_a_search_can_be_narrowed_to_a_category_maker_file_or_page(store, where, expected):
-    assert set(store.nearest(np.stack([unit(1, 0, 0)]), 10, where)[0]) == expected
+def test_candidates_can_be_narrowed_to_a_category_maker_file_or_page(store, where, expected):
+    assert set(store.candidates(where)) == expected
 
 
 def test_a_filter_on_an_unknown_field_is_refused(store):
     with pytest.raises(ValueError, match="Cannot filter"):
-        store.nearest(np.stack([unit(1, 0, 0)]), 1, {"colour": "red"})
+        store.candidates({"colour": "red"})
 
 
 def test_a_file_is_stored_until_its_content_or_settings_change(store):
@@ -61,7 +60,7 @@ def test_a_file_is_stored_until_its_content_or_settings_change(store):
 def test_storing_a_file_again_replaces_its_old_chunks(store):
     store.put(KSB, [chunk("ksb", "k.pdf", 5, "new text")], np.stack([unit(0, 1, 0)]))
     assert [c.pdf_page for c in store.chunks(KSB)] == [5]
-    assert set(store.nearest(np.stack([unit(1, 0, 0)]), 10, {"manufacturer": "ksb", "category": "valves"})[0]) == {"valves/ksb/k.pdf#0"}
+    assert store.candidates({"manufacturer": "ksb", "category": "valves"}) == ["valves/ksb/k.pdf#0"]
 
 
 def test_a_chunk_comes_back_from_the_store_exactly_as_it_went_in(store):
@@ -87,3 +86,56 @@ def test_vectors_come_back_exactly_in_the_order_asked(store):
     store.put(KSB, [chunk("ksb", "k.pdf", p, "x") for p in range(40)], vectors)
     order = list(rng.permutation(40))
     assert np.array_equal(store.vectors([f"valves/ksb/k.pdf#{i}" for i in order]), vectors[order])
+
+
+class Stuck:
+    """Stands in for a Chroma collection whose reads fail with `message`."""
+
+    def __init__(self, message):
+        self.message = message
+
+    def get(self, **_):
+        from chromadb.errors import InternalError
+
+        raise InternalError(self.message)
+
+
+STUCK_MESSAGE = "Error executing plan: Internal error: Error creating hnsw segment reader: Nothing found on disk"
+
+
+def test_a_stuck_client_is_closed_and_a_new_one_reads_the_store(tmp_path, caplog):
+    store = ChromaStore(tmp_path / "chroma")
+    store.put(KSB, [chunk("ksb", "k.pdf", 1, "gate valve")], np.stack([unit(1, 0, 0)]))
+    stuck_client = store.client
+    store.chunk_rows = Stuck(STUCK_MESSAGE)
+    assert store.candidates({"manufacturer": "ksb"}) == ["valves/ksb/k.pdf#0"]
+    assert store.client is not stuck_client and "Opening a new client" in caplog.text
+    assert np.array_equal(store.vectors(["valves/ksb/k.pdf#0"]), np.stack([unit(1, 0, 0)]))
+
+
+def test_any_other_chroma_error_is_raised_without_reopening(tmp_path):
+    from chromadb.errors import InternalError
+
+    store = ChromaStore(tmp_path / "chroma")
+    client = store.client
+    store.chunk_rows = Stuck("Error executing plan: something else")
+    with pytest.raises(InternalError, match="something else"):
+        store.candidates({})
+    assert store.client is client
+
+
+def test_a_store_still_stuck_after_reopening_raises(tmp_path, monkeypatch):
+    from chromadb.errors import InternalError
+
+    store = ChromaStore(tmp_path / "chroma")
+    opened = []
+
+    def open_stuck():
+        opened.append(1)
+        store.chunk_rows = Stuck(STUCK_MESSAGE)
+
+    store.chunk_rows = Stuck(STUCK_MESSAGE)
+    monkeypatch.setattr(store, "open", open_stuck)
+    with pytest.raises(InternalError, match="hnsw segment reader"):
+        store.vectors(["valves/ksb/k.pdf#0"])
+    assert opened == [1]  # one reopen, one more read, then the error
