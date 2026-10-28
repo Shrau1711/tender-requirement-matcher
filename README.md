@@ -1,18 +1,68 @@
 # Tender Requirement Matching
 
+[![CI](https://github.com/Shrau1711/tender-matcher/actions/workflows/ci.yml/badge.svg)](https://github.com/Shrau1711/tender-matcher/actions/workflows/ci.yml)
+
 Upload a GeM tender (PDF), and pick a category or let the system find each item's category. The system reads the tender, breaks it into individual requirements, searches each manufacturer's catalogue documents for evidence, compares them, and returns a report: a status and score per requirement per manufacturer, an overall compatibility ranking, and a cited page for every claim.
 
 How the parts fit together, with diagrams and the design decisions, is in [docs/architecture.md](docs/architecture.md). An LLM (Gemini) only reads text and pulls out structured facts. The comparison and scoring are plain code, and every quoted piece of evidence is checked programmatically against the page it came from.
 
-### What is new in v3
+## What's new in v3
 
-- The code is split into one package per pipeline stage (reading, chunking, embedding, vector store, retrieval, extraction, judging, reporting, and more), each replaceable on its own.
-- Five chunking strategies behind one interface, with a router that picks one per document (`CHUNKER`).
-- A vector store interface: Chroma on disk (the default, reads each document once) or the original in-memory store, with identical results.
-- Categories are folders with a `category.json`; the category is optional on upload, and a tender with items of several categories gets one run per category.
-- An exact token counter option, model, thinking and temperature as settings, and a small knowledge graph of standards (off by default).
+- **One package per pipeline stage** (reading, chunking, embedding, vector store, retrieval, extraction, judging, reporting and more), each replaceable on its own.
+- **Five chunking strategies** behind one interface, with a router that picks one per document (`CHUNKER`).
+- **A vector store interface:** Chroma on disk, the default, which reads each document once, or the original in-memory store. Chroma stores and filters; similarity is scored exactly in the code, so both give the same results.
+- **Categories are folders with a `category.json`.** The category is optional on upload, and a tender with items of several categories gets one run per category.
+- **Settings:** model, thinking level and temperature, and an exact token counter. A small knowledge graph of standards is also included, off by default.
 
-Every default is what the saved answers were made with, so they all still match. What changed, why and what was measured, phase by phase: [docs/CHANGES.md](docs/CHANGES.md). Checks that would need paid model calls, with their prices: [docs/NEEDS_PAID_RUN.md](docs/NEEDS_PAID_RUN.md).
+Every default is what the saved answers were made with, so they all still match. Measured without paid calls:
+- with Chroma, every question the pipeline would ask for the five cached dev tenders (1,273) is byte-identical to the original store's;
+- `score_gold` reproduces 31 of 35 statuses and 23 of 23 pages on the labelled valve tender.
+
+Two approved paid checks on that tender (about ₹60 in all) kept the defaults:
+
+| Setting | Statuses agree | Pages agree |
+|---|---|---|
+| Gemini 3.5 Flash-Lite | 28 of 35 | 19 of 21 |
+| Temperature 1.0 | 29 of 35 | 21 of 21 |
+
+What changed, why and what was measured, phase by phase: [docs/CHANGES.md](docs/CHANGES.md). The remaining paid checks, with prices: [docs/NEEDS_PAID_RUN.md](docs/NEEDS_PAID_RUN.md).
+
+## Overview
+
+How the parts fit together: the manufacturers' documents are read, chunked and embedded once into the store; each tender is read, split into requirements, searched for evidence, judged in plain code and reported. The ingest and query paths and the design decisions are in [docs/architecture.md](docs/architecture.md).
+
+```mermaid
+flowchart LR
+    UI["frontend (React)<br/>upload, report, review"] -->|HTTP| API["api<br/>FastAPI routes"]
+    API --> DB[("db<br/>runs and reviews (SQLite)")]
+    API --> RUN["pipeline<br/>one job per tender and category"]
+
+    subgraph Documents["manufacturer documents (once per file)"]
+        READ["reading<br/>PDF text, tables, boxes, OCR"] --> CHUNK["chunking<br/>strategies + router"]
+        CHUNK --> EMB["embedding<br/>local model + cache"]
+        EMB --> VS[("vectorstore<br/>Chroma or memory")]
+    end
+
+    subgraph Tender["each tender"]
+        TEN["tender<br/>items and requirement rows"] --> CAT["categories<br/>route items"]
+        CAT --> ATOM["extraction<br/>atomic requirements"]
+        ATOM --> RET["retrieval<br/>BM25 + vectors, RRF"]
+        RET --> COST["cost<br/>budget, estimate, approval"]
+        COST --> EVID["extraction<br/>evidence questions"]
+        EVID --> JUDGE["judging<br/>units, compare, match"]
+        JUDGE --> REP["reporting<br/>JSON, Markdown, Excel"]
+    end
+
+    RUN --> TEN
+    RUN --> READ
+    VS --> RET
+    TEN & ATOM & EVID -.-> LLM["llm<br/>Gemini + answer cache"]
+    READ -.->|picture-only pages| LLM
+    VOC["vocabulary<br/>words, units, roles"] -.-> JUDGE
+    GRAPH["graph (off by default)<br/>standards, tender layout"] -.-> JUDGE
+    CFG["data/categories/*/category.json"] -.-> CAT & VOC & ATOM
+    COL["collecting<br/>crawler + source records"] -.->|PDFs| READ
+```
 
 ## Run it (Docker, no build needed)
 

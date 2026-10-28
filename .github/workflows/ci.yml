@@ -4,6 +4,12 @@ on:
   push:
   pull_request:
 
+# No test may call the model: with a limit of 0, any call that is not already saved stops with an error instead of
+# spending. The tests never load the local embedding model either (they use fake embeddings; checked by running them
+# with an empty model folder and Hugging Face offline), so nothing is downloaded and there is no model cache to keep.
+env:
+  LLM_MAX_CALLS: "0"
+
 jobs:
   backend:
     runs-on: ubuntu-latest
