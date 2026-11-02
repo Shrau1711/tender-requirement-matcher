@@ -465,3 +465,33 @@ One run of the full suite had one failing test, which I did not see; it did not 
   - a store still stuck after reopening raises.
 
 **Files to read.** `ChromaStore.reading` and `candidates` in `backend/app/vectorstore/chroma.py`, `backend/scripts/diagnose/chroma_repro.py`, and the Chroma paragraphs in `docs/architecture.md`.
+
+## Upload screen and CI
+
+**What changed.**
+- **Upload screen.**
+  - The manual category choice moved into a collapsed "Advanced" section, below the run name, labelled "Product category (optional)". It still defaults to "Find it in the tender".
+  - When the model call limit is 0, the cost note is replaced by "This demo replays saved examples only." With any other limit the note is as before (answers found before cost nothing, at most N calls per run, an estimate before anything is spent).
+- **CI** (`.github/workflows/ci.yml`, on every push and pull request):
+  - Three jobs: backend (pytest on Linux), frontend (vitest and `vite build`), images (both Docker builds, after the other two pass).
+  - `LLM_MAX_CALLS: "0"` is set for the whole workflow, so no job can call the model. The tests need no embedding model download, checked offline, so nothing is cached for it.
+  - A CI badge is at the top of the README.
+  - The actions are pinned to exact releases at least two weeks old, all on Node 24: `actions/checkout@v7.0.1` (20 July 2026), `actions/setup-python@v7.0.0` (20 July 2026; v7.1.0 came out on 22 October, too new) and `actions/setup-node@v7.1.0` (8 October 2026). Only the version numbers changed. Exact tags, so a moving `@v7` tag cannot pull in a newer release.
+
+**Why.**
+- Most people should let the system find the category in the tender, so the manual choice is kept out of the way but still there.
+- The demo runs with the limit at 0, where the old note promised a cost estimate that never comes. The new note says what the demo actually does.
+- CI proves on every change that the tests pass on Linux without spending anything. The old action versions ran on Node 20, which GitHub has deprecated and was forcing onto Node 24.
+
+**In an interview.** "The upload screen now leaves the category to the system by default and keeps the manual choice under Advanced, and when the call limit is 0 it says plainly that the demo replays saved examples. Every push and pull request runs the backend tests, the frontend tests and both Docker builds on GitHub, with the model call limit at 0 so CI can never spend money. The actions are pinned to exact releases that have been out at least two weeks, which removed GitHub's Node 20 warning without changing anything else."
+
+**Checks.** Free, with `LLM_MAX_CALLS=0`.
+- Frontend: 76 passed (74 before).
+  - The upload test now checks that the category choice is inside a closed Advanced section, under the new label, defaulting to "Find it in the tender".
+  - New: with the limit at 0, only the replay note shows.
+  - New: a category chosen under Advanced is sent with the run.
+  - The accessibility check of the upload page still finds no violations.
+- `vite build` succeeds.
+- CI after the version change: backend, frontend and images all passed on the push run and the pull request run. The only warning left is GitHub's general notice that `ubuntu-latest` is moving to Ubuntu 26.
+
+**Files to read.** `frontend/src/pages/UploadPage.jsx`, the upload tests in `frontend/src/app.test.jsx`, `.github/workflows/ci.yml`.
