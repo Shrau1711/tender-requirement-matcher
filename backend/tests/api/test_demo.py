@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+
 from fastapi.testclient import TestClient
 
 from app.demo import REPLAY_ONLY, create_demo_app
@@ -24,3 +27,12 @@ def test_the_page_and_the_api_share_one_port(tmp_path, monkeypatch):
     assert "Tender matcher" in client.get("/").text
     assert client.get("/health").json() == {"status": "ok"}
     assert client.get("/runs").status_code == 200  # API routes are matched before the page
+
+
+def test_the_demo_image_lets_in_exactly_the_sample_tenders():
+    root = Path(__file__).resolve().parents[3]
+    lines = (root / "Dockerfile.demo.dockerignore").read_text(encoding="utf-8").splitlines()
+    let_in = {line[1:].removeprefix("data/tenders/") for line in lines if line.startswith("!data/tenders/")}
+    samples = json.loads((root / "data" / "demo_runs" / "runs.json").read_text(encoding="utf-8"))
+    assert let_in == {s["folder"] for s in samples}
+    assert "data/tenders/*/*" in lines

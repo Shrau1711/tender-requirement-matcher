@@ -502,7 +502,8 @@ One run of the full suite had one failing test, which I did not see; it did not 
 **What changed.**
 - **`Dockerfile.demo`** at the repository root builds one image that serves the backend and the built frontend on port 7860.
   - It holds no API key and sets `LLM_MAX_CALLS=0`.
-  - Its own ignore file, `Dockerfile.demo.dockerignore`, lets the sample tenders in, which the other images leave out, and keeps every `.env` out.
+  - Its own ignore file, `Dockerfile.demo.dockerignore`, lets in only the five sample tenders' folders (and `sources.csv`), which the other images leave out, and keeps every `.env` out. A test checks that these folders are exactly the samples in `data/demo_runs/runs.json`.
+  - The build fails if any file in the image has an email address in its name. One tender attachment does (in 9789486, not a sample, so not in the image). It is not renamed in the repository: tender file names are part of the model prompts, so renaming it would make that tender's saved answers miss.
 - **`app/demo.py`** wraps the usual service:
   - an upload (`POST /runs`) is refused with 403 and "This demo replays saved examples only." before anything is read, so no run starts;
   - the built page is served from `/`, after every API route, and calls the API at relative addresses.
@@ -516,7 +517,8 @@ One run of the full suite had one failing test, which I did not see; it did not 
 
 **Measured, free.**
 - **Replay:** 5 of the 11 tenders in `sources.csv` replay with 0 model calls: 9933225 (64 saved answers), 9935891 (214), 9968695 (97), 9604147 (50), 10016383 (121). The other 6 (10010349, 9789486, 9840129, 9918524, 9995708, 9987635) each need at least one answer that is not shipped, so they are left out. No report has a budget note.
-- **Image:** 1.31 GB. It runs as user 1000, with `LLM_MAX_CALLS=0`, no `.env` file and no key variable.
+- **The six, with the local saved answers** (a copy of this machine's cache, still no model call): only 10010349 completes, needing 3 answers that are not shipped, and in its report neither of its two items has requirements, so nothing is scored. It is left out. The other five stop at an answer that was never saved: 9789486 after 306 saved answers, 9840129 after 141, 9918524 after 12, 9995708 after none, 9987635 after 88.
+- **Image:** 1.27 GB. It runs as user 1000, with `LLM_MAX_CALLS=0`, no `.env` file and no key variable. Its tenders are the 9 PDFs of the 5 samples (1.1 MB), and no file name in it contains `@`.
 - **In the running container (`docker run -p 7860:7860`):**
   - The page, its `config.js` and its assets load.
   - `/config` gives `max_model_calls: 0`. `/runs` lists the 5 sample runs, all done with 0 model calls.
@@ -525,6 +527,6 @@ One run of the full suite had one failing test, which I did not see; it did not 
   - An upload gets 403 with the plain message, and no run is added. The log has no traceback.
 - **In a browser** (headless Edge): the runs list, the report of 9933225 (7 manufacturers ranked) and the upload page with the replay-only note render.
 - **Chroma and permissions:** as user 1000 and as an unrelated user (1234), a Chroma store opens and creates its collections in the cache folder, the runs database is writable, and saving review decisions works. With a read-only filesystem the app does not start, because it writes its runs database at start; Hugging Face's filesystem is writable.
-- **Tests:** backend 443 passed (441 before; `tests/api/test_demo.py` checks the refusal and the page sharing the port with the API). Frontend 77 passed (76 before; the refusal shows as plain text).
+- **Tests:** backend 444 passed (441 before; `tests/api/test_demo.py` checks the refusal, the page sharing the port with the API, and the sample folders let into the image). Frontend 77 passed (76 before; the refusal shows as plain text).
 
-**Files to read.** `Dockerfile.demo`, `backend/app/demo.py`, `backend/scripts/demo/replay_samples.py`, `backend/scripts/demo/load_samples.py`, `docs/HF_SPACE_README.md`.
+**Files to read.** `Dockerfile.demo`, `Dockerfile.demo.dockerignore`, `backend/app/demo.py`, `backend/scripts/demo/replay_samples.py`, `backend/scripts/demo/load_samples.py`, `docs/HF_SPACE_README.md`.

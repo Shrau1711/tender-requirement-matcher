@@ -3,7 +3,7 @@
 # uploads are refused with "This demo replays saved examples only.", and LLM_MAX_CALLS=0 stops any model call.
 #   docker build -f Dockerfile.demo -t tender-matcher-demo .
 #   docker run -p 7860:7860 tender-matcher-demo
-# Its own ignore file (Dockerfile.demo.dockerignore) lets the sample tenders in, which the other images leave out.
+# Its own ignore file (Dockerfile.demo.dockerignore) lets the sample tenders' folders in, and no other tender.
 
 FROM node:22-alpine AS frontend
 WORKDIR /build
@@ -44,6 +44,8 @@ COPY --from=frontend /build/dist /app/frontend
 
 # The sample runs, stored as finished runs with their tender PDFs. Hugging Face runs the container as user 1000 (and other
 # hosts may pick any user), so everything the service writes is owned by 1000 and writable by any user.
+# No file in the image may have an email address in its name (some tender attachments do; only the samples are let in).
+RUN ! find /app -type f | grep -E '[^/]*@[^/]*\.[A-Za-z]{2,}[^/]*$'
 RUN python -m scripts.demo.load_samples /app/data/demo_runs /app/data/tenders "$RUNS_DIR" \
     && mkdir -p "$CACHE_DIR" \
     && useradd --create-home --uid 1000 user \
