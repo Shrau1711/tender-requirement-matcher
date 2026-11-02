@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "./api";
-import { NotifyProvider } from "./components/shell/Notifier";
+import { NotifyProvider, useNotify } from "./components/shell/Notifier";
 import { Sidebar, Topbar } from "./components/shell/Shell";
 import { go, useRoute } from "./hooks/useRoute";
 import { useRun } from "./hooks/useRun";
@@ -14,8 +14,11 @@ import { links } from "./lib/route";
 
 function RunPage({ route, onChange }) {
   const { run, report, error } = useRun(route.id, onChange);
+  const notify = useNotify();
   if (report && run) {
-    const remove = async () => { await api.remove(route.id); onChange(); go(links.runs); };
+    const remove = async () => {
+      try { await api.remove(route.id); onChange(); go(links.runs); } catch (e) { notify(`Could not delete: ${e.message}`); }
+    };
     return <ReportPage run={run} report={report} tab={route.tab} makerName={route.maker} onDelete={remove} />;
   }
   return <RunStatus run={run} error={error} />;

@@ -506,6 +506,7 @@ One run of the full suite had one failing test, which I did not see; it did not 
   - The build fails if any file in the image has an email address in its name. One tender attachment does (in 9789486, not a sample, so not in the image). It is not renamed in the repository: tender file names are part of the model prompts, so renaming it would make that tender's saved answers miss.
 - **`app/demo.py`** wraps the usual service:
   - an upload (`POST /runs`) is refused with 403 and "This demo replays saved examples only." before anything is read, so no run starts;
+  - deleting or renaming a run is refused with 403 and "The saved examples cannot be deleted or renamed in this demo.", because every visitor shares the samples. Reports, downloads and documents open as usual, and review decisions can still be saved;
   - the built page is served from `/`, after every API route, and calls the API at relative addresses.
 - **Sample runs.** `scripts/demo/replay_samples.py` replays each tender in `data/tenders/sources.csv` from the shipped answers alone (an empty `CACHE_DIR`, a model that refuses every call, `LLM_MAX_CALLS=0`) and saves the reports in `data/demo_runs`. When the image is built, `scripts/demo/load_samples.py` stores them as finished runs, with the tender PDFs beside them.
 - **Permissions.** Everything the service writes is in `/srv/demo`, owned by user 1000 (the user Hugging Face runs) and writable by any user. It is not under `/data`, where a Space mounts its persistent storage.
@@ -527,6 +528,8 @@ One run of the full suite had one failing test, which I did not see; it did not 
   - An upload gets 403 with the plain message, and no run is added. The log has no traceback.
 - **In a browser** (headless Edge): the runs list, the report of 9933225 (7 manufacturers ranked) and the upload page with the replay-only note render.
 - **Chroma and permissions:** as user 1000 and as an unrelated user (1234), a Chroma store opens and creates its collections in the cache folder, the runs database is writable, and saving review decisions works. With a read-only filesystem the app does not start, because it writes its runs database at start; Hugging Face's filesystem is writable.
-- **Tests:** backend 444 passed (441 before; `tests/api/test_demo.py` checks the refusal, the page sharing the port with the API, and the sample folders let into the image). Frontend 77 passed (76 before; the refusal shows as plain text).
+- **Delete and rename, in the container:** for each of the 5 runs, delete and rename get 403 with the plain message, and the run list is unchanged afterwards. The report, its Markdown and Excel downloads and the review decisions still answer 200, and saving decisions works.
+- **Frontend:** the report page's Delete button now shows a refusal as a notice ("Could not delete: ..."), as the runs list already did, instead of doing nothing.
+- **Tests:** backend 445 passed (441 before; `tests/api/test_demo.py` checks the upload refusal, the delete and rename refusal, the page sharing the port with the API, and the sample folders let into the image). Frontend 78 passed (76 before; refusals show as plain text, on the upload page, the runs list and the report).
 
 **Files to read.** `Dockerfile.demo`, `Dockerfile.demo.dockerignore`, `backend/app/demo.py`, `backend/scripts/demo/replay_samples.py`, `backend/scripts/demo/load_samples.py`, `docs/HF_SPACE_README.md`.

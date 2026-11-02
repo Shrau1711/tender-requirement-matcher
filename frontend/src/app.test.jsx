@@ -172,6 +172,24 @@ describe("the other pages", () => {
     await waitFor(() => expect(start).toHaveBeenCalledWith(expect.objectContaining({ category: "valves" })));
   });
 
+  it("says why a run could not be deleted or renamed, from the list and from the report", async () => {
+    const kept = "The saved examples cannot be deleted or renamed in this demo.";
+    vi.spyOn(api, "remove").mockRejectedValue(new Error(kept));
+    vi.spyOn(api, "rename").mockRejectedValue(new Error(kept));
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    open("#/runs");
+    fireEvent.click(await screen.findByRole("button", { name: "Delete GeM-Bidding-DEMO" }));
+    expect(await screen.findByText(`Could not delete: ${kept}`)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Rename GeM-Bidding-DEMO" }));
+    fireEvent.submit(document.querySelector("form"));
+    expect(await screen.findByText(`Could not rename: ${kept}`)).toBeInTheDocument();
+    cleanup();
+    open("#/runs/abc");
+    fireEvent.click(await screen.findByRole("button", { name: "Delete" }));
+    expect(await screen.findByText(`Could not delete: ${kept}`)).toBeInTheDocument();
+    expect(window.location.hash).toBe("#/runs/abc");  // still on the report
+  });
+
   it("lists, searches and compares runs", async () => {
     vi.spyOn(api, "runs").mockResolvedValue([run, { ...run, id: "def", tender: "Pump tender" }]);
     open("#/runs");
