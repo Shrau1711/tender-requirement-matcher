@@ -152,6 +152,15 @@ describe("the other pages", () => {
     await waitFor(() => expect(start).toHaveBeenCalledWith(expect.objectContaining({ category: "" })));
   });
 
+  it("shows the server's refusal of an upload as plain text", async () => {
+    vi.spyOn(api, "start").mockRejectedValue(new Error("This demo replays saved examples only."));
+    open("#/new");
+    await screen.findByText(/at most 300 per run/);
+    fireEvent.change(document.querySelector("input[type=file]"), { target: { files: [new File(["%PDF"], "bid.pdf", { type: "application/pdf" })] } });
+    fireEvent.click(screen.getByRole("button", { name: "Start matching" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(/^This demo replays saved examples only\.$/);
+  });
+
   it("starts a run with the category chosen under Advanced", async () => {
     const start = vi.spyOn(api, "start").mockResolvedValue(run);
     open("#/new");

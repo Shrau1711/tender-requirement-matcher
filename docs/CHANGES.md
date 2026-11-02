@@ -496,3 +496,35 @@ One run of the full suite had one failing test, which I did not see; it did not 
 - CI after the version change: backend, frontend and images all passed on the push run and the pull request run. The only warning left is GitHub's general notice that `ubuntu-latest` is moving to Ubuntu 26.
 
 **Files to read.** `frontend/src/pages/UploadPage.jsx`, the upload tests in `frontend/src/app.test.jsx`, `.github/workflows/ci.yml`.
+
+## Replay-only demo for a Hugging Face Space (branch `demo-space`)
+
+**What changed.**
+- **`Dockerfile.demo`** at the repository root builds one image that serves the backend and the built frontend on port 7860.
+  - It holds no API key and sets `LLM_MAX_CALLS=0`.
+  - Its own ignore file, `Dockerfile.demo.dockerignore`, lets the sample tenders in, which the other images leave out, and keeps every `.env` out.
+- **`app/demo.py`** wraps the usual service:
+  - an upload (`POST /runs`) is refused with 403 and "This demo replays saved examples only." before anything is read, so no run starts;
+  - the built page is served from `/`, after every API route, and calls the API at relative addresses.
+- **Sample runs.** `scripts/demo/replay_samples.py` replays each tender in `data/tenders/sources.csv` from the shipped answers alone (an empty `CACHE_DIR`, a model that refuses every call, `LLM_MAX_CALLS=0`) and saves the reports in `data/demo_runs`. When the image is built, `scripts/demo/load_samples.py` stores them as finished runs, with the tender PDFs beside them.
+- **Permissions.** Everything the service writes is in `/srv/demo`, owned by user 1000 (the user Hugging Face runs) and writable by any user. It is not under `/data`, where a Space mounts its persistent storage.
+- **`docs/HF_SPACE_README.md`** is the Space's README, with its settings block (`sdk: docker`, `app_port: 7860`) and what the Space repository needs. The main README is unchanged.
+
+**Why.** A free demo that anyone can open, which can never spend money and needs no key.
+
+**In an interview.** "The demo is one container that serves the interface and the API together, with the model call limit at 0, no key, and uploads refused with a plain message. Its sample reports were replayed beforehand from the answers shipped in the repository, with a model that refuses every call, so they are exactly what the real pipeline produces and cost nothing. Five of the eleven recorded tenders replay completely; the other six need answers that were never saved, so they are left out rather than shown half done."
+
+**Measured, free.**
+- **Replay:** 5 of the 11 tenders in `sources.csv` replay with 0 model calls: 9933225 (64 saved answers), 9935891 (214), 9968695 (97), 9604147 (50), 10016383 (121). The other 6 (10010349, 9789486, 9840129, 9918524, 9995708, 9987635) each need at least one answer that is not shipped, so they are left out. No report has a budget note.
+- **Image:** 1.31 GB. It runs as user 1000, with `LLM_MAX_CALLS=0`, no `.env` file and no key variable.
+- **In the running container (`docker run -p 7860:7860`):**
+  - The page, its `config.js` and its assets load.
+  - `/config` gives `max_model_calls: 0`. `/runs` lists the 5 sample runs, all done with 0 model calls.
+  - Each report's JSON is identical to the saved one. Its Markdown and Excel downloads work.
+  - Each run's tender PDFs open, and all 27 manufacturer documents open.
+  - An upload gets 403 with the plain message, and no run is added. The log has no traceback.
+- **In a browser** (headless Edge): the runs list, the report of 9933225 (7 manufacturers ranked) and the upload page with the replay-only note render.
+- **Chroma and permissions:** as user 1000 and as an unrelated user (1234), a Chroma store opens and creates its collections in the cache folder, the runs database is writable, and saving review decisions works. With a read-only filesystem the app does not start, because it writes its runs database at start; Hugging Face's filesystem is writable.
+- **Tests:** backend 443 passed (441 before; `tests/api/test_demo.py` checks the refusal and the page sharing the port with the API). Frontend 77 passed (76 before; the refusal shows as plain text).
+
+**Files to read.** `Dockerfile.demo`, `backend/app/demo.py`, `backend/scripts/demo/replay_samples.py`, `backend/scripts/demo/load_samples.py`, `docs/HF_SPACE_README.md`.

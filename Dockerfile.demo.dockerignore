@@ -1,0 +1,15 @@
+# For Dockerfile.demo only. Like .dockerignore, but the sample tenders are let in: the demo shows their pages.
+.git
+**/node_modules
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.ruff_cache
+**/dist
+**/.env
+backend/.cache
+backend/runs
+backend/reports
+data/eval
+data/reference

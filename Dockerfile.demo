@@ -1,0 +1,57 @@
+# Replay-only demo, for a Hugging Face Docker Space: the backend and the built frontend in one container on port 7860.
+# No API key is in the image and none is needed: the sample tenders' reports are loaded at build time from data/demo_runs,
+# uploads are refused with "This demo replays saved examples only.", and LLM_MAX_CALLS=0 stops any model call.
+#   docker build -f Dockerfile.demo -t tender-matcher-demo .
+#   docker run -p 7860:7860 tender-matcher-demo
+# Its own ignore file (Dockerfile.demo.dockerignore) lets the sample tenders in, which the other images leave out.
+
+FROM node:22-alpine AS frontend
+WORKDIR /build
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+COPY frontend/index.html frontend/vite.config.js ./
+COPY frontend/public public
+COPY frontend/src src
+RUN npm run build
+# Same origin as the API, so the page calls it at relative addresses.
+RUN echo 'window.APP_CONFIG = { apiUrl: "" };' > dist/config.js
+
+FROM python:3.13-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    LLM_MAX_CALLS=0 \
+    FRONTEND_DIR=/app/frontend \
+    CACHE_DIR=/srv/demo/cache \
+    RUNS_DIR=/srv/demo/runs
+
+WORKDIR /app/backend
+
+COPY backend/requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY backend/app app
+COPY backend/config config
+COPY backend/scripts scripts
+COPY data/categories /app/data/categories
+COPY data/graph /app/data/graph
+COPY data/demo_cache /app/data/demo_cache
+COPY data/seed_embeddings.sqlite /app/data/seed_embeddings.sqlite
+COPY data/tenders /app/data/tenders
+COPY data/demo_runs /app/data/demo_runs
+COPY --from=frontend /build/dist /app/frontend
+
+# The sample runs, stored as finished runs with their tender PDFs. Hugging Face runs the container as user 1000 (and other
+# hosts may pick any user), so everything the service writes is owned by 1000 and writable by any user.
+RUN python -m scripts.demo.load_samples /app/data/demo_runs /app/data/tenders "$RUNS_DIR" \
+    && mkdir -p "$CACHE_DIR" \
+    && useradd --create-home --uid 1000 user \
+    && chown -R 1000:1000 /srv/demo && chmod -R a+rwX /srv/demo
+USER 1000
+
+EXPOSE 7860
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:7860/health', timeout=4).status == 200 else 1)"
+
+CMD ["uvicorn", "app.demo:create_demo_app", "--factory", "--host", "0.0.0.0", "--port", "7860"]
