@@ -15,8 +15,6 @@
     "plant"
   ],
   "defining": [
-    "pump_type",
-    "valve_type",
     "product_type"
   ],
   "generic": [

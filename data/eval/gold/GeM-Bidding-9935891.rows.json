@@ -1,0 +1,642 @@
+[
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 1,
+  "name": "Pump Type",
+  "value": "vertical multistage, in-line type",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | pump_type"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Suction condition",
+  "value": "Flooded",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | suction_condition"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Operating duty head",
+  "value": "more than 100 m of water column (MWC) & not exceeding 110 MWC",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | operating_duty_head",
+   "Type-1 pumpwith motor along with spare mechanical seals | operating_duty_head"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Operating duty flow",
+  "value": "20 m3/h (minimum)",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | operating_duty_flow"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Pumping Efficiency",
+  "value": "≥ 70%",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | pumping_efficiency"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Companion Flange",
+  "value": "SS304 as per IS 6392, PN 16or equivalent",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | companion_flange_material",
+   "Type-1 pumpwith motor along with spare mechanical seals | companion_flange_standard",
+   "Type-1 pumpwith motor along with spare mechanical seals | companion_flange_pressure_rating"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Noise Level",
+  "value": "≤ 85 dBA at 1 m distance",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | noise_level"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Pump Impeller Material",
+  "value": "stainless steelas per IS 6911 (X04Cr17Ni12Mo2) or equivalent enclosed type with smooth surface finishes",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | pump_impeller_material"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Mechanical seal type",
+  "value": "Cartridge type and balanced",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | mechanical_seal_type"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Mechanical seal operating limit",
+  "value": "continuous operation up to 100°C & 30 Bar",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | mechanical_seal_operating_temperature_limit",
+   "Type-1 pumpwith motor along with spare mechanical seals | mechanical_seal_operating_pressure_limit"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Pump Coupling",
+  "value": "Rigid coupling as per standard",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | pump_coupling"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Liquid to be handled",
+  "value": "DI Water",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | liquid_to_be_handled"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Specific gravity",
+  "value": "1",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | specific_gravity"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Service temperature",
+  "value": "Upto 60°C",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | service_temperature"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Viscosity",
+  "value": "1",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | viscosity"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Service",
+  "value": "Continuous Duty",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | service"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Head capacity curve",
+  "value": "Stable",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | head_capacity_curve"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Pump Casing Material",
+  "value": "Stainless steel as per IS 3444 Gr. CF8M or equivalent",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | pump_casing_material"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Impeller Material",
+  "value": "Stainless steel as per IS 6911 (X04Cr17Ni12Mo2) or equivalent",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | impeller_material"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Shaft Material",
+  "value": "Stainless Steel (Duplex)- grade EN 1.4462 or equivalent IS std.",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | shaft_material"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Motor Type",
+  "value": "Vertical, face / flange mounted, totally enclosed fan-cooled, standard squirrel cage induction motors with main dimensions according to IEC standards",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | motor_type"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Recommended Motor safety",
+  "value": "Better than 10% at rated duty point (mention the Power requirement at rated operating duty point). Motor should be selected as non-over-loading type",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | motor_safety_margin",
+   "Type-1 pumpwith motor along with spare mechanical seals | motor_loading_type"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Motor Rated Speed",
+  "value": "In range of 2900 to 3000 RPM",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | motor_rated_speed",
+   "Type-1 pumpwith motor along with spare mechanical seals | motor_rated_speed"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Motor Efficiency Class",
+  "value": "IE3 or better energy efficient type",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | motor_efficiency_class"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Rated Voltage",
+  "value": "3 Phase - 415 V ± 10%",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | rated_voltage",
+   "Type-1 pumpwith motor along with spare mechanical seals | phase",
+   "Type-1 pumpwith motor along with spare mechanical seals | voltage_tolerance"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Frequency",
+  "value": "50 Hz ±3%",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | frequency",
+   "Type-1 pumpwith motor along with spare mechanical seals | frequency_tolerance"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Enclosure class",
+  "value": "TEFC, IP55 or better",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | motor_enclosure_type",
+   "Type-1 pumpwith motor along with spare mechanical seals | ingress_protection_rating"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Insulation class",
+  "value": "F class",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | insulation_class"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Motor Starter compatibility",
+  "value": "Motor shall be suitable for both DOL and / or STAR/DELTA starting",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | motor_starter_compatibility"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 4,
+  "name": "Pump Testing Standard",
+  "value": "IS 9137standards or equivalent",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | pump_testing_standard"
+  ]
+ },
+ {
+  "item": "Type-1 pumpwith motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 4,
+  "name": "Motor Performance Test Standard",
+  "value": "IS 12615 standard or equivalent",
+  "keys": [
+   "Type-1 pumpwith motor along with spare mechanical seals | motor_performance_test_standard"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 1,
+  "name": "Pump Type",
+  "value": "vertical multistage, in-line type",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | pump_type"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Suction condition",
+  "value": "Flooded",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | suction_condition"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Operating duty head",
+  "value": "more than 35 m of water column (MWC) & not exceeding 40 MWC",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | operating_duty_head",
+   "Type-2 pump with motor along with spare mechanical seals | operating_duty_head"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Operating duty flow",
+  "value": "30 m3/h (minimum)",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | operating_duty_flow"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Pumping Efficiency",
+  "value": "≥ 70%",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | pumping_efficiency"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Companion Flange",
+  "value": "SS304 as per IS 6392, PN 16or equivalent",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | companion_flange_material",
+   "Type-2 pump with motor along with spare mechanical seals | companion_flange_standard",
+   "Type-2 pump with motor along with spare mechanical seals | companion_flange_pressure_rating"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Noise Level",
+  "value": "≤ 85 dBA at 1 m distance",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | noise_level"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Pump Impeller Material",
+  "value": "stainless steelas per IS 6911 (X04Cr17Ni12Mo2) or equivalent enclosed type with smooth surface finishes",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | pump_impeller_material"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Mechanical seal type",
+  "value": "Cartridge type and balanced",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | mechanical_seal_type"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Mechanical seal operating limit",
+  "value": "continuous operation up to 100°C & 30 Bar",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | mechanical_seal_operating_temperature_limit",
+   "Type-2 pump with motor along with spare mechanical seals | mechanical_seal_operating_pressure_limit"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Pump Coupling",
+  "value": "Rigid coupling as per standard",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | pump_coupling"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Liquid to be handled",
+  "value": "DI Water",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | liquid_to_be_handled"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Specific gravity",
+  "value": "1",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | specific_gravity"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Service temperature",
+  "value": "Upto 60°C",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | service_temperature"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Viscosity",
+  "value": "1",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | viscosity"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Service",
+  "value": "Continuous Duty",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | service"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Head capacity curve",
+  "value": "Stable",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | head_capacity_curve"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Pump Casing Material",
+  "value": "Stainless steel as per IS 3444 Gr. CF8M or equivalent",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | pump_casing_material"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Impeller Material",
+  "value": "Stainless steel as per IS 6911 (X04Cr17Ni12Mo2) or equivalent",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | impeller_material"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 2,
+  "name": "Shaft Material",
+  "value": "Stainless Steel (Duplex)- grade EN 1.4462 or equivalent IS std.",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | shaft_material"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Motor Type",
+  "value": "Vertical, face / flange mounted, totally enclosed fan-cooled, standard squirrel cage induction motors with main dimensions according to IEC standards",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | motor_type"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Recommended Motor safety",
+  "value": "Better than 10% at rated duty point (mention the Power requirement at rated operating duty point). Motor should be selected as non-over-loading type",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | motor_safety_margin",
+   "Type-2 pump with motor along with spare mechanical seals | motor_loading_type"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Motor Rated Speed",
+  "value": "In range of 2900 to 3000 RPM",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | motor_rated_speed",
+   "Type-2 pump with motor along with spare mechanical seals | motor_rated_speed"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Motor Efficiency Class",
+  "value": "IE3 or better energy efficient type",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | motor_efficiency_class"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Rated Voltage",
+  "value": "3 Phase - 415 V ± 10%",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | phase",
+   "Type-2 pump with motor along with spare mechanical seals | rated_voltage",
+   "Type-2 pump with motor along with spare mechanical seals | voltage_tolerance"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Frequency",
+  "value": "50 Hz ±3%",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | frequency",
+   "Type-2 pump with motor along with spare mechanical seals | frequency_tolerance"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Enclosure class",
+  "value": "TEFC, IP55 or better",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | motor_enclosure_type",
+   "Type-2 pump with motor along with spare mechanical seals | ingress_protection_rating"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Insulation class",
+  "value": "F class",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | insulation_class"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 3,
+  "name": "Motor Starter compatibility",
+  "value": "Motor shall be suitable for both DOL and / or STAR/DELTA starting",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | motor_starter_compatibility"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 4,
+  "name": "Pump Testing Standard",
+  "value": "IS 9137standards or equivalent",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | pump_testing_standard"
+  ]
+ },
+ {
+  "item": "Type-2 pump with motor along with spare mechanical seals",
+  "file": "revised_specification_2026-09-23-15-16-11_65f2de0b6bad0447b6893b5a00601dd0.pdf",
+  "page": 4,
+  "name": "Motor Performance Test Standard",
+  "value": "IS 12615 standard or equivalent",
+  "keys": [
+   "Type-2 pump with motor along with spare mechanical seals | motor_performance_test_standard"
+  ]
+ }
+]

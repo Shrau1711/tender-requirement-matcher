@@ -8,7 +8,7 @@ from typing import Literal
 
 from pydantic import BaseModel, field_validator
 
-from app.services.estimate import Estimate
+from app.cost.estimate import Estimate
 
 Status = Literal["queued", "awaiting", "running", "done", "failed", "cancelled"]  # awaiting: the person has an estimate to approve
 
@@ -82,6 +82,11 @@ class RunStore:
     def set_status(self, run_id: str, status: Status) -> None:
         with self.connect() as db:
             db.execute("UPDATE runs SET status = ? WHERE id = ?", (status, run_id))
+
+    def set_category(self, run_id: str, category: str) -> None:
+        """For a run started without a category, once the tender says which one."""
+        with self.connect() as db:
+            db.execute("UPDATE runs SET category = ? WHERE id = ?", (category, run_id))
 
     def set_progress(self, run_id: str, text: str) -> None:
         with self.connect() as db:

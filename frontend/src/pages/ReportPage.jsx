@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
-import CompareMakers from "../components/CompareMakers";
-import Icon from "../components/Icon";
-import MethodTab from "../components/MethodTab";
-import Overview from "../components/Overview";
-import PagesToCheck from "../components/PagesToCheck";
-import { PrintContext } from "../components/PrintContext";
-import Requirements from "../components/Requirements";
-import { TabPanel, Tabs } from "../components/Tabs";
-import ToConfirm from "../components/ToConfirm";
+import CompareMakers from "../components/report/CompareMakers";
+import Icon from "../components/common/Icon";
+import MethodTab from "../components/report/MethodTab";
+import Overview from "../components/report/Overview";
+import PagesToCheck from "../components/review/PagesToCheck";
+import { PrintContext } from "../components/common/PrintContext";
+import Requirements from "../components/report/Requirements";
+import { TabPanel, Tabs } from "../components/common/Tabs";
+import ToConfirm from "../components/review/ToConfirm";
 import { useReviews } from "../hooks/useReviews";
 import { shortDate } from "../lib/format";
 import { go } from "../hooks/useRoute";
@@ -47,7 +47,7 @@ export default function ReportPage({ run, report, tab, makerName, onDelete }) {
       <div className="page-head">
         <div>
           <h1 id="report-title" tabIndex={-1}>{run.tender}</h1>
-          <p>{report.tender === run.tender ? "" : `${report.tender} · `}Matched against {run.category} on {shortDate(run.finished_at ?? run.created_at)}</p>
+          <p>{report.tender === run.tender ? "" : `${report.tender} · `}Matched against {run.category || "…"} on {shortDate(run.finished_at ?? run.created_at)}</p>
         </div>
         <div className="actions">
           <a className="button secondary" href={api.downloadUrl(run.id, "xlsx")} download><Icon name="download" />Excel</a>

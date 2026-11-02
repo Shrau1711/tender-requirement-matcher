@@ -1,8 +1,68 @@
 # Tender Requirement Matching
 
-Upload a GeM tender (PDF) and pick a category. The system reads the tender, breaks it into individual requirements, searches each manufacturer's catalogue documents for evidence, compares them, and returns a report: a status and score per requirement per manufacturer, an overall compatibility ranking, and a cited page for every claim.
+[![CI](https://github.com/Shrau1711/tender-matcher/actions/workflows/ci.yml/badge.svg)](https://github.com/Shrau1711/tender-matcher/actions/workflows/ci.yml)
 
-An LLM (Gemini) only reads text and pulls out structured facts. The comparison and scoring are plain code, and every quoted piece of evidence is checked programmatically against the page it came from.
+Upload a GeM tender (PDF), and pick a category or let the system find each item's category. The system reads the tender, breaks it into individual requirements, searches each manufacturer's catalogue documents for evidence, compares them, and returns a report: a status and score per requirement per manufacturer, an overall compatibility ranking, and a cited page for every claim.
+
+How the parts fit together, with diagrams and the design decisions, is in [docs/architecture.md](docs/architecture.md). An LLM (Gemini) only reads text and pulls out structured facts. The comparison and scoring are plain code, and every quoted piece of evidence is checked programmatically against the page it came from.
+
+## What's new in v3
+
+- **One package per pipeline stage** (reading, chunking, embedding, vector store, retrieval, extraction, judging, reporting and more), each replaceable on its own.
+- **Five chunking strategies** behind one interface, with a router that picks one per document (`CHUNKER`).
+- **A vector store interface:** Chroma on disk, the default, which reads each document once, or the original in-memory store. Chroma stores and filters; similarity is scored exactly in the code, so both give the same results.
+- **Categories are folders with a `category.json`.** The category is optional on upload, and a tender with items of several categories gets one run per category.
+- **Settings:** model, thinking level and temperature, and an exact token counter. A small knowledge graph of standards is also included, off by default.
+
+Every default is what the saved answers were made with, so they all still match. Measured without paid calls:
+- with Chroma, every question the pipeline would ask for the five cached dev tenders (1,273) is byte-identical to the original store's;
+- `score_gold` reproduces 31 of 35 statuses and 23 of 23 pages on the labelled valve tender.
+
+Two approved paid checks on that tender (about ₹60 in all) kept the defaults:
+
+| Setting | Statuses agree | Pages agree |
+|---|---|---|
+| Gemini 3.5 Flash-Lite | 28 of 35 | 19 of 21 |
+| Temperature 1.0 | 29 of 35 | 21 of 21 |
+
+What changed, why and what was measured, phase by phase: [docs/CHANGES.md](docs/CHANGES.md). The remaining paid checks, with prices: [docs/NEEDS_PAID_RUN.md](docs/NEEDS_PAID_RUN.md).
+
+## Overview
+
+How the parts fit together: the manufacturers' documents are read, chunked and embedded once into the store; each tender is read, split into requirements, searched for evidence, judged in plain code and reported. The ingest and query paths and the design decisions are in [docs/architecture.md](docs/architecture.md).
+
+```mermaid
+flowchart LR
+    UI["frontend (React)<br/>upload, report, review"] -->|HTTP| API["api<br/>FastAPI routes"]
+    API --> DB[("db<br/>runs and reviews (SQLite)")]
+    API --> RUN["pipeline<br/>one job per tender and category"]
+
+    subgraph Documents["manufacturer documents (once per file)"]
+        READ["reading<br/>PDF text, tables, boxes, OCR"] --> CHUNK["chunking<br/>strategies + router"]
+        CHUNK --> EMB["embedding<br/>local model + cache"]
+        EMB --> VS[("vectorstore<br/>Chroma or memory")]
+    end
+
+    subgraph Tender["each tender"]
+        TEN["tender<br/>items and requirement rows"] --> CAT["categories<br/>route items"]
+        CAT --> ATOM["extraction<br/>atomic requirements"]
+        ATOM --> RET["retrieval<br/>BM25 + vectors, RRF"]
+        RET --> COST["cost<br/>budget, estimate, approval"]
+        COST --> EVID["extraction<br/>evidence questions"]
+        EVID --> JUDGE["judging<br/>units, compare, match"]
+        JUDGE --> REP["reporting<br/>JSON, Markdown, Excel"]
+    end
+
+    RUN --> TEN
+    RUN --> READ
+    VS --> RET
+    TEN & ATOM & EVID -.-> LLM["llm<br/>Gemini + answer cache"]
+    READ -.->|picture-only pages| LLM
+    VOC["vocabulary<br/>words, units, roles"] -.-> JUDGE
+    GRAPH["graph (off by default)<br/>standards, tender layout"] -.-> JUDGE
+    CFG["data/categories/*/category.json"] -.-> CAT & VOC & ATOM
+    COL["collecting<br/>crawler + source records"] -.->|PDFs| READ
+```
 
 ## Run it (Docker, no build needed)
 
@@ -18,12 +78,12 @@ docker run -d --name tm-frontend -p 3000:80 -e API_URL=http://localhost:8000 shr
 
 **How the two images connect:** the frontend is a static site served by nginx. The page you open on port 3000 runs in your browser, and your browser calls the backend directly at `API_URL` (default `http://localhost:8000`). The containers do not talk to each other, so no shared network is needed. Start the backend first and keep both ports published. If you run the images on another machine, set `API_URL` on the frontend to the address your browser should use to reach the backend (for example `http://my-server:8000`).
 
-Open http://localhost:3000, choose a category and upload the tender PDF(s). The system reads the tender, then **stops and shows an estimate before it spends anything**: how many new Gemini questions it needs, roughly what they cost in rupees, and about how long they take, with **Proceed** and **Cancel** buttons. Nothing is charged for matching until you press Proceed; the only Gemini calls made before it are the few that read the tender itself.
+Open http://localhost:3000, upload the tender PDF(s), and choose a category or leave it to be found in the tender (a tender that buys, say, pumps and valves then gets one run for each). The system reads the tender, then **stops and shows an estimate before it spends anything**: how many new Gemini questions it needs, roughly what they cost in rupees, and about how long they take, with **Proceed** and **Cancel** buttons. Nothing is charged for matching until you press Proceed; the only Gemini calls made before it are the few that read the tender itself.
 
 - **Answers it already has are free.** The images ship with the answers for five example tenders (GeM 9933225, 9968695 and 10016383 for valves; 9935891 and 9604147 for pumps), so those show "everything is already saved" and finish with no Gemini calls. In my runs that took 1 to 6 minutes (the pump tenders are the slow ones), because the manufacturers' documents are still read and searched. Every answer from your own runs is kept in the `tender-data` volume, so repeating a run is also free.
 - **A tender it has not seen** makes live Gemini calls. Expect a few minutes and roughly ₹6 for a small tender up to ₹60-90 for one with 8-16 requirements, and never more than the budget below. On one checked tender the estimate said about ₹26 and AI Studio showed ₹26.
-- The estimate is a guess for time (the model's speed varies) and a close figure for money (it prices the input tokens of every question before asking it).
-- The manufacturers' documents are already indexed inside the image, so the first run on a fresh container does not spend minutes building a search index.
+- The estimate is a guess for time (the model's speed varies) and a rough figure for money. It counts the input tokens of every question as characters / 4. Measured against the counts Gemini reported for the two labelled tenders' saved questions, that is about 70% of the real input tokens, and the replies' output tokens come on top. `TOKEN_COUNTER=gemini` counts exactly.
+- The manufacturers' documents are read and embedded once into the Chroma store in the `tender-data` volume (about 1.5 minutes for valves and 4 for pumps on my machine); later runs take them from the store in about a second. The search vectors ship inside the image, so even the first run computes no embeddings for the shipped documents.
 
 Or with Docker Compose (from a clone of this repo, with a `.env` file next to `docker-compose.yml`):
 
@@ -37,7 +97,30 @@ docker compose pull
 docker compose up
 ```
 
-To build the images yourself instead, run `docker compose up --build`.
+To build the images yourself instead:
+
+```
+docker compose build          # both images
+docker compose up             # start them; add -d to run in the background
+docker compose logs -f backend
+docker compose down           # stop; the tender-data volume (runs, saved answers, Chroma store) is kept
+```
+
+## Switching the settings
+
+Settings are environment variables (the full list is below). Set them in `backend/.env` when running locally, with `-e NAME=value` on `docker run`, or in the `.env` next to `docker-compose.yml`, which passes the main ones through:
+
+```
+LLM_TEMPERATURE=DEFAULT
+KNOWLEDGE_GRAPH=on
+```
+
+Restart the backend after a change. Two kinds of setting behave differently:
+
+- **They change the questions sent to Gemini, so saved answers no longer match and runs cost money again:** `LLM_MODEL`, `LLM_THINKING`, `LLM_TEMPERATURE`, `CHUNKER`, `EVIDENCE_TOP_K`, and a category's `extraction_rules`. Before switching one, get the free estimate: `cd backend` then `python -m scripts.cost.estimate_cost <tender folder> ../data/categories/<category>`. It reads the saved answers and counts what would be new. With a new model or temperature even the tender's reading is new, so it stops and says so; the measured costs of whole runs are in `docs/NEEDS_PAID_RUN.md`.
+- **They do not change any question:** `VECTOR_STORE` (same results either way), `TOKEN_COUNTER` (only how the estimate counts), `KNOWLEDGE_GRAPH` (only how standards are judged, in plain code), `LLM_MAX_CALLS`, `TENDER_TOKEN_BUDGET`, `LLM_WORKERS`.
+
+To check a setting for free on a labelled tender, `python -m scripts.eval.score_gold ../data/tenders/dev/GeM-Bidding-9933225 ../data/categories/valves` with `LLM_MAX_CALLS=0` scores the saved answers against the answer key, and stops instead of spending if a question is new.
 
 ## Ports and settings
 
@@ -53,11 +136,18 @@ Backend environment variables:
 | `GEMINI_API_KEY` | none (required) | your Gemini key |
 | `LLM_MAX_CALLS` | 400 | hard cap on Gemini calls per run, a cost guard |
 | `TENDER_TOKEN_BUDGET` | 1500000 | input tokens of new Gemini questions one tender may use (about 150 rupees). A tender over it is read from fewer passages per question, and if still over, only its first items are evaluated; the report's notes say exactly what was cut |
+| `TOKEN_COUNTER` | `estimate` | how a question's tokens are counted for the budget and the estimate: `estimate` (characters / 4, free) or `gemini` (Gemini's own count_tokens, exact; each count is a request and counts toward `LLM_MAX_CALLS`, after which it estimates). Counting never changes a question, so saved answers still match |
 | `SEED_CACHE_DIR` | baked into the image | model answers shipped for the example tenders, so those tenders cost nothing to run |
 | `SEED_EMBEDDINGS` | baked into the image | search vectors of the manufacturers' documents and of the example tenders' questions, computed where the shipped answers were saved. Vectors computed on another machine differ in the last digits, which can change the passages a question reads and so miss a saved answer |
 | `EVIDENCE_TOP_K` | 16 | passages read per question. 8 is an economy mode at roughly half the cost: the cited page was among the passages read 95% of the time at 16 and 82% at 8, but on my two hand-labelled tenders the accuracy was about the same |
 | `LLM_MODEL` | `gemini-3.8-flash` | Gemini model. Saved answers belong to a model and a thinking level, so changing either means asking again |
 | `LLM_THINKING` | `LOW` | `MINIMAL`, `LOW`, `MEDIUM`, `HIGH` or `DEFAULT` |
+| `LLM_TEMPERATURE` | `0` | a number, or `DEFAULT` for the model's own (1.0). Google advises leaving Gemini 3 models at their default because lower values can cause looping; 0 stays the default because every saved answer was made with it, and any other value means asking again |
+| `CHUNKER` | `table_rows` | how manufacturer documents are cut into passages: `table_rows` (one chunk per table row, then sections or packed text; the original), `recursive` (fixed size with overlap), `sections` (whole tables and headed sections), `parent_child` (small chunks searched, the larger passage read), `structure` (numbered clauses and flowchart boxes), or `auto` (picked per document from what it looks like). Saved answers belong to the passages, so anything but `table_rows` means asking again |
+| `VECTOR_STORE` | `chroma` | where chunk vectors are kept: `chroma` (on disk, so a document is read and embedded once, and again only when its content or the chunking settings change) or `memory` (everything read again at each start; the original). Both give the same results to the last digit. Chroma's folder is for one process at a time: do not run a script on it while the server runs; if it ever breaks, delete the folder, it is only a cache |
+| `CHROMA_DIR` | `<CACHE_DIR>/chroma` | where the Chroma store is kept |
+| `KNOWLEDGE_GRAPH` | `off` | `on` lets judging use the standards graph: a standard stated under another body's name ("BS EN ISO 5208" for "ISO 5208") counts as the one asked for, and one that documents only name together with it goes to a person when the tender accepts an equivalent. Build or refresh the graph with `python -m scripts.run.build_graph` (no model calls) |
+| `STANDARDS_GRAPH` | `data/graph/standards.json` | where the standards graph is kept |
 | `RUPEES_PER_MILLION_TOKENS` | 100 | turns tokens into the rupee figure on the estimate; change it if the price changes |
 | `APPROVAL_WAIT_MINUTES` | 30 | how long a run waits for Proceed or Cancel before it cancels itself, because a waiting run holds up the runs behind it |
 | `LLM_WORKERS` | 4 | parallel Gemini calls; lower it on a free-tier key |
@@ -72,6 +162,7 @@ Frontend: `API_URL`, the backend address.
 
 ```
 curl -F "category=pumps" -F "files=@tender.pdf" http://localhost:8000/runs
+curl -F "files=@tender.pdf" http://localhost:8000/runs        # no category: each item goes to its own, one run per category
 curl -F "category=pumps" -F "files=@tender.pdf" -F "ask_first=true" http://localhost:8000/runs   # stops at the estimate (status "awaiting")
 curl -X POST http://localhost:8000/runs/<id>/proceed     # or /cancel
 curl http://localhost:8000/runs/<id>/report        # machine-readable JSON
@@ -85,16 +176,32 @@ Other routes: `GET /health`, `/categories`, `/runs`, `PATCH`/`DELETE /runs/{id}`
 
 ## Categories
 
-Categories live in `data/categories/<category>/manufacturers/<maker>/` as PDFs plus source notes. Add a folder of PDFs and it appears in the category list; no code changes are needed.
+Categories live in `data/categories/<category>/manufacturers/<maker>/` as PDFs plus source notes, with a `category.json` next to `manufacturers/` holding the category's own words and rules. Add a folder of PDFs and a `category.json` and it appears in the category list; no code changes are needed (the words and rules are read when the server starts).
 
-Collecting catalogues by hand does not scale, so there is an optional crawler that lists, and with `--download` saves, the PDFs a manufacturer publishes, recording each file's address, the page it was found on, the date and a hash in `crawl_sources.csv` next to them. It obeys `robots.txt`, waits between requests, stays on the manufacturer's site, and does nothing unless asked:
+```json
+{
+  "product_words": ["pump"],
+  "type_attributes": ["pump_type"],
+  "filler_words": [],
+  "extraction_rules": ["A duty point the pump must deliver (head, flow) is also at_least, ..."]
+}
+```
+
+- `product_words`: an item whose title says one of these belongs to the category. An item whose title names no category's word, or several, goes to the category whose documents are most alike in meaning.
+- `type_attributes`: requirement names that say which kind of product it is; a product that fails one is the wrong kind.
+- `filler_words`: words that say nothing about which kind it is ("valve" in "gate valve").
+- `extraction_rules`: extra rules for reading the tender's rows, added to the shared ones. Every category's rules are in every prompt, so adding a rule changes the questions for all tenders and their saved answers no longer match.
+
+Every field may be left out. Units, abbreviations and other shared vocabulary stay in `backend/config/`.
+
+Collecting catalogues by hand does not scale, so there is an optional crawler that lists, and with `--download` saves, the PDFs a manufacturer publishes, recording each file's address, the page it was found on, the date and a hash in `crawl_sources.csv` next to them. It obeys `robots.txt`, waits between requests, stays on the manufacturer's site, and does nothing unless asked. Documents collected by hand are recorded in `data/categories/sources.csv` instead, and a test checks that every manufacturer PDF has its source recorded in one of the two:
 
 ```
 cd backend
-python -m scripts.crawl_catalogues --category pumps --maker grundfos --start <page listing the catalogues> --include databooklet --exclude price
+python -m scripts.run.crawl_catalogues --category pumps --maker grundfos --start <page listing the catalogues> --include databooklet --exclude price
 ```
 
-Scanned catalogue pages are read once by the model and the transcription is saved. `python -m scripts.compare_ocr <category folder>` measures, without any model call, how closely a free local reader (`pip install rapidocr onnxruntime`) matches those saved transcriptions on the numbers in each page. It is an experiment to decide whether a cheaper reader is good enough for new catalogues; the matching pipeline does not use it.
+Scanned catalogue pages are read once by the model and the transcription is saved. `python -m scripts.eval.compare_ocr <category folder>` measures, without any model call, how closely a free local reader (`pip install rapidocr onnxruntime`) matches those saved transcriptions on the numbers in each page. It is an experiment to decide whether a cheaper reader is good enough for new catalogues; the matching pipeline does not use it.
 
 Included: `pumps` (CRI, Grundfos, Kirloskar, KSB) and `valves` (Delval, Duncan, Intervalve, King, KSB, L&T, Leader).
 
@@ -132,8 +239,20 @@ cd backend
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements-dev.txt
+set LLM_MAX_CALLS=0          # PowerShell: $env:LLM_MAX_CALLS=0 ; no test or check below needs a paid call
 pytest
 uvicorn app.main:create_app --factory --port 8000
+```
+
+Free checks, all with `LLM_MAX_CALLS=0` (they read saved answers and stop rather than spend):
+
+```
+python -m scripts.eval.eval_retrieval ../data/categories/valves ../data/eval/retrieval_cases.json [chunker]   # search quality
+python -m scripts.eval.eval_retrieval ../data/eval/samples ../data/eval/retrieval_cases_samples.json [chunker]
+python -m scripts.eval.score_gold ../data/tenders/dev/GeM-Bidding-9933225 ../data/categories/valves           # against the answer key
+python -m scripts.cost.estimate_cost ../data/tenders/dev/GeM-Bidding-9840129 ../data/categories/valves        # what a run would cost
+python -m scripts.run.build_graph                                                                              # rebuild the standards graph
+python -m scripts.run.show_graph ../data/tenders/dev/GeM-Bidding-9840129                                        # a tender as a graph
 ```
 
 ```

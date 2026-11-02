@@ -129,6 +129,38 @@ describe("the other pages", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("not a PDF");
     fireEvent.change(input, { target: { files: [new File(["%PDF"], "bid.pdf", { type: "application/pdf" })] } });
     expect(screen.getByRole("button", { name: "Start matching" })).toBeEnabled();
+    const advanced = screen.getByText("Advanced").closest("details");
+    expect(advanced).not.toHaveAttribute("open");  // the manual category choice is tucked away
+    const category = within(advanced).getByLabelText("Product category (optional)");
+    expect(category).toHaveValue("");  // by default each item's category is found in the tender
+    expect(within(advanced).getByRole("option", { name: /Find it in the tender/ })).toBeInTheDocument();
+  });
+
+  it("says the demo only replays saved examples when the call limit is 0", async () => {
+    vi.spyOn(api, "config").mockResolvedValue({ max_model_calls: 0, max_upload_mb: 60 });
+    open("#/new");
+    expect(await screen.findByText("This demo replays saved examples only.")).toBeInTheDocument();
+    expect(screen.queryByText(/per run/)).not.toBeInTheDocument();
+  });
+
+  it("starts a run with a chosen category, or without one so the server finds it", async () => {
+    const start = vi.spyOn(api, "start").mockResolvedValue(run);
+    open("#/new");
+    await screen.findByText(/at most 300 per run/);
+    fireEvent.change(document.querySelector("input[type=file]"), { target: { files: [new File(["%PDF"], "bid.pdf", { type: "application/pdf" })] } });
+    fireEvent.click(screen.getByRole("button", { name: "Start matching" }));
+    await waitFor(() => expect(start).toHaveBeenCalledWith(expect.objectContaining({ category: "" })));
+  });
+
+  it("starts a run with the category chosen under Advanced", async () => {
+    const start = vi.spyOn(api, "start").mockResolvedValue(run);
+    open("#/new");
+    await screen.findByRole("option", { name: /^valves/ });
+    fireEvent.change(document.querySelector("input[type=file]"), { target: { files: [new File(["%PDF"], "bid.pdf", { type: "application/pdf" })] } });
+    fireEvent.click(screen.getByText("Advanced"));
+    fireEvent.change(screen.getByLabelText("Product category (optional)"), { target: { value: "valves" } });
+    fireEvent.click(screen.getByRole("button", { name: "Start matching" }));
+    await waitFor(() => expect(start).toHaveBeenCalledWith(expect.objectContaining({ category: "valves" })));
   });
 
   it("lists, searches and compares runs", async () => {

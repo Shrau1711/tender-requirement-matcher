@@ -1,0 +1,8 @@
+{
+  "product_words": ["pump"],
+  "type_attributes": ["pump_type"],
+  "filler_words": [],
+  "extraction_rules": [
+    "A duty point the pump must deliver (head, flow) is also at_least, even when the row is called min or max: a pump that cannot reach the upper figure does not meet it. For example \"Head 100 - 110 m\" gives two requirements, 100 and 110, both at_least."
+  ]
+}

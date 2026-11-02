@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { api } from "../api";
-import { useNotify } from "../components/Notifier";
+import { useNotify } from "../components/shell/Notifier";
 
 /** The decisions people have recorded for one run, and a way to record more. They never change the computed score. */
 export function useReviews(runId) {

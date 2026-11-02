@@ -4,18 +4,18 @@ import shutil
 from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, Form, HTTPException, Request, UploadFile
-from pydantic import BaseModel, Field
 from fastapi.responses import Response
+from pydantic import BaseModel, Field
 
 from app.api.categories import Category, list_categories
 from app.api.uploads import MAX_UPLOAD_MB, save_tender
+from app.cost.approval import APPROVALS
 from app.db.runs import RunInfo, RunStore
-from app.services.approval import APPROVALS
-from app.services.llm_cache import MAX_CALLS
-from app.services.report import Report
-from app.services.report_xlsx import build_workbook
-from app.services.report_markdown import to_markdown
-from app.services.runner import Runner, execute
+from app.llm.llm_cache import MAX_CALLS
+from app.pipeline.runner import Runner, execute, execute_routed
+from app.reporting.report import Report
+from app.reporting.report_markdown import to_markdown
+from app.reporting.report_xlsx import build_workbook
 
 router = APIRouter()
 
@@ -59,18 +59,21 @@ def categories(request: Request) -> list[Category]:
 
 @router.post("/runs", status_code=202)
 async def create_run(
-    request: Request, background: BackgroundTasks, files: list[UploadFile], category: str = Form(...), name: str | None = Form(None),
+    request: Request, background: BackgroundTasks, files: list[UploadFile], category: str | None = Form(None), name: str | None = Form(None),
     ask_first: bool = Form(False),
 ) -> RunInfo:
     """Upload a tender (one or more PDFs) and start matching it against a category's manufacturers. Poll GET /runs/{id}.
 
+    Without a category, each item of the tender is sent to the category it belongs to. A tender with items of several
+    categories gets one run for each: this run takes the first, and the others appear in GET /runs.
+
     With ask_first the run stops once it knows what the search will cost (status "awaiting", with its estimate) until POST /runs/{id}/proceed or /cancel.
     """
     state = request.app.state
-    if category not in {c.name for c in list_categories(state.categories_dir)}:
+    if category and category not in {c.name for c in list_categories(state.categories_dir)}:
         raise HTTPException(404, f"Unknown category: {category}")
     first = Path(files[0].filename or "tender").stem if files else "tender"
-    run = state.store.create((name or first).strip() or first, category)
+    run = state.store.create((name or first).strip() or first, category or "")
     folder = state.runs_dir / run.id / "tender"
     try:
         await save_tender(files, folder)
@@ -81,7 +84,10 @@ async def create_run(
     if ask_first:
         APPROVALS.require(run.id)
     runner: Runner = state.runner
-    background.add_task(execute, state.store, run.id, folder, state.categories_dir / category, run.tender, runner)
+    if category:
+        background.add_task(execute, state.store, run.id, folder, state.categories_dir / category, run.tender, runner)
+    else:
+        background.add_task(execute_routed, state.store, run.id, folder, state.categories_dir, run.tender, runner, state.route)
     return run
 
 
