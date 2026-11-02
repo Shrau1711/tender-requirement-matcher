@@ -65,18 +65,23 @@ export default function UploadPage({ onStarted }) {
           )}
           {tooBig && <p className="problem" role="alert">These files add up to {totalMb.toFixed(1)} MB. The limit is {limits.max_upload_mb} MB.</p>}
         </div>
-        <label className="field"><span>Product category</span>
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="">Find it in the tender (a tender with several categories gets one run for each)</option>
-            {(categories ?? []).map((c) => <option key={c.name} value={c.name}>{c.name} ({c.manufacturers.length} manufacturers, {c.documents} documents)</option>)}
-          </select>
-        </label>
         <label className="field"><span>Name for this run <span className="hint">(optional)</span></span>
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Defaults to the file name" />
         </label>
+        <details className="fold">
+          <summary>Advanced</summary>
+          <label className="field"><span>Product category <span className="hint">(optional)</span></span>
+            <select value={category} onChange={(e) => setCategory(e.target.value)}>
+              <option value="">Find it in the tender (a tender with several categories gets one run for each)</option>
+              {(categories ?? []).map((c) => <option key={c.name} value={c.name}>{c.name} ({c.manufacturers.length} manufacturers, {c.documents} documents)</option>)}
+            </select>
+          </label>
+        </details>
         {limits && (
           <p className="notice">
-            Answers the system has found before are reused and cost nothing. A tender it has not seen makes calls to the language model, at most {limits.max_model_calls} per run. Before anything is spent you will see an estimate of the cost and time, and can cancel.
+            {limits.max_model_calls === 0
+              ? "This demo replays saved examples only."
+              : `Answers the system has found before are reused and cost nothing. A tender it has not seen makes calls to the language model, at most ${limits.max_model_calls} per run. Before anything is spent you will see an estimate of the cost and time, and can cancel.`}
           </p>
         )}
         {(error || loadError) && <div className="problem" role="alert">{error || `Could not reach the server: ${loadError}`}</div>}
