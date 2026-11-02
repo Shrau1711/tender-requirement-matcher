@@ -9,4 +9,4 @@ bid_number,gem_file_number,buyer,product,category,where_found,date_downloaded,no
 9968695,GeM-Bidding-9968695.pdf,Rourkela Steel Plant,GATE VALVE,valves,"GeM portal, bid search",,"hold-out set, not used for tuning"
 9987635,GeM-Bidding-9987635.pdf,Hindustan Petroleum Corporation Ltd,"SUPPLY OF CENTRIFUGAL PUMP , SITE VISIT FOR SUPERVISION",pumps,"GeM portal, bid search",,"hold-out set, not used for tuning"
 9604147,GeM-Bidding-9604147.pdf,Patan District Panchayat,"Submersible Pumpsets (Three Phase) Conforming To IS 8034 (V2) (Q2) , Submersible Pump Starters (Motor starter controls) (Q3)",pumps,"GeM portal, bid search",,"hold-out set, not used for tuning"
-10016383,GeM-Bidding-10016383.pdf,Munitions India Limited,PFA LINED BALL VALVES. SIZE-40 NB. FLANGE TO FLANGE DISTANCE 178 MM. 4 NOS. OF 16 MM DIA HOLES ON 98.4 M ...,valves,"GeM portal, bid search",,"hold-out set, not used for tuning"
+10016383,GeM-Bidding-10016383.pdf,Munitions India Limited,PFA LINED BALL VALVES. SIZE-40 NB. FLANGE TO FLANGE DISTANCE 178 MM. 4 NOS. OF 16 MM DIA HOLES ON 98.4 M,valves,"GeM portal, bid search",,"hold-out set, not used for tuning"
