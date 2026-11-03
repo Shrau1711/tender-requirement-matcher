@@ -4,6 +4,7 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from app.demo import KEPT, REPLAY_ONLY, create_demo_app
+from app.main import create_app
 
 
 def demo(tmp_path, monkeypatch):
@@ -46,3 +47,12 @@ def test_a_sample_run_cannot_be_deleted_or_renamed(tmp_path, monkeypatch):
         assert answer.json() == {"detail": KEPT}
     assert client.get(f"/runs/{run.id}").json()["tender"] == "GeM-Bidding-1"  # still there, under its own name
     assert client.put(f"/runs/{run.id}/reviews", json={"items": []}).status_code == 200  # decisions can still be saved
+
+
+def test_the_normal_app_still_deletes_and_renames(tmp_path, monkeypatch):
+    monkeypatch.setenv("RUNS_DIR", str(tmp_path / "runs"))
+    client = TestClient(create_app())
+    run = client.app.state.store.create("GeM-Bidding-1", "valves")
+    assert client.patch(f"/runs/{run.id}", json={"name": "renamed"}).json()["tender"] == "renamed"
+    assert client.delete(f"/runs/{run.id}").status_code == 204
+    assert client.get(f"/runs/{run.id}").status_code == 404
