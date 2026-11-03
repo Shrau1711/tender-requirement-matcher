@@ -530,6 +530,25 @@ One run of the full suite had one failing test, which I did not see; it did not 
 - **Chroma and permissions:** as user 1000 and as an unrelated user (1234), a Chroma store opens and creates its collections in the cache folder, the runs database is writable, and saving review decisions works. With a read-only filesystem the app does not start, because it writes its runs database at start; Hugging Face's filesystem is writable.
 - **Delete and rename, in the container:** for each of the 5 runs, delete and rename get 403 with the plain message, and the run list is unchanged afterwards. The report, its Markdown and Excel downloads and the review decisions still answer 200, and saving decisions works.
 - **Frontend:** the report page's Delete button now shows a refusal as a notice ("Could not delete: ..."), as the runs list already did, instead of doing nothing.
-- **Tests:** backend 445 passed (441 before; `tests/api/test_demo.py` checks the upload refusal, the delete and rename refusal, the page sharing the port with the API, and the sample folders let into the image). Frontend 78 passed (76 before; refusals show as plain text, on the upload page, the runs list and the report).
+- **Tests:** backend 446 passed (441 before; `tests/api/test_demo.py` checks the upload refusal, the delete and rename refusal, that the normal app still deletes and renames, the page sharing the port with the API, and the sample folders let into the image). Frontend 78 passed (76 before; refusals show as plain text, on the upload page, the runs list and the report).
 
 **Files to read.** `Dockerfile.demo`, `Dockerfile.demo.dockerignore`, `backend/app/demo.py`, `backend/scripts/demo/replay_samples.py`, `backend/scripts/demo/load_samples.py`, `docs/HF_SPACE_README.md`.
+
+## Demo image on Docker Hub: `shravani1711/tender-matcher-demo:v3`
+
+**What changed.**
+- The replay-only demo image is published on Docker Hub as `shravani1711/tender-matcher-demo:v3`. Anyone can run it with `docker run -p 7860:7860 shravani1711/tender-matcher-demo:v3` and open http://localhost:7860.
+- It was built from `Dockerfile.demo` at commit `697ac5f` on `demo-space`. Digest `sha256:ee9955eb8b797d805985ae28b116f0569d7a07eaa4451319f56be921e30107e1`, 1.27 GB.
+- Only the `v3` tag was pushed. There is no `latest` tag for the demo, so a pull always names the exact version. The backend and frontend images on Docker Hub are unchanged.
+
+**Why.** The demo can be tried with one command, without building it or cloning the repository, and still never calls the model or needs a key.
+
+**In an interview.** "The demo is also a public Docker image, tagged v3 and nothing else, so whoever runs it knows exactly which build they get. I checked it from a fresh pull, not from my local build: it serves the page and the API on port 7860, the five sample reports are identical to the saved ones, and uploads are refused with the plain replay-only message."
+
+**Checked, free** (on the copy pulled back from Docker Hub, after deleting the local tag; the pulled digest matches the pushed one):
+- `/health` is ok, the page and `config.js` load, and `/config` gives `max_model_calls: 0`.
+- `/runs` lists the 5 sample runs, all done. Each report's JSON is identical to its saved copy in `data/demo_runs`. The Markdown and Excel downloads work.
+- In a browser (headless Edge), the report of 10016383 renders: 7 manufacturers ranked, the best at 45.0%.
+- An upload gets 403 with "This demo replays saved examples only." The log has no traceback.
+
+**Files to read.** `Dockerfile.demo`, `docs/HF_SPACE_README.md`.
