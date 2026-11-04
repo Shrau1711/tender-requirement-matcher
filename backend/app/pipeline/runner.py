@@ -3,6 +3,7 @@ from __future__ import annotations
 import shutil
 import threading
 from collections.abc import Callable
+from functools import cache
 from pathlib import Path
 
 from app.categories.routing import by_category, route_items
@@ -12,13 +13,14 @@ from app.db.runs import RunStore
 from app.llm.llm import LLM
 from app.llm.llm_factory import make_llm
 from app.pipeline.pipeline import build_report, gather
-from app.reading.ocr import reader_for
+from app.reading.ocr import OCR, reader_for
 from app.tender.reader import read_tender
-from app.vectorstore.ingest import open_index
+from app.vectorstore.ingest import ingest, open_index, open_store
 
 Progress = Callable[[str], None]  # told what the job is doing, in words for the person
 Runner = Callable[[str, Path, Path, str, Progress], tuple[str, str]]  # (run id, tender folder, category folder, tender name, progress) -> (report json, model-call summary)
 Route = Callable[[Path, Path], dict[str, list[str]]]  # (tender folder, categories folder) -> {category: its item titles}
+Ingest = Callable[[Path, str, str], int]  # (category folder, manufacturer, file) -> the file's chunks, once searchable
 
 ONE_AT_A_TIME = threading.Lock()  # a run spends the model quota; two at once would only make both slow
 
@@ -61,6 +63,15 @@ def route_tender(tender_dir: Path, categories_dir: Path) -> dict[str, list[str]]
     read_image = reader_for(llm)
     titles = [r.item.title for r in read_tender(llm, tender_dir, read_image).requirements]
     return by_category(route_items(titles, lambda folder: open_index(folder, read_image), categories_dir))
+
+
+def add_to_search(category_dir: Path, maker: str, file: str) -> int:
+    """Store a category's new documents now, with the page reader a run uses, so the next run finds them ready.
+    The model is made only if a page is a picture and OCR is the model, so a document with its own text, or one read
+    by a local reader, needs no key and costs nothing."""
+    reader = cache(lambda: reader_for(make_llm() if OCR == "model" else None))
+    chunks = ingest(category_dir, open_store(), lambda png: reader()(png))
+    return sum(1 for c in chunks if c.manufacturer == maker and c.file == file)
 
 
 def execute_routed(

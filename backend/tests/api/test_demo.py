@@ -23,6 +23,14 @@ def test_an_upload_is_refused_with_the_plain_message(tmp_path, monkeypatch):
     assert client.get("/runs").json() == []  # no run was started
 
 
+def test_adding_a_manufacturer_document_is_refused_with_the_same_message(tmp_path, monkeypatch):
+    client = demo(tmp_path, monkeypatch)
+    answer = client.post("/categories/valves/documents", data={"manufacturer": "ksb"},
+                         files={"file": ("demo-visitor.pdf", b"%PDF-1.4 fake", "application/pdf")})
+    assert (answer.status_code, answer.json()) == (403, {"detail": REPLAY_ONLY})
+    assert not list(client.app.state.categories_dir.rglob("demo-visitor.pdf"))  # nothing was saved
+
+
 def test_the_page_and_the_api_share_one_port(tmp_path, monkeypatch):
     client = demo(tmp_path, monkeypatch)
     assert "Tender matcher" in client.get("/").text

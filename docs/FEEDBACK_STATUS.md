@@ -9,6 +9,8 @@ Checked on branch `demo-space`, 4 November 2026, by reading the code and the mea
 
 *Updated after the next batch ("Embedder and retriever behind interfaces, and a semantic chunker" in `docs/CHANGES.md`): points 1 and 2 changed; their status did not.*
 
+*Updated again after "Add documents in the web app, and OCR in more languages": point 9a is now done and point 9c partly done. Point 2 lists the new page-reader setting.*
+
 | # | Feedback | Status |
 |---|---|---|
 | 1 | Dynamic, modular chunking that suits the document, including flowcharts and hierarchies | partly done |
@@ -19,11 +21,11 @@ Checked on branch `demo-space`, 4 November 2026, by reading the code and the mea
 | 6 | A real token counter instead of characters / 4 | partly done |
 | 7 | Temperature and model as settings; leave Gemini 3 temperature at its default | partly done |
 | 8 | Make the model a setting and test a cheaper one | done |
-| 9a | Extra: a tool to collect manufacturer documents from the web | partly done |
+| 9a | Extra: a tool to collect manufacturer documents from the web | done |
 | 9b | Extra: a knowledge graph | partly done |
-| 9c | Extra: OCR that works for more languages | not done |
+| 9c | Extra: OCR that works for more languages | partly done |
 
-Done: 3. Partly done: 7. Not done: 1.
+Done: 4. Partly done: 7. Not done: 0.
 
 ## 1. Chunking: partly done
 
@@ -52,6 +54,7 @@ Done: 3. Partly done: 7. Not done: 1.
 - Every folder holds at most 7 files, except `frontend/`, whose 8 files are root config files: `package.json`, `vite.config.js`, the Dockerfile and similar.
 - Chunking (`CHUNKER`), embedding (`EMBEDDER`), the vector store (`VECTOR_STORE`) and retrieval (`RETRIEVER`) can each be swapped by a setting, behind an interface with implementations listed by name: `Embedder` in `backend/app/embedding/base.py`, `Retriever` in `backend/app/retrieval/base.py`, and `Chunker` in `backend/app/chunking/base.py` and `VectorStore` in `backend/app/vectorstore/base.py`.
 - The model is behind the `LLM` interface in `backend/app/llm/llm.py`, and `LLM_MODEL` chooses which Gemini model.
+- The page reader for scanned pages (`OCR`) is chosen the same way, from a list of readers by name in `backend/app/reading/ocr/readers.py`.
 
 **What is missing.**
 - **Only one embedder exists.** `EMBEDDER` has one choice, `bge-small`. A second is a class and one line in `EMBEDDERS`, and gets its own saved vectors and Chroma folder, but none is listed, so the setting has nothing to switch to. A new model would also make the shipped `data/seed_embeddings.sqlite` useless and every question new.
@@ -125,18 +128,32 @@ All three diagrams were checked with Mermaid's own parser, and it describes the 
 
 **What is missing.** It was tested on one small tender only. The pump tender (check 3) has not been run, so the default stays `gemini-3.8-flash` and no cost saving has been taken.
 
-## 9a. Collecting manufacturer documents: partly done
+## 9a. Collecting manufacturer documents: done
 
 **What is there.**
-- `backend/app/collecting/crawl.py` follows links on a manufacturer's site to a set depth, obeying `robots.txt`.
-- `backend/app/collecting/download.py` saves PDFs politely, each content once.
-- `backend/app/collecting/sources.py` records where each file came from.
-- Run from the command line with `backend/scripts/run/crawl_catalogues.py`.
-- A test checks that all 27 shipped documents have a recorded source.
+- **A web page, Add documents** (`frontend/src/pages/DocumentsPage.jsx`), and its route, `POST /categories/{category}/documents` (`backend/app/api/documents.py`):
+  - choose the category and the manufacturer, or type a new one;
+  - upload a PDF, with an optional web address it came from, or give the address of a PDF.
+- **The collector's own code does the work** (`backend/app/collecting/add.py`):
+  - a download goes through the crawler's polite fetcher, which obeys `robots.txt` and pauses between requests;
+  - the file is saved with `save_pdf`, so the same content is never saved twice, even under another name;
+  - a line with the source and date goes into `data/categories/sources.csv`.
+- **It is made searchable by the one ingest function.** `add_to_search` in `backend/app/pipeline/runner.py` calls `ingest` with the page reader a run uses, so the next run finds the document already stored.
+- **The page answers** with the file, the date and how many passages are now searchable. A file that saved but could not be read says so, and the next run tries again.
+- **The replay-only demo refuses it** with its plain message.
+- **Tests:**
+  - 11 collector tests (`backend/tests/collecting/test_add.py`), including a search that finds the added document;
+  - 10 API tests (`backend/tests/api/test_add_documents.py`), plus 1 demo test;
+  - 5 frontend tests (`frontend/src/documents.test.jsx`).
+- **Run on real data, free:**
+  - Intervalve's portfolio was downloaded through the route from the address recorded in `sources.csv`. It arrived byte for byte identical to the shipped copy, was recorded, and gave 20 searchable passages. Its pages that are only a picture were read from the shipped saved transcriptions (the scratch cache started empty), so no model call was made.
+  - A text PDF uploaded through the route was found by a search. A scanned Hindi page uploaded with `OCR=easyocr` was read and stored without a key or a model call.
+- The command-line crawler (`backend/app/collecting/crawl.py`, `backend/scripts/run/crawl_catalogues.py`) is unchanged.
 
 **What is missing.**
-- **It is a script, not a web tool.** Nothing in the API (`backend/app/api/`) or the web page uses `app/collecting`. A user of the app cannot collect documents.
-- **No shipped document came from it.** All 27 shipped documents are recorded by hand in `data/categories/sources.csv`. No `crawl_sources.csv` exists in the repository.
+- **The page takes one PDF, not a site.** Following a manufacturer's links to find its catalogues is still only the command-line crawler.
+- **Adding waits while the document is read.** A long catalogue can take minutes. A scanned one read by the default page reader, the model, is a paid call per picture page, and the page only warns about this in words; it shows no estimate first.
+- **No shipped document came through it.** All 27 shipped documents were still recorded by hand.
 
 ## 9b. Knowledge graph: partly done
 
@@ -154,17 +171,26 @@ All three diagrams were checked with Mermaid's own parser, and it describes the 
 - **The tender hierarchy is used only by a script.** It is not in the API, the report or the web page.
 - **Product → family → attribute links, which the reviewers named, do not exist.**
 
-## 9c. OCR for more languages: not done
+## 9c. OCR for more languages: partly done
 
-**What is there.** Pages without a text layer are read by the model from a picture of the page (`backend/app/reading/ocr.py`). `backend/app/reading/ocr_compare.py` and `backend/scripts/eval/compare_ocr.py` compare one reading with another.
+**What is there.**
+- **The page reader is a setting.** `OCR` chooses what reads pages that are only a picture, and `OCR_LANGS` the languages on them (`backend/app/reading/ocr/readers.py`, with a list of readers by name, like the other parts).
+  - `model` is the default and unchanged: Gemini transcribes the page. With `OCR_LANGS` other than `en`, one sentence asks it to expect those languages; with `en` its prompt is byte for byte the same, so every saved transcription still matches.
+  - `easyocr` runs EasyOCR on this computer (`backend/app/reading/ocr/local.py`). It reads English, Hindi and Marathi, is free and needs no key, and writes Devanagari digits as 0 to 9.
+- **Tested on pictures made in the test** (`backend/tests/ocr/test_ocr_languages.py`): a line each of Hindi, Marathi and English, and a scanned page with all three, are read word for word. `backend/tests/ocr/test_ocr_readers.py` checks the default prompt, the settings and the store key.
+- **Measured free on real pages.** Tender 9918524 includes a BHEL specification whose 6 scanned pages mix Hindi and English. The model's saved transcriptions of those pages were the reference:
+  - with `OCR_LANGS=en,hi`, EasyOCR found 25 of the 89 Hindi words the model wrote (28%) and 148 of 254 numbers (58%);
+  - with `en` alone, it found no Hindi words and 167 of 254 numbers (66%);
+  - English words: about 76% either way.
 
-**What is missing.** Everything the point asked for:
-- no language setting;
-- no OCR engine with language packs;
-- no non-English test document;
-- no measurement.
+  So on real scans EasyOCR misses most of the Hindi, and asking for Hindi costs numbers. The model's reading is the reference here, not a checked truth.
 
-The transcription prompt, the vocabulary in `backend/config/` and the word matching in `ocr_compare.py` (`[a-z]{3,}`) all assume English. A model may read other scripts, but nothing in the repository shows or checks that.
+**What is missing.**
+- **It is not used.** `OCR` defaults to `model`, and nothing switches on `easyocr`. EasyOCR is not in `requirements.txt` or the Docker images, because it brings PyTorch (about 1 GB).
+- **Not good enough on real pages yet** (the numbers above): it reads the generated pictures perfectly and real scans poorly.
+- **The rest of the pipeline is English.** The vocabulary in `backend/config/`, the units, the tender-reading prompts and the word matching in `compare.py` (`[a-z]{3,}`) assume English. Text read in Hindi or Marathi is stored, but keyword search drops Devanagari words (`TOKEN` in `backend/app/retrieval/search.py` keeps Latin letters and digits only), the embedder (`bge-small-en`) is an English model, and nothing judges Hindi text.
+- **No real Marathi page, and no document that is mainly Hindi,** is in the repository.
+- **The model's Hindi reading is unchecked.** Whether the language hint changes what the model writes needs a paid run (check 12 below).
 
 ## What would need a paid run
 
@@ -184,6 +210,8 @@ These are expected costs, not limits. Google doubles Gemini 3.8 Flash's price on
 | 8 | Chunkers `recursive`, `sections`, `parent_child` | 1 | 9935891 | 203 to 204 each | ≈ ₹162, ₹130, ₹161 |
 | 9 | Standards graph on a tender that cites linked standards | 9b | 9840129 (no answer key) | 123 | ≈ ₹88 |
 | 11 | Chunker `semantic` | 1 | 9933225 (valves) | 56 | ≈ ₹33 (free estimate 219,527 input tokens × 1.36, plus output) |
+| 12 | The model told to expect Hindi, on the real bilingual scans | 9c | 9918524 (6 pages) | 6 | ≈ ₹1.13 (from the saved readings' tokens) |
+| 13 | EasyOCR as the page reader, end to end | 9c | 9933225 | not priced | not priced: the free estimate was stopped when the computer ran low on memory |
 
 The numbers are those in `docs/NEEDS_PAID_RUN.md`. Checks 1 and 2 there were run (≈ ₹19.24 and ≈ ₹40.54, ≈ ₹59.78 in all), and check 10 was answered for free.
 
@@ -191,7 +219,7 @@ The numbers are those in `docs/NEEDS_PAID_RUN.md`. Checks 1 and 2 there were run
 
 **Not priced, because the work does not exist yet:**
 - **Exact token counts (point 6).** These are requests to Google, not answers from the model. The pricing in `docs/NEEDS_PAID_RUN.md` does not list them, and nothing here was checked against Google's billing, so confirm the price before running one. It needs `LLM_MAX_CALLS` above 0.
-- **OCR in other languages (point 9c).** There is no test document, so the number of pages, and so the cost, is unknown.
+- **OCR on a real Marathi document or a mainly Hindi one (point 9c).** None is in the repository, so the number of pages, and so the cost, is unknown.
 
 ## Notes found while checking
 

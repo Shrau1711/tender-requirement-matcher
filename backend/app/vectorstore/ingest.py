@@ -19,7 +19,7 @@ from app.config import cache_dir, path_setting, text_setting
 from app.embedding.base import EmbedFn
 from app.embedding.embed_cache import embed_cached
 from app.embedding.embedder import DEFAULT, EMBEDDER, embedder
-from app.reading.ocr import ImageReader
+from app.reading.ocr import ImageReader, reader_setting
 from app.reading.pdf_reader import sha256_file
 from app.retrieval.base import Retriever
 from app.retrieval.retrievers import RETRIEVER, retriever
@@ -42,7 +42,8 @@ def code_version() -> str:
 
 
 def settings_for(chunker: str, reads_pictures: bool) -> str:
-    return f"chunker={chunker};pictures={reads_pictures};code={code_version()}"
+    reader = reader_setting() if reads_pictures else ""  # empty for the default page reader, so its stored files still match
+    return f"chunker={chunker};pictures={reads_pictures};code={code_version()}" + (f";ocr={reader}" if reader else "")
 
 
 @cache

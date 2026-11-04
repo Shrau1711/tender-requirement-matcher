@@ -24,6 +24,8 @@ How the prices were worked out (phase 7, all free, `LLM_MAX_CALLS=0`):
 | 9 | Standards graph on a tender that cites linked standards | 9840129 (no answer key) | 123 | ≈ ₹88 (the raw estimate said ₹61) | whether `KNOWLEDGE_GRAPH=on` changes any outcome; a person would have to judge the rows that change | low |
 | 10 | How far characters / 4 is from Gemini's own count | both labelled tenders | 0 | ₹0, **answered for free** | measured on the saved answers: the estimate is 74% (valves) and 69% (pumps) of the real input tokens, from 45% to 91% per question | done |
 | 11 | Chunker `semantic` (added after phase 7) | 9933225 | 56 (none of the 56 questions unchanged) | ≈ ₹33 (estimate 219,527 input tokens × 1.36, plus 474 output tokens a question) | whether the strategy that put a right page first most often on the free retrieval checks (6 of 7 valve cases, hybrid) also gives better final answers, given its much shorter passages | medium |
+| 12 | The model told to expect Hindi (`OCR_LANGS=en,hi`) on the real bilingual scans | 9918524 (its BHEL specification, the 6 scanned pages with Hindi) | 6 | ≈ ₹1.13 (the saved readings of these pages used 7,254 input and 4,043 output tokens) | whether the language hint changes what the model writes in Hindi on those pages, against today's saved transcriptions. The default reader, the model, reads them now without the hint | low |
+| 13 | EasyOCR as the page reader (`OCR=easyocr`), end to end | 9933225 | not priced yet | not priced: the free estimate was stopped before it finished (the computer ran low on memory) | whether a free local reader gives the same final answers as the model's transcriptions; the free check on real bilingual scans (below) says it reads them poorly | low |
 
 ## Recommended plan: a lighter model and temperature 1.0 on 9933225, under ₹100
 
@@ -134,3 +136,14 @@ Each run ends with the agreement and a line like `model calls 59, from cache 0, 
 **Why it costs money.** The graph asks no question itself, but 9840129's evidence is not saved yet: 123 new questions, about ₹88 (see the table). The other tender citing linked standards, 9987635, would need 1,406 new questions, about 7.2 million tokens by the raw estimate, over the per-tender budget, and it is a hold-out tender; it is not worth it for this check. There is no answer key for 9840129, so a person would have to judge the rows that change.
 
 **How to run it, once approved.** Run 9840129 once with the default settings and `LLM_MAX_CALLS=135` to save its answers, then score it with `KNOWLEDGE_GRAPH=off` and `KNOWLEDGE_GRAPH=on`; the second scoring costs nothing, because the questions are the same. Compare the rows for the standard requirements.
+
+## After phase 7: OCR in more languages
+
+**The default page reader uses the model.** Pages that are only a picture are transcribed by Gemini (`OCR=model`, the default), one paid call per page, saved. A free local reader, EasyOCR (`OCR=easyocr`), now exists for English, Hindi and Marathi (`OCR_LANGS`).
+
+**Measured free.** Tender 9918524 includes a BHEL specification whose 6 scanned pages mix Hindi and English, and the model's transcriptions of them are saved. Against them, EasyOCR with `OCR_LANGS=en,hi` found 25 of the 89 Hindi words (28%) and 148 of 254 numbers (58%); with `en` only, 0 Hindi words and 167 numbers (66%). On pictures generated in the tests it reads Hindi, Marathi and English word for word. The model's transcriptions are the reference here, not a checked truth.
+
+**Check 12: the language hint on the model.** With `OCR_LANGS` other than `en`, one sentence is added to the transcription prompt, so the 6 pages are new questions: about ₹1.13. Run each page once and compare the Hindi with the saved transcription (a person judges which is right):
+`OCR_LANGS=en,hi LLM_MAX_CALLS=1 PYTHONIOENCODING=utf-8 python -m scripts.show_reading.show_ocr "../data/tenders/dev/GeM-Bidding-9918524/spec-_merge_2026-09-19-15-26-40_dc94d4c4c4cbd6cc2943216292c7b412.pdf" <page>` for pages 1, 3, 4, 5, 6 and 7.
+
+**Check 13: EasyOCR end to end.** Every page that is a picture would be read differently, so the passages of the catalogues with such pages (and the reading of any tender with them) change, and those questions are new. To price it for free, run `OCR=easyocr CHROMA_DIR=<a scratch folder> LLM_MAX_CALLS=0 python -m scripts.cost.estimate_cost ../data/tenders/dev/GeM-Bidding-9933225 ../data/categories/valves` on a computer with memory to spare (EasyOCR loads PyTorch). A scratch Chroma folder keeps the main store as it is. Not worth paying for until EasyOCR reads real scans better.

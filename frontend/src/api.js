@@ -34,6 +34,14 @@ export const api = {
     form.append("ask_first", "true");  // the run stops with its estimate until the person says yes
     return (await request("/runs", { method: "POST", body: form })).json();
   },
+  addDocument: async ({ category, manufacturer, file, url, source }) => {
+    const form = new FormData();
+    form.append("manufacturer", manufacturer.trim());
+    if (file) form.append("file", file);
+    if (url) form.append("url", url.trim());
+    if (source) form.append("source", source.trim());
+    return (await request(`/categories/${part(category)}/documents`, { method: "POST", body: form })).json();
+  },
   downloadUrl: (id, kind) => `${base()}/runs/${part(id)}/${DOWNLOADS[kind]}`,
   documentUrl: (category, maker, file, page) => `${base()}/categories/${part(category)}/manufacturers/${part(maker)}/documents/${part(file)}#page=${page}`,
   tenderUrl: (runId, file, page) => `${base()}/runs/${part(runId)}/tender/${part(file)}#page=${page}`,

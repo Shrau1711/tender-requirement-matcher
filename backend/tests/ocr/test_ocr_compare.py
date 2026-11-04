@@ -1,4 +1,4 @@
-from app.reading.ocr_compare import (
+from app.reading.ocr.compare import (
     confident_pages,
     mean,
     number_hits,

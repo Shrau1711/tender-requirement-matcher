@@ -64,13 +64,15 @@ def file_name(url: str) -> str:
     return name or "catalogue.pdf"
 
 
-def save_pdf(url: str, found_on: str, body: bytes, folder: Path, known: set[str], today: date | None = None) -> Saved | None:
-    """Writes the PDF unless it is not a PDF or the same content is already known (by hash). Returns the record, or None."""
+def save_pdf(url: str, found_on: str, body: bytes, folder: Path, known: set[str], today: date | None = None,
+             name: str | None = None) -> Saved | None:
+    """Writes the PDF unless it is not a PDF or the same content is already known (by hash). Returns the record, or None.
+    The file is named after the address unless a name is given."""
     digest = hashlib.sha256(body).hexdigest()
     if not body.startswith(b"%PDF") or digest in known:
         return None
     folder.mkdir(parents=True, exist_ok=True)
-    target = folder / file_name(url)
+    target = folder / (name or file_name(url))
     if target.exists():  # same name, different content: keep both
         target = target.with_name(f"{target.stem}_{digest[:8]}{target.suffix}")
     target.write_bytes(body)

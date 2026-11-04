@@ -638,3 +638,81 @@ How to read this:
 **In an interview.** "Chunking and the vector store already sat behind interfaces, so I gave embedding and retrieval the same shape: an interface, a list of implementations by name, and a setting whose default is the original. I proved nothing moved by hashing every chunk, vector and ranked result, and the cost estimates, before and after, and all were identical. I also added a semantic chunker that cuts where neighbouring blocks stop being alike. It ranked a right page first more often on my seven valve cases, but its chunks are tiny, so I kept the default and wrote down the paid check that would settle it."
 
 **Files to read.** `backend/app/embedding/base.py` and `embedder.py`, `backend/app/retrieval/base.py` and `retrievers.py`, `backend/app/chunking/strategies/semantic.py`, `backend/tests/chunking/test_semantic.py`.
+
+## Add documents in the web app, and OCR in more languages
+
+**What changed.**
+- **The page reader is a setting** (`backend/app/reading/ocr/`, which replaces `ocr.py` and `ocr_compare.py`):
+  - `model.py` is the old reader: the model transcribes the page, with the same prompt. `prompt_for` adds one sentence ("The page may be printed in Hindi or Marathi: write that text in its own script.") only when other languages are asked for.
+  - `local.py` is new: EasyOCR on this computer, loaded on the first page, one page at a time. Devanagari digits (१६) are written as 0 to 9.
+  - `readers.py` lists the readers by name and picks one with `OCR` (`model`, the default, or `easyocr`), in the languages of `OCR_LANGS` (`en`, the default; `hi` Hindi; `mr` Marathi; codes separated by commas). Every script and job still calls `reader_for(llm)`, so the setting reaches them all.
+  - A reader other than the default is added to the settings a stored file is checked against (`;ocr=easyocr:en,hi`), so a store never mixes two readers' chunks. For the default nothing is added.
+  - `compare.py` is the old `ocr_compare.py`.
+- **Add documents, a page in the web app** (`frontend/src/pages/DocumentsPage.jsx`, in the side bar):
+  - choose the category and the manufacturer (from the list, or a new name), then upload a PDF, with the web address it came from if known, or give the address of a PDF;
+  - the page says what was added, the date recorded and how many passages are now searchable.
+- **Its route**, `POST /categories/{category}/documents` (`backend/app/api/documents.py`), uses the collector's own code (`backend/app/collecting/add.py`):
+  - a download goes through the crawler's polite fetcher (`robots.txt`, a pause);
+  - the file is saved by `save_pdf`, which now takes a name, so the same content is never saved twice, even under another name;
+  - a line goes into `data/categories/sources.csv` (`record_by_hand` in `sources.py`) with the source and date, or "source not given".
+  - Refused, with nothing saved: an unknown category (404); a manufacturer name that is not lower-case letters, digits, `-` and `_` (400); not a PDF (400); both or neither of a file and an address (400); a source that is not a web address (400); a site that does not answer or forbids it (502); the same content again (409).
+- **One ingest.** After saving, the route calls `add_to_search` (`backend/app/pipeline/runner.py`), which runs the existing `ingest` with the page reader a run uses. So the store already holds the file, under the same settings, when the next run opens the category. The model is only made if a page is a picture and `OCR=model`. If reading fails, the file stays saved and recorded, the page says why, and the next run tries again.
+- **The replay-only demo refuses it** with the same plain message as an upload (`backend/app/demo.py`).
+- README: two settings rows, a paragraph on adding documents, two lines in "What's new". `docs/architecture.md`: the overview, the ingest path, the package table and two design decisions.
+
+**Why.** The reviewers' point 9 asked for a tool to collect manufacturer documents from the web, and an OCR path that works for more languages. `docs/FEEDBACK_STATUS.md` had marked the first partly done (it was only a script) and the second not done.
+
+**Does the current OCR use the model?** Yes. Pages that are only a picture were, and by default still are, transcribed by Gemini, one paid call per page, with the transcription saved. It stays the default because every saved answer was made from those transcriptions.
+
+**The defaults did not change, measured free.** These were taken with `LLM_MAX_CALLS=0` against the files saved before this batch:
+- **Fingerprint:** every chunk, vector and ranked result through `open_index` for both categories. Every hash is identical.
+- **`estimate_cost` output, byte for byte identical:** 9933225, 56 of 56 answered; 9935891, 204 of 204; 9840129, 133 questions, 123 new, about 606,094 input tokens. These estimates read the scanned pages through `reader_for` and the saved transcriptions, so the model's prompt is unchanged.
+- **A one-time re-read.** The reading code moved into `reading/ocr/`, so a Chroma store made before re-reads every catalogue once. The chunks come out the same, and no model is asked.
+
+**Measured, free.**
+- **Generated pictures** (in `backend/tests/ocr/test_ocr_languages.py`): EasyOCR reads one line each of Hindi ("दबाव रेटिंग 16 बार"), Marathi ("पाण्याचा पंप 50 मिमी") and English word for word, and a scanned PDF page with all three through `read_pdf`.
+- **Real bilingual scans.** Tender 9918524 has a BHEL specification whose 6 scanned pages mix Hindi and English. Against the model's saved transcriptions of those pages:
+
+  | EasyOCR languages | Hindi words found | numbers found | English words found (mean) |
+  |---|---|---|---|
+  | `en,hi` | 25 of 89 (28%) | 148 of 254 (58%) | 76% |
+  | `en` | 0 of 89 | 167 of 254 (66%) | 76% |
+
+  EasyOCR misses most of the Hindi on real scans, and asking for Hindi loses numbers. The model's transcription is the reference, not a checked truth. 70 other scanned tender pages have no Devanagari in their saved reading.
+- **A real download through the route.** Intervalve's portfolio, from the address recorded in `sources.csv`, was fetched into a scratch folder with the real fetcher, ingest, embedder and an empty scratch cache. It arrived byte for byte identical to the shipped copy (1,919,055 bytes), was recorded with its source and date, and gave 20 searchable passages. Its pages that are only a picture were read from the shipped saved transcriptions, so no model call was made.
+- **Uploads through the route,** with the real ingest: a text PDF was the first result of a search for its words, and a scanned Hindi page with `OCR=easyocr` was read and stored with no key and no model call.
+
+**Not measured.**
+- **EasyOCR end to end.** The free estimate of what `OCR=easyocr` would make new on 9933225 was stopped by Claude Code before it finished, because the computer ran low on memory. It was not run again. The command to price it is in `docs/NEEDS_PAID_RUN.md` (check 13).
+- **The language hint on the model.** It needs new transcriptions: check 12, 6 calls, about ₹1.13.
+- **Hindi or Marathi beyond reading.** Keyword search drops Devanagari words, the embedder is English, and judging knows only English words and units.
+
+**What did not change.** No default, prompt, chunk, search result or saved answer. `OCR` is `model` and `OCR_LANGS` is `en`. EasyOCR is optional and not in `requirements.txt` or the Docker images, because it brings PyTorch (about 1 GB). No Docker image was rebuilt.
+
+**Tests.** Backend 498 passed (465 before); frontend 83 passed (78 before).
+- `backend/tests/ocr/test_ocr_readers.py`, 7 tests:
+  - the default prompt unchanged;
+  - the language sentence;
+  - unknown readers and languages refused;
+  - EasyOCR not loaded before a page, with plain digits;
+  - a clear message when EasyOCR is missing;
+  - the store key;
+  - a new reader as one line.
+- `backend/tests/ocr/test_ocr_languages.py`, 4 tests: real EasyOCR on generated Hindi, Marathi and English pictures and a scanned page. These are skipped unless EasyOCR and its Devanagari model are installed.
+- `backend/tests/collecting/test_add.py`, 11 tests:
+  - saved and recorded with source and date;
+  - no source;
+  - a new manufacturer;
+  - the same content twice;
+  - what is refused;
+  - downloads through the fetcher;
+  - names ending in `.pdf`;
+  - found by a search after the one ingest;
+  - a scanned page read by the run's reader.
+- `backend/tests/api/test_add_documents.py`, 10 tests (upload, address, six refusals, a second copy, a reading that fails), and one more in `test_demo.py`.
+- `frontend/src/documents.test.jsx`, 5 tests: the side-bar link, upload with source, an address for a new manufacturer, the server's refusal and a failed reading, and no axe violations.
+- `test_ocr_compare.py` moved to `backend/tests/ocr/`.
+
+**In an interview.** "The scanned-page reader was the model, so I made it a setting and added EasyOCR as a free local reader that reads Hindi and Marathi. It passes on pictures I generated, but on six real bilingual scans it found only 28% of the Hindi words the model did, so the model stays the default. I also added a page that adds a manufacturer document by upload or address. It uses the crawler's own fetcher and saver, records the source in `sources.csv`, and calls the same ingest as everything else. A real download came out byte for byte identical to the shipped copy."
+
+**Files to read.** `backend/app/reading/ocr/readers.py` and `local.py`, `backend/app/collecting/add.py`, the add route at the end of `backend/app/api/documents.py`, `add_to_search` in `backend/app/pipeline/runner.py`, `frontend/src/pages/DocumentsPage.jsx`.

@@ -6,6 +6,7 @@ import { go, useRoute } from "./hooks/useRoute";
 import { useRun } from "./hooks/useRun";
 import { useTheme } from "./hooks/useTheme";
 import ComparePage from "./pages/ComparePage";
+import DocumentsPage from "./pages/DocumentsPage";
 import ReportPage from "./pages/ReportPage";
 import RunStatus from "./pages/RunStatus";
 import RunsPage from "./pages/RunsPage";
@@ -35,7 +36,7 @@ export default function App() {
 
   const name = (id) => runs.find((r) => r.id === id)?.tender ?? "Run";
   const crumbs = {
-    new: ["New run"], runs: ["Runs"], run: ["Runs", name(route.id)], compare: ["Runs", "Compare"],
+    new: ["New run"], runs: ["Runs"], run: ["Runs", name(route.id)], compare: ["Runs", "Compare"], documents: ["Documents"],
   }[route.page];
 
   return (
@@ -49,6 +50,7 @@ export default function App() {
           {route.page === "runs" && <RunsPage runs={runs} refresh={refresh} />}
           {route.page === "run" && <RunPage key={route.id} route={route} onChange={refresh} />}
           {route.page === "compare" && <ComparePage a={route.a} b={route.b} runs={runs} />}
+          {route.page === "documents" && <DocumentsPage />}
         </main>
       </div>
     </NotifyProvider>

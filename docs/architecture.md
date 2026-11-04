@@ -8,12 +8,12 @@ One rule shapes the whole design: **the language model only reads; plain code ju
 
 ```mermaid
 flowchart LR
-    UI["frontend (React)<br/>upload, report, review"] -->|HTTP| API["api<br/>FastAPI routes"]
+    UI["frontend (React)<br/>upload, report, review,<br/>add documents"] -->|HTTP| API["api<br/>FastAPI routes"]
     API --> DB[("db<br/>runs and reviews (SQLite)")]
     API --> RUN["pipeline<br/>one job per tender and category"]
 
     subgraph Documents["manufacturer documents (once per file)"]
-        READ["reading<br/>PDF text, tables, boxes, OCR"] --> CHUNK["chunking<br/>strategies + router"]
+        READ["reading<br/>PDF text, tables, boxes,<br/>OCR (model or EasyOCR)"] --> CHUNK["chunking<br/>strategies + router"]
         CHUNK --> EMB["embedding<br/>embedders + cache"]
         EMB --> VS[("vectorstore<br/>Chroma or memory")]
     end
@@ -36,7 +36,8 @@ flowchart LR
     VOC["vocabulary<br/>words, units, roles"] -.-> JUDGE
     GRAPH["graph (off by default)<br/>standards, tender layout"] -.-> JUDGE
     CFG["data/categories/*/category.json"] -.-> CAT & VOC & ATOM
-    COL["collecting<br/>crawler + source records"] -.->|PDFs| READ
+    COL["collecting<br/>crawler, add a document,<br/>source records"] -.->|PDFs| READ
+    API -->|add a document| COL
 ```
 
 | Package (`backend/app/`) | What it does |
@@ -45,7 +46,7 @@ flowchart LR
 | `pipeline` | the whole job for one tender: `gather` (read, search, ask), `score`, `build_report`; `runner` runs jobs one at a time and splits a mixed tender into one run per category |
 | `tender` | finds the tender's PDFs and reads its items and requirement rows (with the model) |
 | `categories` | each category's own words and rules (`category.json`), and routing each tender item to a category |
-| `reading` | PyMuPDF: lines with position and font, tables, flowchart boxes and the lines between them; picture-only pages are read by the model |
+| `reading` | PyMuPDF: lines with position and font, tables, flowchart boxes and the lines between them; picture-only pages are read by a page reader in `reading/ocr/`, chosen by `OCR` (the model by default, or EasyOCR on this computer) in the languages of `OCR_LANGS` |
 | `chunking` | cuts documents into passages: six strategies behind one interface (`Chunker`), chosen by `CHUNKER` or per document by the router |
 | `embedding` | turns text into vectors: embedders behind one interface (`Embedder`), chosen by `EMBEDDER` (default `bge-small`, fastembed's `bge-small-en-v1.5`, run locally); every vector cached per model and text |
 | `vectorstore` | where chunks and vectors are kept: Chroma (on disk) or memory, behind one interface; `ingest` reads each file once |
@@ -57,19 +58,20 @@ flowchart LR
 | `reporting` | the report and its Markdown and Excel forms; coverage and audit tables |
 | `vocabulary` | shared words, abbreviations, number words, requirement roles |
 | `evaluation` | answer keys and scoring against them |
-| `collecting` | the catalogue crawler and the record of where each document came from |
+| `collecting` | the catalogue crawler, adding one document from the web app (`add.py`: uploaded, or fetched from its address), and the record of where each document came from (`sources.csv`) |
 | `graph` | a small knowledge graph: standards that are one document under several names or that documents name together, and a tender's items, shared rows and requirements; off by default |
 
 ## Ingest path: a manufacturer document becomes searchable
 
 ```mermaid
 flowchart TD
+    ADD["web app: POST /categories/&lt;category&gt;/documents<br/>a PDF uploaded or fetched, recorded in sources.csv"] --> PDF
     PDF["data/categories/&lt;category&gt;/manufacturers/&lt;maker&gt;/*.pdf"] --> HASH["SHA-256 of the file"]
     HASH --> STORED{"store holds this file with<br/>the same hash and settings?"}
     STORED -->|yes| LOAD["load its chunks from the store"]
     STORED -->|no| RP["read_pdf: lines, tables, boxes, links"]
     RP --> PIC{"page is only a picture?"}
-    PIC -->|yes| OCR["Gemini reads the page<br/>(cached transcription)"]
+    PIC -->|yes| OCR["page reader (OCR): Gemini by default<br/>(cached transcription), or EasyOCR"]
     PIC -->|no| ROUTE
     OCR --> ROUTE["chunker: CHUNKER setting,<br/>or the router picks per document"]
     ROUTE --> CH["chunks: text, page, section, headings"]
@@ -79,7 +81,9 @@ flowchart TD
     LOAD --> IDX["retriever (RETRIEVER, hybrid by default):<br/>BM25 over the chunks, the category's vectors in chunk order"]
 ```
 
-The settings in the key are the chunking strategy, whether pictures are read, and a fingerprint of the embedder's name and the reading and chunking code, so changing any of them re-reads the file instead of serving stale chunks. Another embedder's store is kept in its own Chroma folder (`chroma-<name>`), because its vectors can have another length.
+The settings in the key are the chunking strategy, whether pictures are read, and a fingerprint of the embedder's name and the reading and chunking code, so changing any of them re-reads the file instead of serving stale chunks. Another embedder's store is kept in its own Chroma folder (`chroma-<name>`), because its vectors can have another length. A page reader other than the default (`OCR`, `OCR_LANGS`) is part of the settings too, so a store never mixes two readers' chunks; for the default nothing is added, so stored files still match.
+
+A document added in the web app takes this same path. The route saves it with the collector's code and records it in `sources.csv`, then calls `ingest` (through `add_to_search` in `pipeline/runner.py`) with the same page reader a run uses. So the store already holds it, under the same settings, when the next run opens the category.
 
 ## Query path: a tender becomes a report
 
@@ -143,4 +147,8 @@ The price is that Chroma's speed-up is not used. That costs nothing here: the ra
 
 **A knowledge graph that only advises.** The standards graph is built by a script from the catalogues and the saved tender readings, and saved as JSON that a person can read and correct. Its two kinds of link are not equally sure. One standard under several names follows from how adopted standards are named, so it may count as a match. Two standards named together ("API 600 / BS 1873") are often not equivalent, so that link can only send a requirement to a person, and only when the tender says it accepts an equivalent. The whole graph is off by default; on the two labelled tenders, switching it on changed no outcome.
 
-**What needs paid runs.** Whether another chunker, embedder, retriever, temperature, model or the exact token counter changes the results can only be measured by asking the model again. Each such check, what it would measure and how to run it is listed in [`NEEDS_PAID_RUN.md`](NEEDS_PAID_RUN.md). Each is priced there, with a priority and a recommended first plan under ₹100.
+**One way in for every document.** A crawled, hand-collected or web-app document lands in the same folder, is recorded in the same `sources.csv` (or the crawler's `crawl_sources.csv`), and is read by the one `ingest` function. The web page adds nothing of its own except a form: no second reader, chunker or store. The price is that adding a document waits while it is read and embedded, which for a long scanned catalogue read by the model is minutes and money.
+
+**The model stays the default page reader.** EasyOCR (`OCR=easyocr`) is free and reads Hindi and Marathi as well as English, and it reads the generated test pictures word for word. But the saved answers were made from the model's transcriptions, and EasyOCR writes text without the model's table rows and headings, so switching would change the passages and make every question new. EasyOCR is also optional: it brings PyTorch (about 1 GB), so it is not in `requirements.txt` or the Docker images. `OCR_LANGS` other than `en` adds one sentence to the model's prompt, so for the default the prompt is byte for byte the same.
+
+**What needs paid runs.** Whether another chunker, embedder, retriever, page reader, temperature, model or the exact token counter changes the results can only be measured by asking the model again. Each such check, what it would measure and how to run it is listed in [`NEEDS_PAID_RUN.md`](NEEDS_PAID_RUN.md). Each is priced there, with a priority and a recommended first plan under ₹100.

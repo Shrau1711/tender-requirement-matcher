@@ -22,6 +22,7 @@ export function Sidebar({ page }) {
     <nav className="sidebar" aria-label="Main">
       <a className="nav-link" href={links.newRun} aria-current={active("new")}><Icon name="plus" />New run</a>
       <a className="nav-link" href={links.runs} aria-current={active("runs")}><Icon name="list" />Runs</a>
+      <a className="nav-link" href={links.documents} aria-current={active("documents")}><Icon name="upload" />Add documents</a>
       <p className="side-note">Scores come from the manufacturers' own documents. Every answer links to its page.</p>
     </nav>
   );

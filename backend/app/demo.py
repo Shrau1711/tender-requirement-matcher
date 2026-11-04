@@ -1,6 +1,6 @@
 """The replay-only demo (Dockerfile.demo): the usual service and the built frontend from one process, on one port.
 
-Uploads are refused with a plain message before anything is read, so a new tender never starts a run: the demo only shows
+Uploads (a tender, or a manufacturer document) are refused with a plain message before anything is read, so a new tender never starts a run: the demo only shows
 the sample runs loaded into the image (scripts.demo.load_samples). LLM_MAX_CALLS=0 in the image is a second guard.
 The samples are shared by every visitor, so deleting or renaming one is refused too. Review decisions can still be saved.
 """
@@ -19,11 +19,12 @@ from app.main import create_app
 REPLAY_ONLY = "This demo replays saved examples only."
 KEPT = "The saved examples cannot be deleted or renamed in this demo."
 ONE_RUN = re.compile(r"/runs/[^/]+/?")  # a run itself, not its report, documents or reviews
+ADD_DOCUMENT = re.compile(r"/categories/[^/]+/documents/?")
 
 
 def refusal(method: str, path: str) -> str | None:
     """Why the demo refuses this request, or None. Every run in the demo is a sample shared by all visitors."""
-    if method == "POST" and path.rstrip("/") == "/runs":
+    if method == "POST" and (path.rstrip("/") == "/runs" or ADD_DOCUMENT.fullmatch(path)):
         return REPLAY_ONLY
     if method in ("DELETE", "PATCH") and ONE_RUN.fullmatch(path):
         return KEPT
