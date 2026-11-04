@@ -1,5 +1,5 @@
 import axe from "axe-core";
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { api } from "./api";
 import App from "./App";
@@ -136,11 +136,17 @@ describe("the other pages", () => {
     expect(within(advanced).getByRole("option", { name: /Find it in the tender/ })).toBeInTheDocument();
   });
 
-  it("says the demo only replays saved examples when the call limit is 0", async () => {
-    vi.spyOn(api, "config").mockResolvedValue({ max_model_calls: 0, max_upload_mb: 60 });
+  it("shows no note when the call limit is 0, and the server's plain refusal after an upload", async () => {
+    const config = vi.spyOn(api, "config").mockResolvedValue({ max_model_calls: 0, max_upload_mb: 60 });
+    vi.spyOn(api, "start").mockRejectedValue(new Error("This demo replays saved examples only."));
     open("#/new");
-    expect(await screen.findByText("This demo replays saved examples only.")).toBeInTheDocument();
-    expect(screen.queryByText(/per run/)).not.toBeInTheDocument();
+    await waitFor(() => expect(config).toHaveBeenCalled());
+    await act(async () => {});  // let the limits arrive
+    expect(document.querySelector(".notice")).toBeNull();
+    expect(screen.queryByText(/replays saved examples|per run/)).not.toBeInTheDocument();
+    fireEvent.change(document.querySelector("input[type=file]"), { target: { files: [new File(["%PDF"], "bid.pdf", { type: "application/pdf" })] } });
+    fireEvent.click(screen.getByRole("button", { name: "Start matching" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(/^This demo replays saved examples only\.$/);
   });
 
   it("starts a run with a chosen category, or without one so the server finds it", async () => {

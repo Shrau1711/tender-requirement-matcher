@@ -77,11 +77,10 @@ export default function UploadPage({ onStarted }) {
             </select>
           </label>
         </details>
-        {limits && (
+        {/* With the limit at 0 (the replay-only demo) there is no note: the server's refusal says why on an upload. */}
+        {limits && limits.max_model_calls !== 0 && (
           <p className="notice">
-            {limits.max_model_calls === 0
-              ? "This demo replays saved examples only."
-              : `Answers the system has found before are reused and cost nothing. A tender it has not seen makes calls to the language model, at most ${limits.max_model_calls} per run. Before anything is spent you will see an estimate of the cost and time, and can cancel.`}
+            {`Answers the system has found before are reused and cost nothing. A tender it has not seen makes calls to the language model, at most ${limits.max_model_calls} per run. Before anything is spent you will see an estimate of the cost and time, and can cancel.`}
           </p>
         )}
         {(error || loadError) && <div className="problem" role="alert">{error || `Could not reach the server: ${loadError}`}</div>}
