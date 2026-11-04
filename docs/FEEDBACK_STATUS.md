@@ -7,6 +7,8 @@ The nine points are from `docs/IMPROVEMENT_PLAN.md` (the verbatim feedback). Eac
 
 Checked on branch `demo-space`, 4 November 2026, by reading the code and the measurements already recorded in `docs/CHANGES.md` and `docs/NEEDS_PAID_RUN.md`. No model calls were made for this review.
 
+*Updated after the next batch ("Embedder and retriever behind interfaces, and a semantic chunker" in `docs/CHANGES.md`): points 1 and 2 changed; their status did not.*
+
 | # | Feedback | Status |
 |---|---|---|
 | 1 | Dynamic, modular chunking that suits the document, including flowcharts and hierarchies | partly done |
@@ -27,18 +29,19 @@ Done: 3. Partly done: 7. Not done: 1.
 
 **What is there.**
 - `backend/app/chunking/base.py`: the `Chunker` interface.
-- `backend/app/chunking/strategies/`: five strategies, one file each, registered by name:
+- `backend/app/chunking/strategies/`: six strategies, one file each, registered by name:
   - `table_rows`, the original;
   - `recursive`, fixed size with overlap;
   - `sections`, layout-based;
   - `parent_child`;
-  - `structure`, numbered clauses and flowcharts, which follows the lines between boxes using `backend/app/reading/boxes.py`.
+  - `structure`, numbered clauses and flowcharts, which follows the lines between boxes using `backend/app/reading/boxes.py`;
+  - `semantic`, which cuts where neighbouring text blocks stop being alike, judged with the embeddings (`semantic.py`).
 - `backend/app/chunking/router.py` picks a strategy from what a document looks like, with the reason.
 - Compared with `eval_retrieval` and `eval_candidates` on the real catalogues, and on two invented documents, a clause specification and a flowchart, in `data/eval/samples/`. Tests are in `backend/tests/chunking/`.
 
 **What is missing.**
 - **The dynamic choice is off.** `CHUNKER` defaults to `table_rows`, and nothing in the app, `docker-compose.yml` or the demo sets it to `auto`. As shipped, every document is still chunked by the original table-row rule, which is exactly what the reviewers objected to. The router only runs if someone sets `CHUNKER=auto` by hand. It is kept off because any other strategy changes the questions, so the saved answers stop matching.
-- **No semantic strategy.** The reviewers named fixed/recursive, structure/layout-aware, semantic and parent-child. There is no strategy that cuts where the meaning changes, for example by embedding similarity between sentences.
+- **Semantic chunking is there but unproven.** `semantic` now exists. On the 7 valve retrieval cases it put a right page first most often (6 of 7, hybrid, against 4 of 7 for the default), but its chunks are tiny (a median of 42 characters against 329), and it has not been run end to end (check 11, ≈ ₹33). It is not the default and the router never picks it.
 - **Tenders are not chunked.** Chunking applies only to manufacturer documents. A tender, the document the reviewers said "may also have a flowchart or hierarchical structure", is still read page by page by the model. The tender hierarchy exists only as a graph shown by a script (see 9b).
 - **Not proven on final answers.** No strategy other than `table_rows` has been run end to end. On the free retrieval checks none was clearly better on the real catalogues. `structure` and `auto` only did clearly better on the invented documents, which were written for them.
 
@@ -47,13 +50,13 @@ Done: 3. Partly done: 7. Not done: 1.
 **What is there.**
 - `backend/app/` is split into packages: reading, chunking, embedding, vectorstore, retrieval, extraction, judging, llm, categories, cost, graph, collecting, reporting, pipeline, api and others.
 - Every folder holds at most 7 files, except `frontend/`, whose 8 files are root config files: `package.json`, `vite.config.js`, the Dockerfile and similar.
-- Chunking can be swapped with the `CHUNKER` setting, and the vector store with `VECTOR_STORE`. Both have an interface: `Chunker` in `backend/app/chunking/base.py` and `VectorStore` in `backend/app/vectorstore/base.py`.
+- Chunking (`CHUNKER`), embedding (`EMBEDDER`), the vector store (`VECTOR_STORE`) and retrieval (`RETRIEVER`) can each be swapped by a setting, behind an interface with implementations listed by name: `Embedder` in `backend/app/embedding/base.py`, `Retriever` in `backend/app/retrieval/base.py`, and `Chunker` in `backend/app/chunking/base.py` and `VectorStore` in `backend/app/vectorstore/base.py`.
 - The model is behind the `LLM` interface in `backend/app/llm/llm.py`, and `LLM_MODEL` chooses which Gemini model.
 
 **What is missing.**
-- **Embedding cannot be swapped by a setting.** `backend/app/embedding/embedder.py` names one model in the code (`MODEL_NAME = "BAAI/bge-small-en-v1.5"`) and there is no interface or setting. It can only be replaced in code, by passing another function as `embed`. A new model would also make the shipped `data/seed_embeddings.sqlite` useless.
+- **Only one embedder exists.** `EMBEDDER` has one choice, `bge-small`. A second is a class and one line in `EMBEDDERS`, and gets its own saved vectors and Chroma folder, but none is listed, so the setting has nothing to switch to. A new model would also make the shipped `data/seed_embeddings.sqlite` useless and every question new.
 - **Extraction is Gemini only.** `make_llm()` in `backend/app/llm/llm_factory.py` always builds `GeminiLLM`. The `LLM` interface would allow another provider, but there is none and no setting to choose one.
-- **Retrieval has no interface.** `Index` in `backend/app/retrieval/search.py` is the only search, with BM25 plus meaning plus RRF fixed. Keyword-only or meaning-only search is available to the eval scripts, not to the app.
+- **The other retrievers are the same search.** `RETRIEVER` offers `hybrid` (the default), `keyword` and `meaning`, but all three are the one `Index` with a fixed mode. No retriever of another kind (for example re-ranking) exists, and neither alternative has been checked against final answers.
 
 ## 3. `architecture.md`: done
 
@@ -180,17 +183,17 @@ These are expected costs, not limits. Google doubles Gemini 3.8 Flash's price on
 | 7 | Chunker `structure` | 1 | 9935891 | 141 | ≈ ₹111 |
 | 8 | Chunkers `recursive`, `sections`, `parent_child` | 1 | 9935891 | 203 to 204 each | ≈ ₹162, ₹130, ₹161 |
 | 9 | Standards graph on a tender that cites linked standards | 9b | 9840129 (no answer key) | 123 | ≈ ₹88 |
+| 11 | Chunker `semantic` | 1 | 9933225 (valves) | 56 | ≈ ₹33 (free estimate 219,527 input tokens × 1.36, plus output) |
 
 The numbers are those in `docs/NEEDS_PAID_RUN.md`. Checks 1 and 2 there were run (≈ ₹19.24 and ≈ ₹40.54, ≈ ₹59.78 in all), and check 10 was answered for free.
 
-**Cheapest checks that would move a point forward.** Check 5 (≈ ₹27) is the only evidence that could justify turning the router on (point 1). Check 3 (≈ ₹73 or ₹56) is the next evidence on the cheaper model (point 8).
+**Cheapest checks that would move a point forward.** Check 5 (≈ ₹27) is the only evidence that could justify turning the router on, and check 11 (≈ ₹33) the only evidence for the semantic chunker (point 1). Check 3 (≈ ₹73 or ₹56) is the next evidence on the cheaper model (point 8).
 
 **Not priced, because the work does not exist yet:**
-- **A semantic chunker (point 1).** It would need building first, then a run like check 6, about ₹35 to ₹45 on 9933225 if it changes most passages, as those strategies did.
 - **Exact token counts (point 6).** These are requests to Google, not answers from the model. The pricing in `docs/NEEDS_PAID_RUN.md` does not list them, and nothing here was checked against Google's billing, so confirm the price before running one. It needs `LLM_MAX_CALLS` above 0.
 - **OCR in other languages (point 9c).** There is no test document, so the number of pages, and so the cost, is unknown.
 
 ## Notes found while checking
 
-- **Stale opening line.** `docs/NEEDS_PAID_RUN.md` still opens with "Nothing here has been run", but checks 1 and 2 were run and are reported further down the same file.
+- **Stale opening line, fixed.** `docs/NEEDS_PAID_RUN.md` opened with "Nothing here has been run", although checks 1 and 2 were run. It now says which checks were run.
 - **Branch.** This file is on `demo-space` only, not on `v3-improvements` (PR #1).

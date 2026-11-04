@@ -1,6 +1,6 @@
 # Checks that need paid model calls
 
-Nothing here has been run. Each check is priced below from free measurements, and each section after the table says what it would measure, why it cannot be measured for free, and how to run it once approved. Run every paid check one tender at a time with `scripts.eval.score_gold`, never `eval_all`: `eval_all` goes on to the other labelled tender and would spend there too.
+Checks 1 and 2 in the table were run on 27 October 2026, with the owner's approval, for ≈ ₹59.78 in all (results in the recommended plan below), and check 10 was answered for free. Nothing else here has been run. Each check is priced below from free measurements, and each section after the table says what it would measure, why it cannot be measured for free, and how to run it once approved. Run every paid check one tender at a time with `scripts.eval.score_gold`, never `eval_all`: `eval_all` goes on to the other labelled tender and would spend there too.
 
 ## Prices and priorities
 
@@ -23,6 +23,7 @@ How the prices were worked out (phase 7, all free, `LLM_MAX_CALLS=0`):
 | 8 | Chunkers `recursive`, `sections`, `parent_child` | 9935891 | 203 to 204 each | ≈ ₹162, ₹130, ₹161 | as #6, on pumps | low |
 | 9 | Standards graph on a tender that cites linked standards | 9840129 (no answer key) | 123 | ≈ ₹88 (the raw estimate said ₹61) | whether `KNOWLEDGE_GRAPH=on` changes any outcome; a person would have to judge the rows that change | low |
 | 10 | How far characters / 4 is from Gemini's own count | both labelled tenders | 0 | ₹0, **answered for free** | measured on the saved answers: the estimate is 74% (valves) and 69% (pumps) of the real input tokens, from 45% to 91% per question | done |
+| 11 | Chunker `semantic` (added after phase 7) | 9933225 | 56 (none of the 56 questions unchanged) | ≈ ₹33 (estimate 219,527 input tokens × 1.36, plus 474 output tokens a question) | whether the strategy that put a right page first most often on the free retrieval checks (6 of 7 valve cases, hybrid) also gives better final answers, given its much shorter passages | medium |
 
 ## Recommended plan: a lighter model and temperature 1.0 on 9933225, under ₹100
 

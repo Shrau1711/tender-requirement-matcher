@@ -2,15 +2,14 @@ from __future__ import annotations
 
 import re
 from collections import Counter
-from collections.abc import Callable
-from typing import Literal
 
 import numpy as np
-from pydantic import BaseModel
 from rank_bm25 import BM25Okapi
 
 from app.chunking.base import Chunk
+from app.embedding.base import EmbedFn
 from app.embedding.embed_cache import embed_cached
+from app.retrieval.base import Hit, Mode
 from app.retrieval.fusion import rrf
 from app.vectorstore.base import StoredDoc, VectorStore, chunk_ids
 from app.vectorstore.memory import MemoryStore
@@ -21,30 +20,22 @@ TABLE_ROWS_PER_PAGE = 2  # one big table must not fill every result slot
 # become the same two tokens. A number stays whole, so 13095 never matches 3095.
 TOKEN = re.compile(r"[a-z]+|\d+(?:\.\d+)?")
 
-Embedder = Callable[[list[str]], np.ndarray]
-Mode = Literal["keyword", "meaning", "hybrid"]
-
-
-class Hit(BaseModel):
-    score: float      # fused rank score, only good for ordering
-    keyword: float    # raw BM25 score, 0 means no query word appears
-    meaning: float    # raw cosine similarity
-    chunk: Chunk
-
-
 # Splits text into letters and numbers so 'DN125', 'DN 125' and 'dn-125' match, and 13095 never matches 3095.
 def tokenize(text: str) -> list[str]:
     return TOKEN.findall(text.lower())
 
 
 class Index:
-    """Keyword search (BM25) over the chunks, and meaning search through a vector store, merged by rank.
+    """Keyword search (BM25) over the chunks, and meaning search through a vector store, merged by rank. A Retriever
+    (app/retrieval/base.py): `mode` is how it searches unless a search asks otherwise, hybrid by default.
 
     With no store given, the chunks are embedded into a new in-memory store, as in the first version. A given store must
     already hold these chunks under `category` (see app.vectorstore.ingest). Either way the index keeps the chunks' vectors
     in one matrix, in the chunks' order, and scores the chunks the store's filter returns exactly."""
 
-    def __init__(self, chunks: list[Chunk], embed: Embedder = embed_cached, store: VectorStore | None = None, category: str = "") -> None:
+    def __init__(self, chunks: list[Chunk], embed: EmbedFn = embed_cached, store: VectorStore | None = None, category: str = "",
+                 mode: Mode = "hybrid") -> None:
+        self.name = self.mode = mode
         self.chunks = chunks
         self.embed = embed
         self.bm25 = BM25Okapi([tokenize(c.text) for c in chunks])
@@ -71,15 +62,16 @@ class Index:
 
     # Finds the best passages for one query.
     def search(
-        self, query: str, manufacturer: str | None = None, top_k: int = 5, mode: Mode = "hybrid"
+        self, query: str, manufacturer: str | None = None, top_k: int = 5, mode: Mode | None = None
     ) -> list[Hit]:
         return self.search_many([query], manufacturer, top_k, mode)
 
     # Finds the best passages for several phrasings. The keyword and meaning rankings are merged by rank (RRF).
     def search_many(
-        self, queries: list[str], manufacturer: str | None = None, top_k: int = 5, mode: Mode = "hybrid"
+        self, queries: list[str], manufacturer: str | None = None, top_k: int = 5, mode: Mode | None = None
     ) -> list[Hit]:
         """Best chunks for several phrasings of one need: every phrasing's rankings are merged."""
+        mode = mode or self.mode
         allowed = [
             i for i, c in enumerate(self.chunks)
             if manufacturer is None or c.manufacturer == manufacturer

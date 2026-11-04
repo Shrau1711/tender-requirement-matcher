@@ -24,7 +24,7 @@ def box_around(l):
 
 
 def test_every_strategy_is_registered_by_its_name():
-    assert set(STRATEGIES) == {"table_rows", "recursive", "sections", "parent_child", "structure"}
+    assert set(STRATEGIES) == {"table_rows", "recursive", "sections", "parent_child", "structure", "semantic"}
     assert all(strategy(name).name == name for name in STRATEGIES)
 
 

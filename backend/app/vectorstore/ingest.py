@@ -16,11 +16,13 @@ from app.chunking.base import Chunk
 from app.chunking.corpus import chunk_file, pdf_files
 from app.chunking.router import CHUNKER
 from app.config import cache_dir, path_setting, text_setting
+from app.embedding.base import EmbedFn
 from app.embedding.embed_cache import embed_cached
-from app.embedding.embedder import MODEL_NAME
+from app.embedding.embedder import DEFAULT, EMBEDDER, embedder
 from app.reading.ocr import ImageReader
 from app.reading.pdf_reader import sha256_file
-from app.retrieval.search import Embedder, Index
+from app.retrieval.base import Retriever
+from app.retrieval.retrievers import RETRIEVER, retriever
 from app.vectorstore.base import StoredDoc, VectorStore
 from app.vectorstore.chroma import ChromaStore
 from app.vectorstore.memory import MemoryStore
@@ -33,7 +35,7 @@ CODE = [Path(__file__).resolve().parents[1] / name for name in ("reading", "chun
 
 @cache
 def code_version() -> str:
-    h = hashlib.sha256(MODEL_NAME.encode())
+    h = hashlib.sha256(embedder().name.encode())  # the vectors depend on the embedder too
     for file in sorted(f for folder in CODE for f in folder.rglob("*.py")):
         h.update(file.read_bytes().replace(b"\r\n", b"\n"))  # the same on Windows and Linux checkouts
     return h.hexdigest()[:16]
@@ -53,12 +55,13 @@ def open_store(name: str = VECTOR_STORE) -> VectorStore:
     if name == "memory":
         return MemoryStore()
     if name == "chroma":
-        return chroma_store(CHROMA_DIR)
+        # Another embedder's vectors can have another length, which one Chroma collection cannot hold: they get their own folder.
+        return chroma_store(CHROMA_DIR if EMBEDDER == DEFAULT else CHROMA_DIR.with_name(f"chroma-{EMBEDDER}"))
     raise ValueError(f"Unknown vector store {name!r}. Choose memory or chroma")
 
 
 def ingest(category_dir: str | Path, store: VectorStore, read_image: ImageReader | None = None, chunker: str = CHUNKER,
-           embed: Embedder = embed_cached) -> list[Chunk]:
+           embed: EmbedFn = embed_cached) -> list[Chunk]:
     """Every chunk of the category, in file order. Files the store already holds unchanged are not read again."""
     category = Path(category_dir).name
     chunks: list[Chunk] = []
@@ -75,7 +78,8 @@ def ingest(category_dir: str | Path, store: VectorStore, read_image: ImageReader
 
 
 def open_index(category_dir: str | Path, read_image: ImageReader | None = None, chunker: str = CHUNKER,
-               store: VectorStore | None = None) -> Index:
-    """The search index over a category's documents, in the store chosen by VECTOR_STORE unless one is given."""
+               store: VectorStore | None = None, search: str = RETRIEVER) -> Retriever:
+    """The search over a category's documents: the retriever chosen by RETRIEVER, over the store chosen by VECTOR_STORE
+    unless one is given."""
     store = store or open_store()
-    return Index(ingest(category_dir, store, read_image, chunker), store=store, category=Path(category_dir).name)
+    return retriever(ingest(category_dir, store, read_image, chunker), store, Path(category_dir).name, search)

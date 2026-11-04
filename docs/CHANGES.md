@@ -555,3 +555,86 @@ One run of the full suite had one failing test, which I did not see; it did not 
 - An upload gets 403 with "This demo replays saved examples only." Deleting a sample gets 403 with "The saved examples cannot be deleted or renamed in this demo." The log has no traceback.
 
 **Files to read.** `Dockerfile.demo`, `docs/HF_SPACE_README.md`.
+
+## Embedder and retriever behind interfaces, and a semantic chunker
+
+**What changed.**
+- **Embedding** (`backend/app/embedding/`):
+  - `base.py` (new) holds the `Embedder` interface: a `name` and an `embed(texts)` method.
+  - `embedder.py` now lists the embedders by name (`EMBEDDERS`) and picks one with the `EMBEDDER` setting. The default is `bge-small`, the same fastembed model as before (`BAAI/bge-small-en-v1.5`), loaded only on first use.
+  - `embed_cache.py` keys each saved vector by the chosen embedder's name and the text. For the default this is the key every vector was always saved under, so the shipped `data/seed_embeddings.sqlite` still matches.
+  - Another embedder's Chroma store goes in its own folder (`chroma-<name>`), because its vectors can have another length. The embedder's name is also part of the settings a stored file is checked against.
+- **Retrieval** (`backend/app/retrieval/`):
+  - `base.py` (new) holds the `Retriever` interface (`name`, `chunks`, `vectors`, `search`, `search_many`), with `Hit` and `Mode` moved there.
+  - `retrievers.py` (new) lists the retrievers by name and picks one with the `RETRIEVER` setting: `hybrid` (the default, the search as before), `keyword` or `meaning`. All three are the existing `Index` with a fixed way of searching. A search can still ask for another mode, as `eval_retrieval` does.
+  - `open_index` returns the chosen retriever. The pipeline, the budget, evidence and routing are typed against the interface, not the class.
+- **A semantic chunker**, `backend/app/chunking/strategies/semantic.py`, is a sixth strategy, chosen only with `CHUNKER=semantic`:
+  - Each page is split into its text blocks, or into paragraphs for a page read from a picture. Every block of a document is embedded in one go, through the embedding cache.
+  - Neighbouring blocks on a page stay in one chunk while they are alike. A cut is made at the document's least alike quarter of neighbours, and before a chunk passes 1,000 characters.
+  - A chunk never spans two pages, so it always has one page to cite. The router (`auto`) never picks it.
+- The README settings table and `docker-compose.yml` list `EMBEDDER` and `RETRIEVER`. `docs/architecture.md` describes the interfaces.
+- `docs/NEEDS_PAID_RUN.md` no longer opens with "Nothing here has been run": it says checks 1 and 2 were run (≈ ₹59.78) and check 10 was answered for free.
+
+**Why.** The review found two gaps (`docs/FEEDBACK_STATUS.md`):
+- embedding and retrieval could not be swapped the way chunking and the vector store could;
+- the reviewers' list of chunking approaches included semantic chunking, which did not exist.
+
+**The defaults did not change, measured free.** These were taken before the change and again after it, with `LLM_MAX_CALLS=0`:
+- **Fingerprint:** every chunk, every vector and every ranked result through `open_index`, the app's own path, for both categories (1,714 valve and 2,099 pump chunks). That is 127 queries (the 7 retrieval cases and 120 catalogue headings), for every manufacturer, in each search mode and with the mode left to the default. Every hash is identical.
+- **`estimate_cost` output, byte for byte identical:**
+  - 9933225: 56 of 56 questions already answered.
+  - 9935891: 204 of 204.
+  - 9840129: 133 questions, 10 answered, 123 new, about 606,094 input tokens, the same as in phase 5.
+- **A one-time re-read.** The chunking code changed, so a Chroma store made before re-reads every catalogue once, as designed. It is only a cache, the chunks come out the same, and nothing is asked of the model.
+
+**Measured, free: `eval_retrieval` for every strategy.** All were run again after the change, one after another on the same Chroma folder. The six older ones give the same top-5 figures as recorded in phase 2 and its follow-up.
+
+Valve catalogues, 7 cases:
+
+| strategy | top 5 (keyword, meaning, hybrid) | first result (keyword, meaning, hybrid) |
+|---|---|---|
+| `table_rows` (default) | 6/7, 4/7, 6/7 | 4/7, 3/7, 4/7 |
+| `recursive` | 7/7, 5/7, 5/7 | 5/7, 3/7, 5/7 |
+| `sections` | 6/7, 3/7, 3/7 | 4/7, 2/7, 3/7 |
+| `parent_child` | 7/7, 5/7, 6/7 | 5/7, 4/7, 3/7 |
+| `structure` | 6/7, 4/7, 6/7 | 4/7, 3/7, 4/7 |
+| `auto` | 7/7, 5/7, 6/7 | 4/7, 3/7, 4/7 |
+| `semantic` (new) | 7/7, 6/7, 6/7 | 6/7, 5/7, 6/7 |
+
+The invented documents (`data/eval/samples`), 10 cases:
+
+| strategy | top 5 (keyword, meaning, hybrid) | first result (keyword, meaning, hybrid) |
+|---|---|---|
+| `table_rows` (default) | 10/10, 10/10, 10/10 | 9/10, 7/10, 8/10 |
+| `recursive` | 10/10, 10/10, 10/10 | 9/10, 7/10, 8/10 |
+| `sections` | 10/10, 10/10, 10/10 | 9/10, 8/10, 9/10 |
+| `parent_child` | 10/10, 10/10, 10/10 | 9/10, 7/10, 8/10 |
+| `structure` | 10/10, 10/10, 10/10 | 9/10, 9/10, 10/10 |
+| `auto` | 10/10, 10/10, 10/10 | 9/10, 9/10, 10/10 |
+| `semantic` (new) | 10/10, 9/10, 10/10 | 9/10, 7/10, 9/10 |
+
+How to read this:
+- **The valve gain is real but small.** On the valve catalogues, `semantic` puts a right page first more often than any other strategy: hybrid 6 of 7 against 4 of 7 for the default. It finds "nominal pressure PN 16" at KSB first instead of fourth, and Duncan's "pressure rating PN 16" first where the default's hybrid search missed it. But it loses KSB's "can the valve be used at 16 bar", which the default found in fifth place. Seven cases are too few to call one strategy better.
+- **Its chunks are very short:** the valve catalogues give 2,361 chunks with a median of 42 characters, against 1,714 with a median of 329 for the default. Short chunks match a short query sharply, which helps these checks, but the model would read 16 short passages per question, far less text around each fact. Whether that gives better or worse final answers is what a paid run would show.
+- **It was not tuned.** The one setting, cutting a quarter of the neighbours, was chosen once before measuring.
+- **On the invented documents it does no better than `structure`.** Those documents were written for `structure`.
+
+**What did not change.** No default, prompt, chunk, search result or saved answer. `CHUNKER` is still `table_rows`, `EMBEDDER` is `bge-small` and `RETRIEVER` is `hybrid`.
+
+**Not measured.** Final answers with `semantic`, another embedder or another retriever: every question would be new, so these need paid runs. The free estimate for `semantic` on 9933225 is 56 new questions of 56, about 219,527 input tokens by characters / 4, so ≈ ₹33 with the scaling used in `docs/NEEDS_PAID_RUN.md` (added there as check 11). No second embedder is listed, because adding one means downloading a model and making every saved vector and question new.
+
+**Tests.** 465 passed (446 before):
+- `tests/chunking/test_semantic.py`, 8 tests: blocks on one topic kept together and a change of topic cut, never across pages, the cut judged against the document, the size limit, pages read from a picture, one embedding call per document, an empty document, and never the default nor picked by the router.
+- `tests/embedding/test_embedders.py`, 6 tests:
+  - the default's name and the old key of a vector;
+  - a shipped vector found under the default embedder;
+  - the model not loaded when an embedder is chosen;
+  - an unknown embedder refused;
+  - a new embedder as one line, with vectors of its own;
+  - its own Chroma folder.
+- `tests/retrieval/test_retrievers.py`, 5 tests: the default is the hybrid search with the same ranking, the one-ranking retrievers, an unknown one refused, and a new retriever as one line.
+- `tests/embedding/test_embed_cache.py` now passes an embedder object instead of a function, and the strategy registry test lists `semantic`.
+
+**In an interview.** "Chunking and the vector store already sat behind interfaces, so I gave embedding and retrieval the same shape: an interface, a list of implementations by name, and a setting whose default is the original. I proved nothing moved by hashing every chunk, vector and ranked result, and the cost estimates, before and after, and all were identical. I also added a semantic chunker that cuts where neighbouring blocks stop being alike. It ranked a right page first more often on my seven valve cases, but its chunks are tiny, so I kept the default and wrote down the paid check that would settle it."
+
+**Files to read.** `backend/app/embedding/base.py` and `embedder.py`, `backend/app/retrieval/base.py` and `retrievers.py`, `backend/app/chunking/strategies/semantic.py`, `backend/tests/chunking/test_semantic.py`.

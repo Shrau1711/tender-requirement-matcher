@@ -16,6 +16,8 @@ services:
       LLM_THINKING: ${LLM_THINKING:-LOW}
       LLM_TEMPERATURE: ${LLM_TEMPERATURE:-0}
       CHUNKER: ${CHUNKER:-table_rows}
+      EMBEDDER: ${EMBEDDER:-bge-small}
+      RETRIEVER: ${RETRIEVER:-hybrid}
       EVIDENCE_TOP_K: ${EVIDENCE_TOP_K:-16}
       VECTOR_STORE: ${VECTOR_STORE:-chroma}
       TOKEN_COUNTER: ${TOKEN_COUNTER:-estimate}

@@ -14,14 +14,14 @@ flowchart LR
 
     subgraph Documents["manufacturer documents (once per file)"]
         READ["reading<br/>PDF text, tables, boxes, OCR"] --> CHUNK["chunking<br/>strategies + router"]
-        CHUNK --> EMB["embedding<br/>local model + cache"]
+        CHUNK --> EMB["embedding<br/>embedders + cache"]
         EMB --> VS[("vectorstore<br/>Chroma or memory")]
     end
 
     subgraph Tender["each tender"]
         TEN["tender<br/>items and requirement rows"] --> CAT["categories<br/>route items"]
         CAT --> ATOM["extraction<br/>atomic requirements"]
-        ATOM --> RET["retrieval<br/>BM25 + vectors, RRF"]
+        ATOM --> RET["retrieval<br/>retrievers: BM25 + vectors, RRF"]
         RET --> COST["cost<br/>budget, estimate, approval"]
         COST --> EVID["extraction<br/>evidence questions"]
         EVID --> JUDGE["judging<br/>units, compare, match"]
@@ -46,10 +46,10 @@ flowchart LR
 | `tender` | finds the tender's PDFs and reads its items and requirement rows (with the model) |
 | `categories` | each category's own words and rules (`category.json`), and routing each tender item to a category |
 | `reading` | PyMuPDF: lines with position and font, tables, flowchart boxes and the lines between them; picture-only pages are read by the model |
-| `chunking` | cuts documents into passages: five strategies behind one interface, chosen by `CHUNKER` or per document by the router |
-| `embedding` | local embeddings (fastembed, `bge-small-en-v1.5`), cached per text |
+| `chunking` | cuts documents into passages: six strategies behind one interface (`Chunker`), chosen by `CHUNKER` or per document by the router |
+| `embedding` | turns text into vectors: embedders behind one interface (`Embedder`), chosen by `EMBEDDER` (default `bge-small`, fastembed's `bge-small-en-v1.5`, run locally); every vector cached per model and text |
 | `vectorstore` | where chunks and vectors are kept: Chroma (on disk) or memory, behind one interface; `ingest` reads each file once |
-| `retrieval` | search queries for a requirement, BM25 keyword search, meaning search through the store, rank fusion (RRF) |
+| `retrieval` | search queries for a requirement, and retrievers behind one interface (`Retriever`), chosen by `RETRIEVER`: the default `hybrid` merges BM25 keyword search and meaning search through the store by rank (RRF); `keyword` and `meaning` use one ranking |
 | `extraction` | the model calls: tender rows to atomic requirements, passages to evidence, product names grouped |
 | `judging` | plain code: units (Pint), comparisons, the match status and score per requirement |
 | `cost` | token counting, the per-tender budget, the estimate a person approves before money is spent |
@@ -76,10 +76,10 @@ flowchart TD
     CH --> EM["embed each chunk<br/>(embedding cache, shipped seed)"]
     EM --> PUT["store.put: replace the file's chunks<br/>with chunk, vector, category, maker, file, page"]
     PUT --> LOAD
-    LOAD --> IDX["Index: BM25 over the chunks,<br/>the category's vectors in chunk order"]
+    LOAD --> IDX["retriever (RETRIEVER, hybrid by default):<br/>BM25 over the chunks, the category's vectors in chunk order"]
 ```
 
-The settings in the key are the chunking strategy, whether pictures are read, and a fingerprint of the reading and chunking code, so changing any of them re-reads the file instead of serving stale chunks.
+The settings in the key are the chunking strategy, whether pictures are read, and a fingerprint of the embedder's name and the reading and chunking code, so changing any of them re-reads the file instead of serving stale chunks. Another embedder's store is kept in its own Chroma folder (`chroma-<name>`), because its vectors can have another length.
 
 ## Query path: a tender becomes a report
 
@@ -110,7 +110,9 @@ flowchart TD
 
 **Saved answers are keyed by the exact prompt.** An answer is saved under a hash of the model, its settings, the instructions and the question. That makes re-running a tender free and repeatable, and it is why so much below is about keeping prompts byte-identical. Any change to a prompt, a passage's text or the passages' order makes that question new, so it costs money again. The shipped demo answers (`data/demo_cache`) only work while the defaults stay as they are.
 
-**The default chunker is kept for cache reasons.** Five chunking strategies exist, and on the free retrieval checks `structure` and `auto` did as well as or slightly better than the original `table_rows` (phase 2 in `docs/CHANGES.md`). But a different chunker gives different passages, so every question would be new. The original stays the default until a paid run shows another one gives better final answers.
+**The default chunker is kept for cache reasons.** Six chunking strategies exist. On the free retrieval checks `structure` and `auto` did as well as or slightly better than the original `table_rows` (phase 2 in `docs/CHANGES.md`), and `semantic` put a right page first more often on the 7 valve cases (6 of 7 against 4 of 7, hybrid), with much shorter chunks (a median of 42 characters against 329), so the model would read less around each fact. But a different chunker gives different passages, so every question would be new. The original stays the default until a paid run shows another one gives better final answers.
+
+**Each part behind a small interface, chosen by a setting.** Chunking (`Chunker`, `CHUNKER`), embedding (`Embedder`, `EMBEDDER`), the vector store (`VectorStore`, `VECTOR_STORE`) and retrieval (`Retriever`, `RETRIEVER`) each have an interface in their package's `base.py` and a list of implementations by name, so a new one is a class plus one line, and the code that uses it does not change. Every default is the original, so the saved answers keep matching: the embedder's name is part of every saved vector's key, and the default's name is the one the vectors were always saved under. Only `bge-small` is listed as an embedder, and `keyword` and `meaning` as other retrievers; none of them has been checked against final answers, which needs paid runs.
 
 **Chroma stores and filters; similarity is scored exactly in the code.** What Chroma does here is keep the chunks and their vectors on disk between starts, so each document is read once, and return the chunks that match a filter (category, maker, file, page). Similarity is not Chroma's job: the index multiplies the stored vectors by the query with the same matrix product as the first version and ranks by that. The reason is order: Chroma's nearest-neighbour search (HNSW) is approximate, and its arithmetic differs from NumPy's in the last digits. That reordered two passages in 3 of 1,273 questions. With exact scoring in the code, every question is identical to the first version's.
 
@@ -141,4 +143,4 @@ The price is that Chroma's speed-up is not used. That costs nothing here: the ra
 
 **A knowledge graph that only advises.** The standards graph is built by a script from the catalogues and the saved tender readings, and saved as JSON that a person can read and correct. Its two kinds of link are not equally sure. One standard under several names follows from how adopted standards are named, so it may count as a match. Two standards named together ("API 600 / BS 1873") are often not equivalent, so that link can only send a requirement to a person, and only when the tender says it accepts an equivalent. The whole graph is off by default; on the two labelled tenders, switching it on changed no outcome.
 
-**What needs paid runs.** Whether another chunker, temperature, model or the exact token counter changes the results can only be measured by asking the model again. Each such check, what it would measure and how to run it is listed in [`NEEDS_PAID_RUN.md`](NEEDS_PAID_RUN.md). Each is priced there, with a priority and a recommended first plan under ₹100.
+**What needs paid runs.** Whether another chunker, embedder, retriever, temperature, model or the exact token counter changes the results can only be measured by asking the model again. Each such check, what it would measure and how to run it is listed in [`NEEDS_PAID_RUN.md`](NEEDS_PAID_RUN.md). Each is priced there, with a priority and a recommended first plan under ₹100.
