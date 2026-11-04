@@ -190,7 +190,7 @@ All three diagrams were checked with Mermaid's own parser, and it describes the 
 - **Not good enough on real pages yet** (the numbers above): it reads the generated pictures perfectly and real scans poorly.
 - **The rest of the pipeline is English.** The vocabulary in `backend/config/`, the units, the tender-reading prompts and the word matching in `compare.py` (`[a-z]{3,}`) assume English. Text read in Hindi or Marathi is stored, but keyword search drops Devanagari words (`TOKEN` in `backend/app/retrieval/search.py` keeps Latin letters and digits only), the embedder (`bge-small-en`) is an English model, and nothing judges Hindi text.
 - **No real Marathi page, and no document that is mainly Hindi,** is in the repository.
-- **The model's Hindi reading is unchecked.** Whether the language hint changes what the model writes needs a paid run (check 12 below).
+- **The language hint is not used.** Paid check 12 (run, ≈ ₹1.19) found that with `OCR_LANGS=en,hi` the model wrote the Hindi on the 6 real pages much more fully, and closer to the print on 4 of them. But `OCR_LANGS` stays `en`, so the app still uses the readings made without the hint. The Hindi there is form labels, not requirements (`docs/NEEDS_PAID_RUN.md`).
 
 ## What would need a paid run
 
@@ -210,10 +210,10 @@ These are expected costs, not limits. Google doubles Gemini 3.8 Flash's price on
 | 8 | Chunkers `recursive`, `sections`, `parent_child` | 1 | 9935891 | 203 to 204 each | ≈ ₹162, ₹130, ₹161 |
 | 9 | Standards graph on a tender that cites linked standards | 9b | 9840129 (no answer key) | 123 | ≈ ₹88 |
 | 11 | Chunker `semantic` | 1 | 9933225 (valves) | 56 | ≈ ₹33 (free estimate 219,527 input tokens × 1.36, plus output) |
-| 12 | The model told to expect Hindi, on the real bilingual scans | 9c | 9918524 (6 pages) | 6 | ≈ ₹1.13 (from the saved readings' tokens) |
+| 12 | The model told to expect Hindi, on the real bilingual scans | 9c | 9918524 (6 pages) | 6 | **run 4 November 2026: ≈ ₹1.19** (estimated ≈ ₹1.13) |
 | 13 | EasyOCR as the page reader, end to end | 9c | 9933225 | not priced | not priced: the free estimate was stopped when the computer ran low on memory |
 
-The numbers are those in `docs/NEEDS_PAID_RUN.md`. Checks 1 and 2 there were run (≈ ₹19.24 and ≈ ₹40.54, ≈ ₹59.78 in all), and check 10 was answered for free.
+The numbers are those in `docs/NEEDS_PAID_RUN.md`. Checks 1 and 2 there were run (≈ ₹19.24 and ≈ ₹40.54, ≈ ₹59.78 in all), check 12 was run (≈ ₹1.19), and check 10 was answered for free.
 
 **Cheapest checks that would move a point forward.** Check 5 (≈ ₹27) is the only evidence that could justify turning the router on, and check 11 (≈ ₹33) the only evidence for the semantic chunker (point 1). Check 3 (≈ ₹73 or ₹56) is the next evidence on the cheaper model (point 8).
 

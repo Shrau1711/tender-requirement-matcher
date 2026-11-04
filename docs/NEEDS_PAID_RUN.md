@@ -1,6 +1,6 @@
 # Checks that need paid model calls
 
-Checks 1 and 2 in the table were run on 27 October 2026, with the owner's approval, for ≈ ₹59.78 in all (results in the recommended plan below), and check 10 was answered for free. Nothing else here has been run. Each check is priced below from free measurements, and each section after the table says what it would measure, why it cannot be measured for free, and how to run it once approved. Run every paid check one tender at a time with `scripts.eval.score_gold`, never `eval_all`: `eval_all` goes on to the other labelled tender and would spend there too.
+Checks 1 and 2 in the table were run on 27 October 2026, with the owner's approval, for ≈ ₹59.78 in all (results in the recommended plan below). Check 12 was run on 4 November 2026, also with approval, for ≈ ₹1.19 (results in its section at the end). Check 10 was answered for free. Nothing else here has been run. Each check is priced below from free measurements, and each section after the table says what it would measure, why it cannot be measured for free, and how to run it once approved. Run every paid check one tender at a time with `scripts.eval.score_gold`, never `eval_all`: `eval_all` goes on to the other labelled tender and would spend there too.
 
 ## Prices and priorities
 
@@ -24,7 +24,7 @@ How the prices were worked out (phase 7, all free, `LLM_MAX_CALLS=0`):
 | 9 | Standards graph on a tender that cites linked standards | 9840129 (no answer key) | 123 | ≈ ₹88 (the raw estimate said ₹61) | whether `KNOWLEDGE_GRAPH=on` changes any outcome; a person would have to judge the rows that change | low |
 | 10 | How far characters / 4 is from Gemini's own count | both labelled tenders | 0 | ₹0, **answered for free** | measured on the saved answers: the estimate is 74% (valves) and 69% (pumps) of the real input tokens, from 45% to 91% per question | done |
 | 11 | Chunker `semantic` (added after phase 7) | 9933225 | 56 (none of the 56 questions unchanged) | ≈ ₹33 (estimate 219,527 input tokens × 1.36, plus 474 output tokens a question) | whether the strategy that put a right page first most often on the free retrieval checks (6 of 7 valve cases, hybrid) also gives better final answers, given its much shorter passages | medium |
-| 12 | The model told to expect Hindi (`OCR_LANGS=en,hi`) on the real bilingual scans | 9918524 (its BHEL specification, the 6 scanned pages with Hindi) | 6 | ≈ ₹1.13 (the saved readings of these pages used 7,254 input and 4,043 output tokens) | whether the language hint changes what the model writes in Hindi on those pages, against today's saved transcriptions. The default reader, the model, reads them now without the hint | low |
+| 12 | The model told to expect Hindi (`OCR_LANGS=en,hi`) on the real bilingual scans | 9918524 (its BHEL specification, the 6 scanned pages with Hindi) | 6 | ≈ ₹1.13 estimated; **run 4 November 2026: 6 calls, ≈ ₹1.19** | whether the language hint changes what the model writes in Hindi on those pages, against today's saved transcriptions. The default reader, the model, reads them now without the hint | done |
 | 13 | EasyOCR as the page reader (`OCR=easyocr`), end to end | 9933225 | not priced yet | not priced: the free estimate was stopped before it finished (the computer ran low on memory) | whether a free local reader gives the same final answers as the model's transcriptions; the free check on real bilingual scans (below) says it reads them poorly | low |
 
 ## Recommended plan: a lighter model and temperature 1.0 on 9933225, under ₹100
@@ -145,5 +145,24 @@ Each run ends with the agreement and a line like `model calls 59, from cache 0, 
 
 **Check 12: the language hint on the model.** With `OCR_LANGS` other than `en`, one sentence is added to the transcription prompt, so the 6 pages are new questions: about ₹1.13. Run each page once and compare the Hindi with the saved transcription (a person judges which is right):
 `OCR_LANGS=en,hi LLM_MAX_CALLS=1 PYTHONIOENCODING=utf-8 python -m scripts.show_reading.show_ocr "../data/tenders/dev/GeM-Bidding-9918524/spec-_merge_2026-09-19-15-26-40_dc94d4c4c4cbd6cc2943216292c7b412.pdf" <page>` for pages 1, 3, 4, 5, 6 and 7.
+
+**Check 12 was run on 4 November 2026, with the owner's approval** (cap `LLM_MAX_CALLS=7` for that run only, then back to 0). It was run exactly as written above, one command per page.
+
+**Actual cost:** 6 model calls, no retries. 7,350 input and 4,541 output tokens, ≈ ₹1.19 at the app's rate (estimated ≈ ₹1.13). At Google's listed prices for Gemini 3.8 Flash ($0.75 in, $3.75 out per million) that is about $0.023.
+
+**What changed.** Every page was read differently. The new readings kept the English and the numbers: 90% to 100% of the old reading's English words, and 241 of 254 of its numbers, mostly the same values written another way. The Hindi on these pages is form labels, sign-off blocks, the header and a copyright note. None of it is a requirement, so it does not change matching. Judged against the printed page, by looking at the scans:
+
+| Page | Old reading (no hint) | New reading (with the Hindi hint) | Closer to the printed page |
+|---|---|---|---|
+| 1 (ST47031, page 1) | only the header: "उत्पाद मानक / PRODUCT STANDARD NO.", and "पृष्ठ / Page: 1 of 2" in place of the printed "पृष्ठ 2 का 1"; the whole Hindi sign-off block left out | the header and "पृष्ठ 2 का 1" as printed, and the whole sign-off block in Hindi: अनुवादक, निर्माणकर्ता, जांचकर्ता, पर्यवेक्षणकर्ता, सहमत विभाग, नाम, दिनांक एवं हस्ताक्षर, स्वीकृति, निर्माण, जारी | **new**, clearly. One slip: "सहमत्त" for the printed "सहमत" |
+| 3 (ST47025, page 1) | the header and the full sign-off block, but "सहमल विभाग" for the printed "सहमत विभाग" | the header and the block with "सहमत विभाग" spelled right, but two signatures turned into made-up words ("Hart", "V.kpy") | about even: the new Hindi is spelled better, the old does not invent words |
+| 4 (ST47025, page 2) | the header, the side notes and the copyright note in Hindi | the same text, plus the handwritten inventory number (P-5522) and date (26.7.04), which are on the page | **new**, slightly |
+| 5 (ST47025, page 3) | "निर्माणकर्ता" and "जांचकर्ता" as printed | "निर्मांणकर्ता", with a dot that is not printed, and two Hindi labels that are not on the page ("हस्ताक्षर SIGN", "दिनांक DATE") | **old** |
+| 6 (ST47025, page 4) | "निर्मांणकर्ता", with a dot that is not printed, and English labels the page does not have ("Row 1", "Signature: [Signed]") | "निर्माणकर्ता" and "जांचकर्ता" as printed | **new** |
+| 7 (change advice form, printed sideways) | almost nothing: four names (संदीप गुप्ता, मनोज कु.) out of a form full of Hindi | the whole form: "प्रपत्र डीजी ४१ (डी)", "संशोधन प्रपत्र", every numbered field label in Hindi and English, the codes and dates. One name on a faint stamp ("अशोक कुमार गुप्ता") could not be checked at this resolution | **new**, by far |
+
+**In plain words:** with the hint, the model wrote down the Hindi much more fully, and on 4 of the 6 pages it is closer to the print. On page 3 it is about even, and on page 5 the old reading is better. The hint is not perfect. It sometimes adds a label that is not printed, or reads a signature as a word, which the old reading did too.
+
+**Nothing in the app changed.** `OCR_LANGS` stays `en`, so the app still uses the old readings and every saved answer still matches. The new readings are only in this computer's answer cache (`backend/.cache/llm`, not in git). Using them would make this tender's reading new, a paid run of its own. The Hindi is labels, not requirements, so there is no reason to do that for this tender.
 
 **Check 13: EasyOCR end to end.** Every page that is a picture would be read differently, so the passages of the catalogues with such pages (and the reading of any tender with them) change, and those questions are new. To price it for free, run `OCR=easyocr CHROMA_DIR=<a scratch folder> LLM_MAX_CALLS=0 python -m scripts.cost.estimate_cost ../data/tenders/dev/GeM-Bidding-9933225 ../data/categories/valves` on a computer with memory to spare (EasyOCR loads PyTorch). A scratch Chroma folder keeps the main store as it is. Not worth paying for until EasyOCR reads real scans better.

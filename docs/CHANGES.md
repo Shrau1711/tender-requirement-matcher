@@ -716,3 +716,25 @@ How to read this:
 **In an interview.** "The scanned-page reader was the model, so I made it a setting and added EasyOCR as a free local reader that reads Hindi and Marathi. It passes on pictures I generated, but on six real bilingual scans it found only 28% of the Hindi words the model did, so the model stays the default. I also added a page that adds a manufacturer document by upload or address. It uses the crawler's own fetcher and saver, records the source in `sources.csv`, and calls the same ingest as everything else. A real download came out byte for byte identical to the shipped copy."
 
 **Files to read.** `backend/app/reading/ocr/readers.py` and `local.py`, `backend/app/collecting/add.py`, the add route at the end of `backend/app/api/documents.py`, `add_to_search` in `backend/app/pipeline/runner.py`, `frontend/src/pages/DocumentsPage.jsx`.
+
+## Paid check 12: the model told to expect Hindi, and the optional OCR packages
+
+**OCR packages are optional, checked.**
+- `backend/requirements.txt`, used by `backend/Dockerfile` and `Dockerfile.demo`, names no OCR package.
+- A dry-run install of it in a fresh scratch venv resolves 106 packages, with no PyTorch, EasyOCR, RapidOCR or OpenCV among them.
+- With those imports blocked, the app and the demo app start and answer, and `OCR=model` reads a picture page with the prompt unchanged. `OCR=easyocr` only fails, on first use, with "OCR=easyocr needs EasyOCR: pip install easyocr".
+- Nothing had to move. No image was rebuilt.
+
+**Check 12 was run, with the owner's approval.**
+- The six commands written in `docs/NEEDS_PAID_RUN.md` were run for pages 1, 3, 4, 5, 6 and 7 of tender 9918524's BHEL specification, with `OCR_LANGS=en,hi` and the call cap at 7 for that run only. The cap in effect afterwards is 0.
+- **Actual cost:** 6 calls, no retries. 7,350 input and 4,541 output tokens, ≈ ₹1.19 at the app's rate (estimated ≈ ₹1.13), about $0.023 at Google's listed prices.
+
+**Result.**
+- With the hint, the model wrote the Hindi much more fully: on page 7, a sideways form, the whole form instead of four names.
+- Judged against the scans, the new reading is closer to the print on 4 of 6 pages, about even on 1, and worse on 1, where it added labels that are not printed.
+- The English and numbers stayed: 241 of 254 numbers.
+- The page-by-page table is in `docs/NEEDS_PAID_RUN.md`.
+
+**Nothing in the app changed.** `OCR_LANGS` stays `en`, and the new readings sit only in the local answer cache. The Hindi on these pages is labels and sign-offs, not requirements.
+
+**In an interview.** "I spent about one rupee to check one thing: does telling the model to expect Hindi change its reading of real bilingual scans? It did. The Hindi came out far more complete and closer to the print on four of six pages, with the English and numbers kept. It also showed the model sometimes adds labels that are not printed. Since that Hindi was form labels, not requirements, I kept the default."
