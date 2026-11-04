@@ -535,21 +535,23 @@ One run of the full suite had one failing test, which I did not see; it did not 
 
 **Files to read.** `Dockerfile.demo`, `Dockerfile.demo.dockerignore`, `backend/app/demo.py`, `backend/scripts/demo/replay_samples.py`, `backend/scripts/demo/load_samples.py`, `docs/HF_SPACE_README.md`.
 
-## Demo image on Docker Hub: `shravani1711/tender-matcher-demo:v3`
+## Demo image on Docker Hub: `shravani1711/tender-matcher-demo:v4`
 
 **What changed.**
-- The replay-only demo image is published on Docker Hub as `shravani1711/tender-matcher-demo:v3`. Anyone can run it with `docker run -p 7860:7860 shravani1711/tender-matcher-demo:v3` and open http://localhost:7860.
-- It was built from `Dockerfile.demo` at commit `697ac5f` on `demo-space`. Digest `sha256:ee9955eb8b797d805985ae28b116f0569d7a07eaa4451319f56be921e30107e1`, 1.27 GB.
-- Only the `v3` tag was pushed. There is no `latest` tag for the demo, so a pull always names the exact version. The backend and frontend images on Docker Hub are unchanged.
+- The replay-only demo image is published on Docker Hub as `shravani1711/tender-matcher-demo:v4`. Anyone can run it with `docker run -p 7860:7860 shravani1711/tender-matcher-demo:v4` and open http://localhost:7860.
+- It was built from `Dockerfile.demo` at commit `985bdf4` on `demo-space`. Digest `sha256:af3ccbec2fa850f1a72e2a83768cf8e107081d8657ce00d22d31ee1a25b263f7`, 1.27 GB.
+- **v3 is superseded.** `v3` (commit `697ac5f`, digest `sha256:ee9955eb8b797d805985ae28b116f0569d7a07eaa4451319f56be921e30107e1`) still shows the note "This demo replays saved examples only." on the upload screen, which was removed afterwards. It stays on Docker Hub unchanged, but `v4` is the one to use.
+- Only the `v3` and `v4` tags were pushed. There is no `latest` tag for the demo, so a pull always names the exact version. The backend and frontend images on Docker Hub are unchanged.
 
 **Why.** The demo can be tried with one command, without building it or cloning the repository, and still never calls the model or needs a key.
 
-**In an interview.** "The demo is also a public Docker image, tagged v3 and nothing else, so whoever runs it knows exactly which build they get. I checked it from a fresh pull, not from my local build: it serves the page and the API on port 7860, the five sample reports are identical to the saved ones, and uploads are refused with the plain replay-only message."
+**In an interview.** "The demo is also a public Docker image with an exact version tag and no latest, so whoever runs it knows exactly which build they get; v4 replaced v3 only to drop a note on the upload screen. I checked it from a fresh pull, not from my local build: it serves the page and the API on port 7860, the five sample reports are identical to the saved ones, and an upload is refused with the plain replay-only message. Deleting or renaming a sample is refused too."
 
-**Checked, free** (on the copy pulled back from Docker Hub, after deleting the local tag; the pulled digest matches the pushed one):
-- `/health` is ok, the page and `config.js` load, and `/config` gives `max_model_calls: 0`.
+**Checked, free** (on the `v4` copy pulled back from Docker Hub, after deleting the local tag; the pulled digest matches the pushed one):
+- `/health` is ok, and `/config` gives `max_model_calls: 0`.
+- In a browser (headless Edge), the upload screen shows nothing below Advanced, and the note's text is not in the page's code.
 - `/runs` lists the 5 sample runs, all done. Each report's JSON is identical to its saved copy in `data/demo_runs`. The Markdown and Excel downloads work.
-- In a browser (headless Edge), the report of 10016383 renders: 7 manufacturers ranked, the best at 45.0%.
-- An upload gets 403 with "This demo replays saved examples only." The log has no traceback.
+- In the browser, the report of 10016383 renders: 7 manufacturers ranked, the best at 45.0%.
+- An upload gets 403 with "This demo replays saved examples only." Deleting a sample gets 403 with "The saved examples cannot be deleted or renamed in this demo." The log has no traceback.
 
 **Files to read.** `Dockerfile.demo`, `docs/HF_SPACE_README.md`.
