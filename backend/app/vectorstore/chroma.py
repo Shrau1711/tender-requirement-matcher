@@ -1,10 +1,18 @@
 """A store kept on disk with Chroma, so a document is read, chunked and embedded once and found again at the next start.
+Chroma is the only place vectors are kept (see vector_cache.py).
 
-Chroma stores and filters; it does not score. Its nearest-neighbour search (HNSW) is approximate and its arithmetic
-differs from NumPy's in the last digits, which reordered near-equal passages. The search needs every chunk of a
-manufacturer anyway, so the candidates are fetched by filter, and the index scores them exactly from the stored vectors
-(see Index.meanings). Two collections are kept: one row per chunk (its vector, its fields to filter on, and the whole
-chunk as JSON so it can be rebuilt without reading the PDF), and one row per document (its content hash and settings).
+Four collections:
+- "chunks": one row per chunk: its vector, its fields to filter on, and the whole chunk as JSON so it can be rebuilt
+  without reading the PDF;
+- "documents": one row per document: its content hash and settings;
+- "vectors": every text the embedder has seen (chunks and search queries), by key, so no text is embedded twice; looked
+  up by key, never searched;
+- "imports": which files were imported into "vectors" (the shipped seed, an older local cache), so each is imported once.
+
+Two ways to rank by meaning (VECTOR_SEARCH, see retrieval/search.py). "exact", the default: the store filters and the
+index scores the candidates itself from the stored vectors. "chroma": Chroma ranks them with its own nearest-neighbour
+search (nearest), with HNSW settings chosen to be as exact as possible at these sizes (a few thousand chunks). Even so its
+arithmetic differs from NumPy's in the last digits, which reorders near-equal passages (measured; see docs/CHANGES.md).
 
 On Windows (only, so far), right after writes, Chroma 1.5.9 sometimes cannot open its index files ("Error creating hnsw
 segment reader: Nothing found on disk"), also when only the stored vectors are read, and the client stays stuck: waiting
@@ -28,6 +36,10 @@ from app.chunking.base import Chunk
 from app.vectorstore.base import StoredDoc, Where, check_where, chunk_ids, fields
 
 BATCH = 1000  # rows sent to Chroma at a time; it refuses very large batches
+# HNSW for native search. A category holds about 2,000 chunks and a maker up to 1,600, so the search may look at every
+# one (ef_search) and the graph is built densely (ef_construction, max_neighbors), as exact as HNSW gets at this size.
+HNSW = {"space": "ip", "ef_construction": 512, "max_neighbors": 64, "ef_search": 10000}
+FIXED = ("space", "ef_construction", "max_neighbors")  # set when a collection is made; the rest can be changed later
 STUCK = "Error creating hnsw segment reader"  # the one Chroma error a new client gets past; every other error is raised
 
 log = logging.getLogger(__name__)
@@ -55,8 +67,18 @@ class ChromaStore:
         self.client = chromadb.PersistentClient(path=str(self.folder), settings=Settings(anonymized_telemetry=False))
         # Inner product, not cosine: the vectors are already unit length, so the two are the same. In cosine mode Chroma
         # gives the vectors back with some last digits changed (measured), which would change the exact scores.
-        self.chunk_rows = self.client.get_or_create_collection("chunks", configuration={"hnsw": {"space": "ip"}})
+        self.chunk_rows = self.client.get_or_create_collection("chunks", configuration={"hnsw": HNSW})
+        if any(self.chunk_rows.configuration.get("hnsw", {}).get(k) != HNSW[k] for k in FIXED):
+            # made before these settings: rebuilt once (it is a cache; ingest reads the documents again)
+            log.warning("The Chroma chunk store was made with other search settings; rebuilding it once.")
+            for name in ("chunks", "documents"):
+                self.client.delete_collection(name)
+            self.chunk_rows = self.client.get_or_create_collection("chunks", configuration={"hnsw": HNSW})
+        elif self.chunk_rows.configuration.get("hnsw", {}).get("ef_search") != HNSW["ef_search"]:
+            self.chunk_rows.modify(configuration={"hnsw": {"ef_search": HNSW["ef_search"]}})
         self.doc_rows = self.client.get_or_create_collection("documents")
+        self.vector_rows = self.client.get_or_create_collection("vectors", configuration={"hnsw": {"space": "ip"}})
+        self.import_rows = self.client.get_or_create_collection("imports")
 
     def reading(self, read: Callable[[], T], what: str) -> T:
         """Runs a read. If the client is stuck unable to open its index, closes it, opens a new one and reads once more.
@@ -104,3 +126,36 @@ class ChromaStore:
     def candidates(self, where: Where) -> list[str]:
         check_where(where)
         return self.reading(lambda: self.chunk_rows.get(where=chroma_where(where), include=[]), "the matching chunks")["ids"]
+
+    def nearest(self, queries: np.ndarray, where: Where, n: int) -> list[list[tuple[str, float]]]:
+        """Chroma's own ranking: for each query, up to n chunks matching `where`, nearest first, with their similarity
+        (1 - Chroma's inner-product distance)."""
+        check_where(where)
+        if n == 0:
+            return [[] for _ in queries]
+        found = self.reading(lambda: self.chunk_rows.query(query_embeddings=queries, n_results=n, where=chroma_where(where),
+                                                           include=["distances"]), "the nearest chunks")
+        return [[(i, 1.0 - d) for i, d in zip(ids, distances, strict=True)] for ids, distances in zip(found["ids"], found["distances"], strict=True)]
+
+    def cached_vectors(self, keys: list[str]) -> dict[str, np.ndarray]:
+        """The stored vectors of these text keys, for those that have one."""
+        rows: dict[str, np.ndarray] = {}
+        for start in range(0, len(keys), BATCH):
+            batch = keys[start:start + BATCH]
+            found = self.reading(lambda batch=batch: self.vector_rows.get(ids=batch, include=["embeddings"]), "the cached vectors")
+            rows.update((i, np.asarray(v, dtype=np.float32)) for i, v in zip(found["ids"], found["embeddings"], strict=True))
+        return rows
+
+    def keep_vectors(self, vectors: dict[str, np.ndarray]) -> None:
+        keys = list(vectors)
+        for start in range(0, len(keys), BATCH):
+            batch = keys[start:start + BATCH]
+            self.vector_rows.upsert(ids=batch, embeddings=np.stack([vectors[k] for k in batch]))
+
+    def imported(self, name: str) -> str | None:
+        """The fingerprint of the file last imported under this name, if any."""
+        found = self.import_rows.get(ids=[name], include=["metadatas"])["metadatas"]
+        return found[0]["sha256"] if found else None
+
+    def mark_imported(self, name: str, sha256: str, rows: int) -> None:
+        self.import_rows.upsert(ids=[name], metadatas=[{"sha256": sha256, "rows": rows}], embeddings=[[0.0]])

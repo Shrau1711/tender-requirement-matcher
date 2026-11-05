@@ -1,20 +1,22 @@
+"""Embedding with a cache, so the model only embeds text it has not seen. The vectors are kept in Chroma
+(app/vectorstore/vector_cache.py), the only place vectors are kept; this module only says how a text is keyed."""
 from __future__ import annotations
 
 import hashlib
-import sqlite3
-from pathlib import Path
+from typing import Protocol
 
 import numpy as np
 
-from app.config import cache_dir, path_setting
 from app.embedding.base import Embedder
 from app.embedding.embedder import embedder as chosen
 
-CACHE_FILE = cache_dir() / "embeddings.sqlite"
-# A copy of the vectors computed where the shipped model answers were saved (read only). Another machine computes slightly different vectors, which can change
-# the order of the passages in a question and so the question itself, and a changed question does not find its saved answer.
-SEED_FILE = path_setting("SEED_EMBEDDINGS", Path(__file__).resolve().parents[3] / "data" / "seed_embeddings.sqlite")
 BATCH = 32  # texts embedded and saved at a time: memory stays small and an interrupted run keeps its progress
+
+
+class VectorCache(Protocol):
+    def get(self, keys: list[str]) -> dict[str, np.ndarray]: ...
+
+    def put(self, vectors: dict[str, np.ndarray]) -> None: ...
 
 
 # The model's name is part of the key, so two embedders never share a vector. For the default model the key is what it always was.
@@ -22,42 +24,24 @@ def key_for(text: str, model: str) -> str:
     return hashlib.sha256(f"{model}\x00{text}".encode()).hexdigest()
 
 
-def read_vector(db: sqlite3.Connection, text: str, model: str) -> np.ndarray | None:
-    row = db.execute("SELECT vector FROM vectors WHERE key = ?", (key_for(text, model),)).fetchone()
-    return np.frombuffer(row[0], dtype=np.float32) if row else None
+def default_cache() -> VectorCache:
+    # imported here, not at the top: the vector store package uses this module
+    from app.vectorstore.vector_cache import shared_vectors
+    return shared_vectors()
 
 
-def open_seed(seed_file: Path | None) -> sqlite3.Connection | None:
-    return sqlite3.connect(f"{seed_file.resolve().as_uri()}?mode=ro", uri=True) if seed_file and seed_file.exists() else None
-
-
-def embed_cached(
-    texts: list[str],
-    cache_file: Path = CACHE_FILE,
-    embedder: Embedder | None = None,
-    seed_file: Path | None = SEED_FILE,
-) -> np.ndarray:
-    """Like embedder.embed, but a text seen before is read from disk (this machine's cache, then the shipped seed), so the
-    model is only used for new text. The embedder is the one the EMBEDDER setting chooses unless one is given."""
+def embed_cached(texts: list[str], cache: VectorCache | None = None, embedder: Embedder | None = None) -> np.ndarray:
+    """Like embedder.embed, but a text seen before is read from the cache (Chroma unless another is given), so the model
+    is only used for new text. The embedder is the one the EMBEDDER setting chooses unless one is given."""
     embedder = embedder or chosen()
-    cache_file.parent.mkdir(parents=True, exist_ok=True)
-    seed = open_seed(seed_file)
-    with sqlite3.connect(cache_file) as db:
-        db.execute("CREATE TABLE IF NOT EXISTS vectors (key TEXT PRIMARY KEY, vector BLOB)")
-        found = {}
-        for text in set(texts):
-            vector = read_vector(db, text, embedder.name)
-            if vector is None and seed:
-                vector = read_vector(seed, text, embedder.name)
-            if vector is not None:
-                found[text] = vector
-        missing = [t for t in dict.fromkeys(texts) if t not in found]
-        for start in range(0, len(missing), BATCH):
-            batch = missing[start:start + BATCH]
-            for text, vector in zip(batch, embedder.embed(batch), strict=True):
-                found[text] = vector.astype(np.float32)
-                db.execute("INSERT INTO vectors VALUES (?, ?)", (key_for(text, embedder.name), found[text].tobytes()))
-            db.commit()
-    if seed:
-        seed.close()
+    cache = cache if cache is not None else default_cache()
+    keys = {text: key_for(text, embedder.name) for text in dict.fromkeys(texts)}
+    stored = cache.get(list(keys.values()))
+    found = {text: stored[key] for text, key in keys.items() if key in stored}
+    missing = [text for text in keys if text not in found]
+    for start in range(0, len(missing), BATCH):
+        batch = missing[start:start + BATCH]
+        new = {text: vector.astype(np.float32) for text, vector in zip(batch, embedder.embed(batch), strict=True)}
+        cache.put({keys[text]: vector for text, vector in new.items()})
+        found.update(new)
     return np.stack([found[t] for t in texts])

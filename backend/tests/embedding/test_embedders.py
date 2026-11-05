@@ -1,15 +1,13 @@
+import sqlite3
+
 import numpy as np
 import pytest
+from builders import DictCache
 
-from app.embedding.embed_cache import (
-    SEED_FILE,
-    embed_cached,
-    key_for,
-    open_seed,
-    read_vector,
-)
+from app.embedding.embed_cache import embed_cached, key_for
 from app.embedding.embedder import DEFAULT, EMBEDDER, EMBEDDERS, FastEmbed, embedder
 from app.vectorstore import ingest
+from app.vectorstore.vector_cache import SEED_FILE
 
 OLD_KEY_OF_WAFER = "5f9a37f1dfc704741071af4cb6d8e1423ad957bdc5157f5d9606ef1c036b618a"  # sha256("BAAI/bge-small-en-v1.5\0wafer")
 
@@ -28,11 +26,9 @@ def test_the_default_embedder_is_the_model_every_saved_vector_was_made_with():
 
 
 def test_the_shipped_vectors_are_found_under_the_default_embedder():
-    seed = open_seed(SEED_FILE)
-    assert seed is not None
-    vector = read_vector(seed, "IS 13095", embedder().name)  # a query from the retrieval cases
-    seed.close()
-    assert vector is not None and vector.shape == (384,)
+    with sqlite3.connect(f"{SEED_FILE.resolve().as_uri()}?mode=ro", uri=True) as seed:
+        row = seed.execute("SELECT vector FROM vectors WHERE key = ?", (key_for("IS 13095", embedder().name),)).fetchone()
+    assert row is not None and np.frombuffer(row[0], dtype=np.float32).shape == (384,)  # a query from the retrieval cases
 
 
 def test_choosing_an_embedder_does_not_load_its_model():
@@ -47,7 +43,8 @@ def test_an_unknown_embedder_is_refused():
 def test_a_new_embedder_is_one_line_and_keeps_its_own_vectors(tmp_path, monkeypatch):
     monkeypatch.setitem(EMBEDDERS, "twos", Twos)
     twos = embedder("twos")
-    vectors = embed_cached(["wafer"], tmp_path / "c.sqlite", twos, seed_file=None)
+    cache = DictCache()
+    vectors = embed_cached(["wafer"], cache, twos)
     assert vectors.tolist() == [[2.0, 2.0]]
 
     class Threes(Twos):
@@ -57,7 +54,7 @@ def test_a_new_embedder_is_one_line_and_keeps_its_own_vectors(tmp_path, monkeypa
             return np.full((len(texts), 3), 3.0)
 
     # the same text under another model is embedded again, never served the first model's vector
-    assert embed_cached(["wafer"], tmp_path / "c.sqlite", Threes(), seed_file=None).tolist() == [[3.0, 3.0, 3.0]]
+    assert embed_cached(["wafer"], cache, Threes()).tolist() == [[3.0, 3.0, 3.0]]
 
 
 def test_another_embedder_gets_its_own_chroma_folder(monkeypatch, tmp_path):

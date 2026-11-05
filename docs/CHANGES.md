@@ -821,3 +821,52 @@ So nothing was wired or tested, no request was sent, and `TOKEN_COUNTER` stays `
 **In an interview.** "I checked Google's documentation before touching the token counter. It says counting is free only for Vertex AI, not for the API key this app uses, so I stopped there, as agreed. For the knowledge graph, I put product families and their attributes in each category's config and linked them. The tender's structure is now a report tab, built from saved answers through a stand-in that has Gemini's cache keys but cannot call it. It even works in the replay-only demo."
 
 **Files to read.** `backend/app/graph/products.py` and `layout.py`, `saved_answers_only` in `backend/app/llm/llm_factory.py`, `data/categories/*/category.json`, `frontend/src/components/report/TenderLayout.jsx`.
+
+## Chroma as the only store of vectors, and Chroma's own ranking as an option
+
+**What changed.**
+- **Chroma is the only store of vectors.** The store gained two collections (`backend/app/vectorstore/chroma.py`):
+  - `vectors`: every text's vector, chunks and search queries alike, keyed by `key_for(text, model)` as before, and looked up by key, never searched;
+  - `imports`: which files were imported into it.
+
+  `backend/app/embedding/embed_cache.py` no longer opens SQLite; it reads and writes through a cache object, the Chroma one (`backend/app/vectorstore/vector_cache.py`) unless a test gives another.
+- **The seed is a one-time import.** The first time anything is embedded, the shipped `data/seed_embeddings.sqlite` is copied into Chroma and recorded by its SHA-256, and so is this machine's older `backend/.cache/embeddings.sqlite` if it exists. After that, no vector is read from either; a changed seed would be imported again. On this machine: 6,126 seed vectors and 23,603 local ones, which already held all 6,126 seed vectors, byte for byte the same. The old file is left on disk, unused, and can be deleted.
+- **Chroma can rank: `VECTOR_SEARCH=chroma`** (`backend/app/retrieval/search.py`).
+  - The meaning ranking comes from Chroma's own nearest-neighbour search, in Chroma's order, through a new `nearest()` that both stores have.
+  - BM25 and rank fusion are unchanged.
+  - The chunk collection is built for near-exact search: inner product, `ef_construction` 512, `max_neighbors` 64, `ef_search` 10,000, so the search can look at every chunk at these sizes.
+  - A store made before with Chroma's defaults (`ef_construction` 100, `max_neighbors` 16) is rebuilt once. It is a cache, and the documents are read again for free.
+  - The default stays `exact`.
+- **`backend/scripts/diagnose/compare_vector_search.py`** compares the two rankings. `VECTOR_SEARCH` is in `docker-compose.yml` and the README settings table.
+
+**Why.** The reviewers asked for a proper vector database instead of embeddings in a plain structured database. Vectors were kept in SQLite, and Chroma was filled from that and used only to store and filter (`docs/FEEDBACK_STATUS.md`, point 4).
+
+**Measured, free (`LLM_MAX_CALLS=0`): is Chroma's ranking identical to the exact one? No.**
+- **A first probe, on the store made before:** even with `ef_search` raised to 10,000, Chroma never returned one of KSB's 1,621 pump chunks, so the old graph could not reach it. With the dense graph above, no chunk is missing.
+- **The fingerprint's index** (the catalogues read without their scanned pages, as the default-results fingerprint reads them): 127 queries, for each of the 8 manufacturers with chunks there, in keyword, meaning and hybrid modes.
+  - **The 16 passages a question reads** differ in 3 of 3,048 comparisons: "Dimensional sketch" (meaning), and "Example: WS_25_LS" (meaning and hybrid), all for Grundfos. Each time, `cr-databooklet-50hz.pdf` prints the same table row on pages 75 and 79, so the two chunks have identical text and vectors and tie exactly. The exact search keeps the chunks' order and cites page 79; Chroma cites page 75.
+  - **The whole meaning ranking** of the manufacturer's chunks differs in 203 of 1,016.
+- **The app's own index** (scanned pages read from the saved transcriptions, with no model allowed): 127 queries, for each of the 11 manufacturers, in the same 3 modes.
+  - **The 16 passages** are the same in all 4,191 comparisons.
+  - **The whole meaning ranking** differs in 161 of 1,397. These are near-ties: the probe found score gaps of 6e-8 to 1.5e-7, a float rounding apart. Chroma's arithmetic differs from NumPy's in the last digits, up to 3e-7 here.
+- **`eval_retrieval`:** the output is byte-identical with `exact` and `chroma`, on the 7 valve cases (top 5: keyword 6/7, meaning 4/7, hybrid 6/7) and on the 10 invented-document cases (10/10 each).
+- **So it stays an option.** A different cited page changes the question and misses its saved answer, so `exact` stays the default. In the 3 cases that differ, the cited pages hold the same text, so for a reader nothing differs.
+
+**The defaults did not change, measured free.**
+- **Fingerprint:** every chunk, vector and ranked result through `open_index`, for both categories, is identical, with every vector now read from Chroma.
+- **`estimate_cost` output is byte for byte identical** for 9933225, 9935891 and 9840129. 9935891 is also identical with the old SQLite file moved away, and no new SQLite file was written.
+- **No test touches this machine's store.** A guard that fails any test using the real vector cache passed the whole suite; every test uses its own folder.
+
+**Tests.** Backend 520 passed (513 before).
+- `backend/tests/vectorstore/test_vector_cache.py`, 6 tests:
+  - the seed and the old cache imported once, with last digits read back exactly;
+  - a changed seed imported again;
+  - new text kept in Chroma, with no SQLite file written;
+  - both stores rank for the index;
+  - native scoring with BM25 and fusion kept, and an unknown setting refused;
+  - the HNSW settings, and an older store rebuilt empty.
+- `backend/tests/embedding/test_embed_cache.py` now uses a cache object (5 tests), and the embedder tests read the seed directly.
+
+**In an interview.** "I made Chroma the only place vectors live: the shipped seed is imported once, and the old SQLite cache is gone. I proved nothing moved by hashing every chunk, vector and ranking, and the cost estimates, before and after. I also let Chroma do the ranking, tuned to look at every chunk. It agreed on 4,191 of 4,191 top-16 results on the app's index, but on another set two chunks with identical text tied and Chroma cited the other page, and the full rankings differ in near-ties. So it is an option, and exact scoring stays the default."
+
+**Files to read.** `backend/app/vectorstore/vector_cache.py` and `chroma.py`, `backend/app/embedding/embed_cache.py`, `meanings` in `backend/app/retrieval/search.py`, `backend/scripts/diagnose/compare_vector_search.py`.

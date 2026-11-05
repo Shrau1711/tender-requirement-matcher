@@ -14,8 +14,8 @@ flowchart LR
 
     subgraph Documents["manufacturer documents (once per file)"]
         READ["reading<br/>PDF text, tables, boxes,<br/>OCR (model or EasyOCR)"] --> CHUNK["chunking<br/>strategies + router"]
-        CHUNK --> EMB["embedding<br/>embedders + cache"]
-        EMB --> VS[("vectorstore<br/>Chroma or memory")]
+        CHUNK --> EMB["embedding<br/>embedders"]
+        EMB --> VS[("vectorstore<br/>Chroma: every vector,<br/>seed imported once")]
     end
 
     subgraph Tender["each tender"]
@@ -49,8 +49,8 @@ flowchart LR
 | `categories` | each category's own words and rules (`category.json`), and routing each tender item to a category |
 | `reading` | PyMuPDF: lines with position and font, tables, flowchart boxes and the lines between them; picture-only pages are read by a page reader in `reading/ocr/`, chosen by `OCR` (the model by default, or EasyOCR on this computer) in the languages of `OCR_LANGS` |
 | `chunking` | cuts documents into passages: six strategies behind one interface (`Chunker`), chosen by `CHUNKER` or per document by the router |
-| `embedding` | turns text into vectors: embedders behind one interface (`Embedder`), chosen by `EMBEDDER` (default `bge-small`, fastembed's `bge-small-en-v1.5`, run locally); every vector cached per model and text |
-| `vectorstore` | where chunks and vectors are kept: Chroma (on disk) or memory, behind one interface; `ingest` reads each file once |
+| `embedding` | turns text into vectors: embedders behind one interface (`Embedder`), chosen by `EMBEDDER` (default `bge-small`, fastembed's `bge-small-en-v1.5`, run locally); a text seen before is not embedded again (`embed_cache.py` keys it by model and text; the vector itself is kept in Chroma) |
+| `vectorstore` | where chunks and vectors are kept: Chroma (on disk) or memory, behind one interface; `ingest` reads each file once. Chroma is the only place vectors are kept: chunk vectors, and every text's vector by key (`vector_cache.py`), with the shipped seed imported once |
 | `retrieval` | search queries for a requirement, and retrievers behind one interface (`Retriever`), chosen by `RETRIEVER`: the default `hybrid` merges BM25 keyword search and meaning search through the store by rank (RRF); `keyword` and `meaning` use one ranking |
 | `extraction` | the model calls: tender rows to atomic requirements, passages to evidence, product names grouped |
 | `judging` | plain code: units (Pint), comparisons, the match status and score per requirement |
@@ -76,7 +76,7 @@ flowchart TD
     PIC -->|no| ROUTE
     OCR --> ROUTE["chunker: CHUNKER setting,<br/>or the router picks per document"]
     ROUTE --> CH["chunks: text, page, section, headings"]
-    CH --> EM["embed each chunk<br/>(embedding cache, shipped seed)"]
+    CH --> EM["embed each chunk<br/>(vectors by text in Chroma,<br/>the shipped seed imported once)"]
     EM --> PUT["store.put: replace the file's chunks<br/>with chunk, vector, category, maker, file, page"]
     PUT --> LOAD
     LOAD --> IDX["retriever (RETRIEVER, hybrid by default):<br/>BM25 over the chunks, the category's vectors in chunk order"]
@@ -98,7 +98,7 @@ flowchart TD
     JOB --> TR["read the tender: items and rows (Gemini)"]
     TR --> AT["atomic requirements (Gemini)"]
     AT --> Q["search queries per requirement"]
-    Q --> S["for each requirement and maker:<br/>BM25 ranking + the maker's stored vectors scored exactly,<br/>merged by RRF, plus a plain term scan"]
+    Q --> S["for each requirement and maker:<br/>BM25 ranking + the maker's stored vectors scored exactly<br/>(or ranked by Chroma, VECTOR_SEARCH=chroma),<br/>merged by RRF, plus a plain term scan"]
     S --> B["budget: count each new question's tokens,<br/>read fewer passages or fewer items if over"]
     B --> E{"person approves<br/>the estimate?"}
     E -->|no| STOP["cancelled, nothing spent"]
@@ -119,7 +119,14 @@ flowchart TD
 
 **Each part behind a small interface, chosen by a setting.** Chunking (`Chunker`, `CHUNKER`), embedding (`Embedder`, `EMBEDDER`), the vector store (`VectorStore`, `VECTOR_STORE`) and retrieval (`Retriever`, `RETRIEVER`) each have an interface in their package's `base.py` and a list of implementations by name, so a new one is a class plus one line, and the code that uses it does not change. Every default is the original, so the saved answers keep matching: the embedder's name is part of every saved vector's key, and the default's name is the one the vectors were always saved under. Only `bge-small` is listed as an embedder, and `keyword` and `meaning` as other retrievers; none of them has been checked against final answers, which needs paid runs.
 
-**Chroma stores and filters; similarity is scored exactly in the code.** What Chroma does here is keep the chunks and their vectors on disk between starts, so each document is read once, and return the chunks that match a filter (category, maker, file, page). Similarity is not Chroma's job: the index multiplies the stored vectors by the query with the same matrix product as the first version and ranks by that. The reason is order: Chroma's nearest-neighbour search (HNSW) is approximate, and its arithmetic differs from NumPy's in the last digits. That reordered two passages in 3 of 1,273 questions. With exact scoring in the code, every question is identical to the first version's.
+**Chroma is the only store of vectors.** Chroma keeps the chunks and their vectors on disk between starts, so each document is read once. It also keeps every text's vector by key, chunks and search queries alike (`vectorstore/vector_cache.py`), so nothing is embedded twice. The shipped seed, vectors computed where the saved answers were made, is imported into it once and recorded by its SHA-256, as is an older local `embeddings.sqlite`. After that, no vector is read from SQLite. Vectors come back from Chroma exactly as stored: the collections use inner product, because in cosine mode Chroma changes the last digits. Measured: with every vector read from Chroma, every chunk, vector and ranked result, and the cost estimates of three tenders, are identical to before.
+
+**Ranking by meaning is exact by default; Chroma can rank instead.** By default (`VECTOR_SEARCH=exact`) Chroma filters, and the index multiplies the stored vectors by the query with the same matrix product as the first version. With `VECTOR_SEARCH=chroma`, Chroma ranks with its own nearest-neighbour search (HNSW, inner product). It is built densely (`ef_construction` 512, `max_neighbors` 64) and told to look at up to 10,000 chunks (`ef_search`), so at these sizes, a few thousand chunks, it looks at every one. A store made with other settings is rebuilt once. Even so, it is not identical (`scripts/diagnose/compare_vector_search.py`):
+- **The app's own index** (11 manufacturers, 127 queries, 3 modes): the 16 passages a question reads were the same in all 4,191 comparisons.
+- **The fingerprint's index** (the catalogues without their scanned pages): they differed in 3 of 3,048. Each time, Grundfos prints the same table row on two pages, the two chunks tie exactly, and Chroma cites the other page.
+- **Further down the whole ranking,** 161 of 1,397 orders differ, in near-ties a float rounding apart.
+
+A different cited page changes the question and misses its saved answer, so `exact` stays the default. `eval_retrieval` gives the same output both ways, on the valve cases and on the invented documents.
 
 **Chroma sometimes cannot read a store it has just written to.** Right after writes it can fail with "Error creating hnsw segment reader: Nothing found on disk". This happens with a nearest-neighbour query, and also when only the stored vectors are read, which the app does on every start. So not using the nearest-neighbour search did not remove it. What has been measured (with `scripts/diagnose/chroma_repro.py`, which uses Chroma alone):
 - **Only on Windows so far.** With Chroma 1.5.9 on Windows 11 it failed within 5 to 175 attempts in every folder tried: the temp folder, the home folder and the project folder, none of them synced by OneDrive. On Linux (in the app's Docker image on the same machine, and on the owner's Linux machine) there was no error in 600 attempts each.

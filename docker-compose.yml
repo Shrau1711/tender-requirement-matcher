@@ -18,6 +18,7 @@ services:
       CHUNKER: ${CHUNKER:-table_rows}
       EMBEDDER: ${EMBEDDER:-bge-small}
       RETRIEVER: ${RETRIEVER:-hybrid}
+      VECTOR_SEARCH: ${VECTOR_SEARCH:-exact}
       EVIDENCE_TOP_K: ${EVIDENCE_TOP_K:-16}
       VECTOR_STORE: ${VECTOR_STORE:-chroma}
       TOKEN_COUNTER: ${TOKEN_COUNTER:-estimate}
