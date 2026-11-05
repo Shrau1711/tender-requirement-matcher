@@ -26,6 +26,7 @@ How the prices were worked out (phase 7, all free, `LLM_MAX_CALLS=0`):
 | 11 | Chunker `semantic` (added after phase 7) | 9933225 | 56 (none of the 56 questions unchanged) | ≈ ₹33 (estimate 219,527 input tokens × 1.36, plus 474 output tokens a question) | whether the strategy that put a right page first most often on the free retrieval checks (6 of 7 valve cases, hybrid) also gives better final answers, given its much shorter passages | medium |
 | 12 | The model told to expect Hindi (`OCR_LANGS=en,hi`) on the real bilingual scans | 9918524 (its BHEL specification, the 6 scanned pages with Hindi) | 6 | ≈ ₹1.13 estimated; **run 4 November 2026: 6 calls, ≈ ₹1.19** | whether the language hint changes what the model writes in Hindi on those pages, against today's saved transcriptions. The default reader, the model, reads them now without the hint | done |
 | 13 | EasyOCR as the page reader (`OCR=easyocr`), end to end | 9933225 | not priced yet | not priced: the free estimate was stopped before it finished (the computer ran low on memory) | whether a free local reader gives the same final answers as the model's transcriptions; the free check on real bilingual scans (below) says it reads them poorly | low |
+| 14 | Reranker `RERANKER=minilm` (a cross-encoder rescoring the top 40 passages) | 9933225 (valves) | 55 (1 of 56 questions unchanged) | ≈ ₹38 (free estimate 262,640 input tokens × 1.36, plus 474 output tokens a question); 9935891 not priced (its free estimate was stopped when the computer ran low on memory) | whether the stage that put the right page first in 7 of 7 valve retrieval cases (4 of 7 without it) also gives better final answers against the answer key | medium |
 
 ## Recommended plan: a lighter model and temperature 1.0 on 9933225, under ₹100
 
@@ -166,3 +167,15 @@ Each run ends with the agreement and a line like `model calls 59, from cache 0, 
 **Nothing in the app changed.** `OCR_LANGS` stays `en`, so the app still uses the old readings and every saved answer still matches. The new readings are only in this computer's answer cache (`backend/.cache/llm`, not in git). Using them would make this tender's reading new, a paid run of its own. The Hindi is labels, not requirements, so there is no reason to do that for this tender.
 
 **Check 13: EasyOCR end to end.** Every page that is a picture would be read differently, so the passages of the catalogues with such pages (and the reading of any tender with them) change, and those questions are new. To price it for free, run `OCR=easyocr CHROMA_DIR=<a scratch folder> LLM_MAX_CALLS=0 python -m scripts.cost.estimate_cost ../data/tenders/dev/GeM-Bidding-9933225 ../data/categories/valves` on a computer with memory to spare (EasyOCR loads PyTorch). A scratch Chroma folder keeps the main store as it is. Not worth paying for until EasyOCR reads real scans better.
+
+## After phase 7: a reranker
+
+**What it would measure.** Whether `RERANKER=minilm` gives better final answers. With it, fastembed's `Xenova/ms-marco-MiniLM-L-6-v2` cross-encoder rescores the top 40 passages of each search. On the free retrieval checks:
+- **The 7 valve cases:** it put the right page first in 7 of 7 in every mode (default: keyword 4, meaning 3, hybrid 4) and in the top 5 in 7 of 7 (default: 6, 4, 6).
+- **The 10 invented-document cases:** first 8, 8, 8 against the default's 9, 7, 8.
+
+Seven cases are few, and the free checks cannot say whether answers improve.
+
+**Why it costs money.** It reorders the passages, so the questions change: on 9933225, 55 of 56 questions are new.
+
+**How to run it, once approved.** On 9933225 only: `RERANKER=minilm LLM_MAX_CALLS=60 python -m scripts.eval.score_gold ../data/tenders/dev/GeM-Bidding-9933225 ../data/categories/valves`. Compare it with today's 31 of 35 statuses and 23 of 23 pages. About ₹38, priced like check 11 from the free estimate (262,640 input tokens × 1.36, plus 474 output tokens a question, at ₹100 per million). The model file downloads on first use, which is free. Run 9935891 only if 9933225 improves, after pricing it: its free estimate was stopped by the computer running low on memory.
