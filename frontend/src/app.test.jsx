@@ -250,3 +250,44 @@ describe("accessibility (axe, without colour contrast, which tokens.test.js chec
     expect(await violations(container)).toEqual([]);
   });
 });
+
+describe("the tender layout tab", () => {
+  const layout = {
+    tender: "GeM-Bidding-DEMO", requirements: 3, shared_rows: 1,
+    items: [
+      { title: "BUTTERFLY VALVE DN 200", category: "valves", family: "butterfly valve", family_from: "title", not_named: ["face_to_face_dimension"],
+        rows: [{ name: "Standard", value: "IS 13095", file: "bid.pdf", page: 2, requirements: ["design_standard equals IS 13095"], shared_with: ["GATE VALVE"], standards: ["IS13095"] }] },
+      { title: "VALVE MOTORISED 300", category: "valves", family: null, family_from: null, not_named: [], rows: [] },
+    ],
+    standards: [{ name: "API598", also_written: ["API 598"], named_together: ["API600"] }],
+  };
+
+  it("shows items, their family, shared rows with a link to the tender page, and the standards", async () => {
+    vi.spyOn(api, "layout").mockResolvedValue(layout);
+    open("#/runs/abc/layout");
+    const item = await screen.findByRole("region", { name: "BUTTERFLY VALVE DN 200" });
+    expect(api.layout).toHaveBeenCalledWith("abc");
+    expect(within(item).getByText(/Family: butterfly valve \(named in the item's title\)/)).toBeInTheDocument();
+    expect(within(item).getByText(/also for GATE VALVE/)).toBeInTheDocument();
+    expect(within(item).getByRole("link", { name: "page 2" })).toHaveAttribute("href", expect.stringContaining("/runs/abc/tender/bid.pdf#page=2"));
+    expect(within(item).getByText("1 attributes of this kind of product the reading does not name")).toBeInTheDocument();
+    expect(screen.getByText(/Family: not named/)).toBeInTheDocument();
+    expect(screen.getByText(/named together with API600 \(not necessarily equivalent\)/)).toBeInTheDocument();
+  });
+
+  it("is only fetched when the tab is opened, and says plainly when the reading is not saved", async () => {
+    const spy = vi.spyOn(api, "layout").mockRejectedValue(new Error("This tender's reading is not saved yet, so its layout cannot be shown without asking the model."));
+    open("#/runs/abc/overview");
+    await screen.findByRole("heading", { name: "GeM-Bidding-DEMO" });
+    expect(spy).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("tab", { name: /Tender layout/ }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("not saved yet");
+  });
+
+  it("has no accessibility problems axe can find", async () => {
+    vi.spyOn(api, "layout").mockResolvedValue(layout);
+    const { container } = open("#/runs/abc/layout");
+    await screen.findByRole("region", { name: "BUTTERFLY VALVE DN 200" });
+    expect(await violations(container)).toEqual([]);
+  });
+});

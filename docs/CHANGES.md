@@ -738,3 +738,73 @@ How to read this:
 **Nothing in the app changed.** `OCR_LANGS` stays `en`, and the new readings sit only in the local answer cache. The Hindi on these pages is labels and sign-offs, not requirements.
 
 **In an interview.** "I spent about one rupee to check one thing: does telling the model to expect Hindi change its reading of real bilingual scans? It did. The Hindi came out far more complete and closer to the print on four of six pages, with the English and numbers kept. It also showed the model sometimes adds labels that are not printed. Since that Hindi was form labels, not requirements, I kept the default."
+
+## Product families and the tender layout in the app; the token counter checked against Google's documentation
+
+**The token counter: stopped, as asked.** Before wiring anything, Google's documentation was checked for whether `countTokens` is free on the Gemini Developer API, the one this app uses with an API key. It does not say so:
+- **The token-counting page** (`aistudio.google.com/docs/tokens`, where `ai.google.dev/gemini-api/docs/tokens` now leads) has only "When billing is enabled, the cost of a call to the Gemini API is determined in part by the number of input and output tokens".
+- **The billing page** (`aistudio.google.com/docs/billing`) has "Requests to the `GetTokens` API are not billed, and they don't count against inference quota". It does not say that `GetTokens` is `countTokens`.
+- **The pricing page** does not mention token counting.
+- **Only the Vertex AI documentation**, a different product with other keys and endpoints, says "There is no charge or quota restriction for using the `CountTokens` API".
+
+So nothing was wired or tested, no request was sent, and `TOKEN_COUNTER` stays `estimate` (characters / 4). The known gap stays as measured before: the estimate is 74% (valves) and 69% (pumps) of the real input tokens in the saved answers.
+
+**What changed.**
+- **Product → family → attribute links** (`backend/app/graph/products.py`):
+  - **New fields.** Each `category.json` has two new optional fields: `attributes`, what any product of the category is described by, and `families`, each with the words that name it and its own attributes.
+  - **Valves:** butterfly, gate (also "sluice"), globe, check ("non return", "NRV") and ball.
+  - **Pumps:** submersible, horizontal centrifugal, vertical multistage, end suction and process.
+  - **Where they came from.** The families are the shipped catalogues' product ranges, as listed in `sources.csv`. The attributes are names the saved tender readings use: a scan of the 9 saved readings, made with `LLM_MAX_CALLS=0`, answered 142 from the cache and made 0 calls.
+  - **Finding an item's family:** from a whole word in its title, or else in the value of its type attribute ("valve_type: gate").
+- **The tender layout in the app** (`backend/app/graph/layout.py`, `GET /runs/{id}/layout`, and the report's new **Tender layout** tab, `frontend/src/components/report/TenderLayout.jsx`):
+  - it shows each item, its family and how it was found, its printed rows with links to the tender page, the other items that share each row, the requirements each row splits into, and the standards cited, with their other names and the standards named with them;
+  - it lists, folded away, the attributes `category.json` lists for that kind of product that the reading does not name;
+  - the tab loads only when opened.
+- **It cannot ask the model.** The layout is built from the run's tender files and saved answers only, through `saved_answers_only()` (`backend/app/llm/llm_factory.py`):
+  - it stands in for Gemini with the same model and settings, so the same cache keys, but with no key and a call limit of 0;
+  - Gemini and the stand-in now take those settings from one function, `cache_settings()` in `gemini.py`, and the key text is unchanged;
+  - a tender whose reading is not saved gets "This tender's reading is not saved yet, so its layout cannot be shown without asking the model."
+- README: the two new fields, the tab and "What's new". `docs/architecture.md`: the graph row, the overview diagram, a design decision, and the token-counter finding.
+
+**Why.** The reviewers' point 9 named "product to family to attribute links" and the "tender hierarchy". `docs/FEEDBACK_STATUS.md` had recorded that the first did not exist and the second was only a script.
+
+**Defaults and saved answers did not change, measured free.**
+- **No prompt reads the new fields.** Only `extraction_rules` reaches a prompt, and the pump rule is byte for byte the same; a test checks that no family name or attribute list reaches the prompt.
+- **`estimate_cost` output is byte for byte identical** for 9933225, 9935891 and 9840129, against the files saved before.
+- **No reading or chunking code changed,** so no store is re-read.
+- **`KNOWLEDGE_GRAPH` is still `off`, and judging is untouched.**
+
+**Measured, free.**
+- **Every demo sample has a layout.** All 5 were loaded as the demo image loads them, with an empty local cache, so only the shipped saved answers were used, and each answered 200:
+
+  | Sample | Items | Requirements | Shared rows | Family (found by) |
+  |---|---|---|---|---|
+  | 9933225 | 1 | 11 | 0 | butterfly valve (title) |
+  | 9935891 | 2 | 82 | 29 | vertical multistage pump (type value), both items |
+  | 9604147 | 2 | 13 | 0 | submersible pump (title), both items |
+  | 9968695 | 1 | 15 | 0 | gate valve (title) |
+  | 10016383 | 1 | 21 | 0 | ball valve (title) |
+
+- **9840129:** 4 gate valves, one named in its title and three ("VALVE MOTORISE …") by their type value. 15 rows are shared, and 4 standards are cited, with their other names (API 598 also written "API-598").
+- **9918524** has no saved reading, so it gets the refusal, with no call.
+
+**Not done, honestly.**
+- **"Not named" compares names exactly,** and the model names attributes freely. On 9933225 it lists `pressure_rating` while the tender asks `nominal_pressure`, so it is a pointer for a person, not a finding.
+- **Families seen only in catalogues have no attributes of their own:** globe, check, vertical multistage, end suction and process.
+- **No score uses families or attributes.**
+
+**Tests.** Backend 509 passed (498 before); frontend 86 passed (83 before).
+- `backend/tests/graph/test_products.py`, 6 tests:
+  - links and where they were seen;
+  - title first, then type value;
+  - whole words only;
+  - the shipped categories;
+  - no prompt reads the new fields;
+  - a tender with no saved reading is refused, and the stand-in is never called.
+- `backend/tests/graph/test_tender_layout.py`, 4 tests: items and shared rows, each item showing only its own requirements; families and names not used; standards; the stand-in's cache key equals Gemini's.
+- `backend/tests/api/test_api.py`: the layout route, its refusal (409) and an unknown run (404).
+- `frontend/src/app.test.jsx`, 3 tests: the tab's content and links, fetched only when opened with the refusal shown plainly, and no axe violations.
+
+**In an interview.** "I checked Google's documentation before touching the token counter. It says counting is free only for Vertex AI, not for the API key this app uses, so I stopped there, as agreed. For the knowledge graph, I put product families and their attributes in each category's config and linked them. The tender's structure is now a report tab, built from saved answers through a stand-in that has Gemini's cache keys but cannot call it. It even works in the replay-only demo."
+
+**Files to read.** `backend/app/graph/products.py` and `layout.py`, `saved_answers_only` in `backend/app/llm/llm_factory.py`, `data/categories/*/category.json`, `frontend/src/components/report/TenderLayout.jsx`.

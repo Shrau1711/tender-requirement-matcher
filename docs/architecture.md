@@ -34,7 +34,8 @@ flowchart LR
     TEN & ATOM & EVID -.-> LLM["llm<br/>Gemini + answer cache"]
     READ -.->|picture-only pages| LLM
     VOC["vocabulary<br/>words, units, roles"] -.-> JUDGE
-    GRAPH["graph (off by default)<br/>standards, tender layout"] -.-> JUDGE
+    GRAPH["graph (off by default for judging)<br/>standards, product families,<br/>tender layout"] -.-> JUDGE
+    API -->|tender layout| GRAPH
     CFG["data/categories/*/category.json"] -.-> CAT & VOC & ATOM
     COL["collecting<br/>crawler, add a document,<br/>source records"] -.->|PDFs| READ
     API -->|add a document| COL
@@ -59,7 +60,7 @@ flowchart LR
 | `vocabulary` | shared words, abbreviations, number words, requirement roles |
 | `evaluation` | answer keys and scoring against them |
 | `collecting` | the catalogue crawler, adding one document from the web app (`add.py`: uploaded, or fetched from its address), and the record of where each document came from (`sources.csv`) |
-| `graph` | a small knowledge graph: standards that are one document under several names or that documents name together, and a tender's items, shared rows and requirements; off by default |
+| `graph` | a small knowledge graph: standards that are one document under several names or that documents name together; each category's product, families and attributes (from `category.json`); and a tender's items, shared rows and requirements, shown in the report's Tender layout tab (`GET /runs/{id}/layout`). Judging uses only the standards, and only with `KNOWLEDGE_GRAPH=on` |
 
 ## Ingest path: a manufacturer document becomes searchable
 
@@ -141,11 +142,13 @@ The price is that Chroma's speed-up is not used. That costs nothing here: the ra
 
 **Items are routed without the model.** Product words first, then the categories' own documents by meaning. It is free and explainable, and it put all 11 labelled items in the right category, but no labelled tender mixes categories yet.
 
-**Money is only spent after a person agrees.** Before any evidence question is asked, every new question is counted and priced, the budget may read fewer passages or fewer items, and the web page waits for Proceed. Token counts are characters / 4 by default; `TOKEN_COUNTER=gemini` uses Gemini's exact count, which is a request to Google and so stays under the same call limit.
+**Money is only spent after a person agrees.** Before any evidence question is asked, every new question is counted and priced, the budget may read fewer passages or fewer items, and the web page waits for Proceed. Token counts are characters / 4 by default; `TOKEN_COUNTER=gemini` uses Gemini's exact count, which is a request to Google and so stays under the same call limit. Google's documentation for the Gemini Developer API (the one this app uses, with an API key) does not say whether that request is free: only the Vertex AI documentation says "There is no charge or quota restriction for using the `CountTokens` API". So it stays off, and has never been run here.
 
 **Settings default to what the saved answers were made with.** The model (`LLM_MODEL`), thinking level (`LLM_THINKING`) and temperature (`LLM_TEMPERATURE`) are settings. Temperature stays 0 by default even though Google advises leaving Gemini 3 models at 1.0, because every saved answer was made at 0. Changing any of them changes the cache key, so every question is new.
 
-**A knowledge graph that only advises.** The standards graph is built by a script from the catalogues and the saved tender readings, and saved as JSON that a person can read and correct. Its two kinds of link are not equally sure. One standard under several names follows from how adopted standards are named, so it may count as a match. Two standards named together ("API 600 / BS 1873") are often not equivalent, so that link can only send a requirement to a person, and only when the tender says it accepts an equivalent. The whole graph is off by default; on the two labelled tenders, switching it on changed no outcome.
+**A knowledge graph that only advises.** The standards graph is built by a script from the catalogues and the saved tender readings, and saved as JSON that a person can read and correct. Its two kinds of link are not equally sure. One standard under several names follows from how adopted standards are named, so it may count as a match. Two standards named together ("API 600 / BS 1873") are often not equivalent, so that link can only send a requirement to a person, and only when the tender says it accepts an equivalent. The whole graph is off by default for judging; on the two labelled tenders, switching it on changed no outcome.
+
+**The tender layout is shown from the saved reading, never asked for.** The report's Tender layout tab is built by `GET /runs/{id}/layout` from the run's tender files and the saved answers only. It reads through a stand-in for Gemini (`saved_answers_only` in `llm/llm_factory.py`), which has the same model and settings, so the same cache keys, but no key and a call limit of 0. A tender whose reading is not saved gets a plain refusal instead of a model call. So it works in the replay-only demo, and it can never spend. Each item's family comes from `category.json` (`graph/products.py`), named by a word in its title or in its type value. The "attributes not named" list compares names exactly, and the model names attributes freely (`nominal_pressure` rather than `pressure_rating`), so it is a prompt for a person to look, not a finding. None of this changes a score.
 
 **One way in for every document.** A crawled, hand-collected or web-app document lands in the same folder, is recorded in the same `sources.csv` (or the crawler's `crawl_sources.csv`), and is read by the one `ingest` function. The web page adds nothing of its own except a form: no second reader, chunker or store. The price is that adding a document waits while it is read and embedded, which for a long scanned catalogue read by the model is minutes and money.
 

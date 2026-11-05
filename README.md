@@ -14,6 +14,7 @@ How the parts fit together, with diagrams and the design decisions, is in [docs/
 - **Categories are folders with a `category.json`.** The category is optional on upload, and a tender with items of several categories gets one run per category.
 - **Settings:** model, thinking level and temperature, and an exact token counter. A small knowledge graph of standards is also included, off by default.
 - **Add manufacturer documents in the web app** (Add documents): upload a PDF or give its address, and it is saved, recorded in `sources.csv` and made searchable.
+- **Tender layout in the report:** a tab showing the tender as it was read (items, printed rows shared by several items, the requirements each row splits into, the standards cited) and each item's product family from `category.json`. It is built from the saved reading, with no model call.
 - **A free local page reader for scans:** `OCR=easyocr` reads English, Hindi and Marathi (`OCR_LANGS`) on this machine. The model stays the default.
 
 Every default is what the saved answers were made with, so they all still match. Measured without paid calls:
@@ -61,7 +62,8 @@ flowchart LR
     TEN & ATOM & EVID -.-> LLM["llm<br/>Gemini + answer cache"]
     READ -.->|picture-only pages| LLM
     VOC["vocabulary<br/>words, units, roles"] -.-> JUDGE
-    GRAPH["graph (off by default)<br/>standards, tender layout"] -.-> JUDGE
+    GRAPH["graph (off by default for judging)<br/>standards, product families,<br/>tender layout"] -.-> JUDGE
+    API -->|tender layout| GRAPH
     CFG["data/categories/*/category.json"] -.-> CAT & VOC & ATOM
     COL["collecting<br/>crawler, add a document,<br/>source records"] -.->|PDFs| READ
     API -->|add a document| COL
@@ -190,7 +192,9 @@ Categories live in `data/categories/<category>/manufacturers/<maker>/` as PDFs p
   "product_words": ["pump"],
   "type_attributes": ["pump_type"],
   "filler_words": [],
-  "extraction_rules": ["A duty point the pump must deliver (head, flow) is also at_least, ..."]
+  "extraction_rules": ["A duty point the pump must deliver (head, flow) is also at_least, ..."],
+  "attributes": ["pump_type", "operating_duty_flow", "operating_duty_head", "..."],
+  "families": {"submersible pump": {"words": ["submersible"], "attributes": ["number_of_pump_stages", "..."]}}
 }
 ```
 
@@ -198,6 +202,7 @@ Categories live in `data/categories/<category>/manufacturers/<maker>/` as PDFs p
 - `type_attributes`: requirement names that say which kind of product it is; a product that fails one is the wrong kind.
 - `filler_words`: words that say nothing about which kind it is ("valve" in "gate valve").
 - `extraction_rules`: extra rules for reading the tender's rows, added to the shared ones. Every category's rules are in every prompt, so adding a rule changes the questions for all tenders and their saved answers no longer match.
+- `attributes` and `families`: the knowledge graph's product → family → attribute links (`backend/app/graph/products.py`). A family is named by a word in an item's title, or in the value of its type attribute ("valve_type: gate"). The report's **Tender layout** tab shows each item's family, and the attributes listed here that the tender's reading does not name. No prompt reads these two fields, so editing them changes no saved answer. The shipped families are the product ranges of the shipped catalogues. The attributes are names the saved tender readings use, so the model's own names, not a fixed list.
 
 Every field may be left out. Units, abbreviations and other shared vocabulary stay in `backend/config/`.
 

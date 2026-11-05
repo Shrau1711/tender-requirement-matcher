@@ -20,6 +20,7 @@ export const api = {
   runs: async () => (await request("/runs")).json(),
   run: async (id) => (await request(`/runs/${part(id)}`)).json(),
   report: async (id) => (await request(`/runs/${part(id)}/report`)).json(),
+  layout: async (id) => (await request(`/runs/${part(id)}/layout`)).json(),
   rename: async (id, name) => (await request(`/runs/${part(id)}`, json("PATCH", { name }))).json(),
   proceed: async (id) => (await request(`/runs/${part(id)}/proceed`, { method: "POST" })).json(),
   cancel: async (id) => (await request(`/runs/${part(id)}/cancel`, { method: "POST" })).json(),

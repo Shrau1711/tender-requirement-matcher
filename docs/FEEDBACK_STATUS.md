@@ -11,6 +11,8 @@ Checked on branch `demo-space`, 4 November 2026, by reading the code and the mea
 
 *Updated again after "Add documents in the web app, and OCR in more languages": point 9a is now done and point 9c partly done. Point 2 lists the new page-reader setting.*
 
+*Updated after "Product families and the tender layout in the app": point 9b changed and is still partly done. Point 6 records that `countTokens` is not documented as free for the Gemini Developer API.*
+
 | # | Feedback | Status |
 |---|---|---|
 | 1 | Dynamic, modular chunking that suits the document, including flowcharts and hierarchies | partly done |
@@ -108,6 +110,12 @@ All three diagrams were checked with Mermaid's own parser, and it describes the 
 - **The app still uses characters / 4.** `TOKEN_COUNTER` defaults to `estimate`, and nothing sets it to `gemini`, so every budget and every estimate shown on the web page is still characters / 4.
 - **That estimate is known to be low.** Measured on the saved answers, it is 74% of the real input tokens on 9933225 and 69% on 9935891 (`docs/NEEDS_PAID_RUN.md`, row 10). The correction factors (1.36 for valves, 1.45 for pumps) were used only to price the checks in that file. They are not in the code, so the app's own estimate is still about a quarter to a third short.
 - **The Gemini counter has never been run.** It has never been called against the real API. In this project's budget it counts as a call, so it was never allowed under `LLM_MAX_CALLS=0`.
+- **Not documented as free for this API, checked 5 November 2026.** Google's pages for the Gemini Developer API (the one this app uses, with an API key) do not say that `countTokens` is free:
+  - the token-counting page (`aistudio.google.com/docs/tokens`) says only "When billing is enabled, the cost of a call to the Gemini API is determined in part by the number of input and output tokens";
+  - the billing page (`aistudio.google.com/docs/billing`) says "Requests to the `GetTokens` API are not billed, and they don't count against inference quota", but it does not say that this is `countTokens`;
+  - only the Vertex AI documentation, a different product, says "There is no charge or quota restriction for using the `CountTokens` API".
+
+  So, as the owner asked, it was not wired further or tested, and the default stays characters / 4.
 
 ## 7. Temperature and model settings: partly done
 
@@ -161,15 +169,31 @@ All three diagrams were checked with Mermaid's own parser, and it describes the 
 - `backend/app/graph/`:
   - `graph.py`: a small graph saved as JSON and drawable as Mermaid;
   - `standards.py`: equivalent standards, with "same document under another name" kept apart from "named together";
-  - `tender.py`: tender → items → rows → requirements.
-- Built by `backend/scripts/run/build_graph.py` into `data/graph/standards.json`: 246 standards, 21 with several names, 24 pairs named together.
-- Shown by `backend/scripts/run/show_graph.py`. Tests are in `backend/tests/graph/`.
+  - `tender.py`: tender → items → rows → requirements;
+  - `products.py`: product → family → attribute, from each category's `category.json` (new `attributes` and `families` fields);
+  - `layout.py`: the tender's layout for the web page.
+- **The standards graph** is built by `backend/scripts/run/build_graph.py` into `data/graph/standards.json`: 246 standards, 21 with several names, 24 pairs named together.
+- **Product → family → attribute links.**
+  - Valves: 5 families (butterfly, gate, globe, check, ball). Pumps: 5 (submersible, horizontal centrifugal, vertical multistage, end suction, process).
+  - The families are the product ranges of the shipped catalogues.
+  - The attributes are names the saved tender readings use: 9 shared by all valves and 18 by all pumps, plus each family's own where a saved tender shows them.
+  - An item's family is found from a word in its title, or in its type value.
+- **The tender hierarchy is in the app.** The report has a Tender layout tab (`frontend/src/components/report/TenderLayout.jsx`), served by `GET /runs/{id}/layout`. For each item it shows:
+  - its family, and how the family was found;
+  - its printed rows, with links to the tender page, and which other items share each row;
+  - the requirements each row splits into, and the standards cited, with their other names and the standards named with them;
+  - the attributes `category.json` lists that the reading does not name.
+- **It is built from the saved reading only,** through a stand-in for Gemini with the same cache keys, no key and a call limit of 0. A tender whose reading is not saved gets a plain refusal.
+- **Checked free:** all 5 demo samples show their layout using only the shipped saved answers, with an empty local cache. The family found: ball, submersible (both items), gate, vertical multistage (from the type value, both items), butterfly. Tender 9840129's four items are all gate valves: one named in its title, three ("VALVE MOTORISE …") by their type value.
+- **Tests:** `backend/tests/graph/test_products.py` (6), `test_tender_layout.py` (4), one API test, and 3 frontend tests.
 
 **What is missing.**
-- **Off in the app.** Judging uses the standards graph only with `KNOWLEDGE_GRAPH=on`. The default is `off`, and nothing switches it on.
+- **Off for judging.** Judging uses the standards graph only with `KNOWLEDGE_GRAPH=on`. The default is `off`, and nothing switches it on.
 - **No effect yet.** On the two labelled tenders, switching it on changed 0 outcomes. It has never changed a result anywhere.
-- **The tender hierarchy is used only by a script.** It is not in the API, the report or the web page.
-- **Product → family → attribute links, which the reviewers named, do not exist.**
+- **The product links only inform.** No score uses a family or its attributes.
+- **"Not named" compares names exactly.** The model names attributes freely, so on 9933225 it lists `pressure_rating` although the tender asks `nominal_pressure`. It is a prompt for a person to look, not a finding.
+- **Family attributes are thin.** Globe and check valves, and three pump families, come from catalogues only. No saved tender has an item of those families, so they have no attributes of their own.
+- **Tenders without a saved reading cannot be shown:** 9918524 and 9995708 among the collected ones.
 
 ## 9c. OCR for more languages: partly done
 
@@ -218,7 +242,7 @@ The numbers are those in `docs/NEEDS_PAID_RUN.md`. Checks 1 and 2 there were run
 **Cheapest checks that would move a point forward.** Check 5 (≈ ₹27) is the only evidence that could justify turning the router on, and check 11 (≈ ₹33) the only evidence for the semantic chunker (point 1). Check 3 (≈ ₹73 or ₹56) is the next evidence on the cheaper model (point 8).
 
 **Not priced, because the work does not exist yet:**
-- **Exact token counts (point 6).** These are requests to Google, not answers from the model. The pricing in `docs/NEEDS_PAID_RUN.md` does not list them, and nothing here was checked against Google's billing, so confirm the price before running one. It needs `LLM_MAX_CALLS` above 0.
+- **Exact token counts (point 6).** These are requests to Google, not answers from the model. Google's documentation for the Gemini Developer API does not say they are free (see point 6), so confirm with Google before running one. It needs `LLM_MAX_CALLS` above 0.
 - **OCR on a real Marathi document or a mainly Hindi one (point 9c).** None is in the repository, so the number of pages, and so the cost, is unknown.
 
 ## Notes found while checking
