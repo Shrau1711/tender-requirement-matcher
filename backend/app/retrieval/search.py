@@ -7,6 +7,7 @@ import numpy as np
 from rank_bm25 import BM25Okapi
 
 from app.chunking.base import Chunk
+from app.config import text_setting
 from app.embedding.base import EmbedFn
 from app.embedding.embed_cache import embed_cached
 from app.retrieval.base import Hit, Mode
@@ -15,6 +16,11 @@ from app.vectorstore.base import StoredDoc, VectorStore, chunk_ids
 from app.vectorstore.memory import MemoryStore
 
 TABLE_ROWS_PER_PAGE = 2  # one big table must not fill every result slot
+# How the meaning ranking is made. "exact" (the default, every saved question was made with it): the store filters and
+# the index scores the candidates with NumPy. "chroma": the store ranks them with its own nearest-neighbour search. The
+# two differ in near-ties (see docs/CHANGES.md), so "chroma" would make some questions new.
+VECTOR_SEARCH = text_setting("VECTOR_SEARCH", "exact")
+SCORINGS = ("exact", "chroma")
 
 # Letters and numbers are split apart so "DN125", "DN 125" and "dn-125" all
 # become the same two tokens. A number stays whole, so 13095 never matches 3095.
@@ -34,8 +40,11 @@ class Index:
     in one matrix, in the chunks' order, and scores the chunks the store's filter returns exactly."""
 
     def __init__(self, chunks: list[Chunk], embed: EmbedFn = embed_cached, store: VectorStore | None = None, category: str = "",
-                 mode: Mode = "hybrid") -> None:
+                 mode: Mode = "hybrid", scoring: str = VECTOR_SEARCH) -> None:
+        if scoring not in SCORINGS:
+            raise ValueError(f"Unknown VECTOR_SEARCH {scoring!r}. Choose one of: {', '.join(SCORINGS)}")
         self.name = self.mode = mode
+        self.scoring = scoring
         self.chunks = chunks
         self.embed = embed
         self.bm25 = BM25Okapi([tokenize(c.text) for c in chunks])
@@ -57,6 +66,8 @@ class Index:
         where = {"category": self.category} | ({"manufacturer": manufacturer} if manufacturer else {})
         asked = self.embed(queries)
         candidates = self.store.candidates(where)
+        if self.scoring == "chroma":  # the store's own ranking, kept in its order (dicts keep insertion order)
+            return [{self.position[c]: score for c, score in ranked} for ranked in self.store.nearest(asked, where, len(candidates))]
         exact = self.vectors @ asked.T  # one column per query
         return [{self.position[c]: float(exact[self.position[c], q]) for c in candidates} for q in range(len(queries))]
 
@@ -83,7 +94,8 @@ class Index:
             scores = self.bm25.get_scores(tokenize(query))
             keyword = np.maximum(keyword, scores)
             by_keyword = [i for i in sorted(allowed, key=lambda i: -scores[i]) if scores[i] > 0]
-            by_meaning = sorted(meanings[q], key=lambda i: (-meanings[q][i], i))  # ties keep the chunks' order
+            by_meaning = (list(meanings[q]) if self.scoring == "chroma"  # the store's order, as it ranked them
+                          else sorted(meanings[q], key=lambda i: (-meanings[q][i], i)))  # ties keep the chunks' order
             rankings += {"keyword": [by_keyword], "meaning": [by_meaning], "hybrid": [by_keyword, by_meaning]}[mode]
         rankings = [self.spread(ranking) for ranking in rankings]
         files = {self.chunks[i].file for i in allowed}

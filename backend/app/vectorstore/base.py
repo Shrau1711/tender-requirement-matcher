@@ -46,12 +46,17 @@ class VectorStore(Protocol):
         ...
 
     def candidates(self, where: Where) -> list[str]:
-        """The ids of every stored chunk whose fields match `where`. The store filters; it does not score: similarity is
-        worked out exactly by the index from the stored vectors (see Index.meanings)."""
+        """The ids of every stored chunk whose fields match `where`. With the default VECTOR_SEARCH=exact the store only
+        filters, and similarity is worked out exactly by the index from the stored vectors (see Index.meanings)."""
         ...
 
     def vectors(self, ids: list[str]) -> np.ndarray:
         """The stored vectors of these chunks, one row each, in the order asked."""
+        ...
+
+    def nearest(self, queries: np.ndarray, where: Where, n: int) -> list[list[tuple[str, float]]]:
+        """The store's own ranking (VECTOR_SEARCH=chroma): for each query, up to n matching chunk ids, nearest first,
+        each with its similarity."""
         ...
 
 

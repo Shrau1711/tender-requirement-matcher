@@ -11,6 +11,8 @@ Checked on branch `demo-space`, 4 November 2026, by reading the code and the mea
 
 *Updated again after "Add documents in the web app, and OCR in more languages": point 9a is now done and point 9c partly done. Point 2 lists the new page-reader setting.*
 
+*Updated after "Chroma as the only store of vectors, and Chroma's own ranking as an option": point 4 is now done.*
+
 *Updated after "Product families and the tender layout in the app": point 9b changed and is still partly done. Point 6 records that `countTokens` is not documented as free for the Gemini Developer API.*
 
 | # | Feedback | Status |
@@ -18,7 +20,7 @@ Checked on branch `demo-space`, 4 November 2026, by reading the code and the mea
 | 1 | Dynamic, modular chunking that suits the document, including flowcharts and hierarchies | partly done |
 | 2 | Chunking, extraction, embedding and retrieval independently replaceable; at most 6 to 7 files a folder | partly done |
 | 3 | `architecture.md` with components, data flow, design decisions and a Mermaid diagram | done |
-| 4 | A proper vector database, not embeddings in a plain structured database | partly done |
+| 4 | A proper vector database, not embeddings in a plain structured database | done |
 | 5 | A new category with no code changes; a tender with two categories | done |
 | 6 | A real token counter instead of characters / 4 | partly done |
 | 7 | Temperature and model as settings; leave Gemini 3 temperature at its default | partly done |
@@ -27,7 +29,7 @@ Checked on branch `demo-space`, 4 November 2026, by reading the code and the mea
 | 9b | Extra: a knowledge graph | partly done |
 | 9c | Extra: OCR that works for more languages | partly done |
 
-Done: 4. Partly done: 7. Not done: 0.
+Done: 5. Partly done: 6. Not done: 0.
 
 ## 1. Chunking: partly done
 
@@ -74,17 +76,27 @@ All three diagrams were checked with Mermaid's own parser, and it describes the 
 
 **What is missing.** Nothing the feedback asked for. It does not describe the replay-only demo (`backend/app/demo.py`, `Dockerfile.demo`), which exists only on `demo-space`.
 
-## 4. Vector storage: partly done
+## 4. Vector storage: done
 
 **What is there.**
-- `backend/app/vectorstore/chroma.py`: Chroma, kept on disk, with filters on category, manufacturer, file and page. It is the default (`VECTOR_STORE=chroma`) and is what the app uses.
-- `backend/app/vectorstore/memory.py`: the old in-memory store, kept for comparison.
-- `backend/app/vectorstore/ingest.py`: each file is embedded once and skipped while its content hash and settings are unchanged.
-- Checked: all 1,273 of 1,273 questions the pipeline would ask come out identical with Chroma and with memory.
+- **Chroma is the only store of vectors.** `backend/app/vectorstore/chroma.py` keeps the chunks and their vectors on disk, with filters on category, manufacturer, file and page. It is the default (`VECTOR_STORE=chroma`) and what the app uses.
+  - It also keeps every text's vector, chunks and search queries alike, by key (`backend/app/vectorstore/vector_cache.py`), so nothing is embedded twice.
+  - The SQLite embedding cache is gone. The shipped `data/seed_embeddings.sqlite` and an older local `backend/.cache/embeddings.sqlite` are imported once, recorded by SHA-256; after that no vector is read from either.
+  - Measured on this machine: 6,126 seed vectors and 23,603 local ones imported. An estimate run with the old SQLite file moved away gives byte-identical output.
+- **Chroma can do the ranking.** `VECTOR_SEARCH=chroma` lets Chroma's own nearest-neighbour search (HNSW) rank by meaning, with BM25 and rank fusion unchanged.
+  - The HNSW settings are chosen to look at every chunk at these sizes: `ef_search` 10,000, `ef_construction` 512, `max_neighbors` 64. A store made with other settings is rebuilt once.
+  - It is compared with the exact search by `backend/scripts/diagnose/compare_vector_search.py`.
+- **The defaults did not change.** These are identical to before: the fingerprint of every chunk, vector and ranked result; the `estimate_cost` output for 9933225, 9935891 and 9840129; and `eval_retrieval` on both case sets. The memory store (`backend/app/vectorstore/memory.py`) is kept for comparison.
+- **Tests** are in `backend/tests/vectorstore/test_vector_cache.py`.
 
 **What is missing.**
-- **Embeddings are still kept in plain SQLite tables.** `backend/app/embedding/embed_cache.py` stores every vector, for chunks and for queries, as a blob in `backend/.cache/embeddings.sqlite`. The shipped `data/seed_embeddings.sqlite` (13 MB) is the same kind of table. Chroma is filled from this cache. This is what the reviewers said not to do. It is kept so that vectors are the same on every machine and the saved questions keep matching.
-- **Chroma does not do the search.** It stores and filters, then `Index.meanings` in `backend/app/retrieval/search.py` scores every candidate with NumPy. The candidates are all of a manufacturer's chunks, so Chroma's nearest-neighbour index saves no work. This was done to keep results identical to the last digit, and it is stated in `docs/architecture.md`, but Chroma is used as storage with filters, not as a search engine.
+- **Chroma's ranking is not the default, because it is not identical.**
+  - On the app's own index, the 16 passages a question reads matched in all 4,191 comparisons.
+  - On the fingerprint's index, 3 of 3,048 differed: two chunks with identical text tie, and Chroma cites the other page.
+  - Deeper in the whole ranking, 161 of 1,397 orders differ, in near-ties.
+
+  A different cited page makes a question new, so by default the app ranks exactly in NumPy, over vectors fetched from Chroma.
+- **The vectors still come from one machine.** The seed only stays useful while the embedder is the default. Another model would make every vector, and so every question, new.
 
 ## 5. New categories and mixed tenders: done
 

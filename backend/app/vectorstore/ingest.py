@@ -51,13 +51,18 @@ def chroma_store(folder: Path) -> ChromaStore:
     return ChromaStore(folder)  # one client per folder for the whole process
 
 
+def chroma_folder() -> Path:
+    """Another embedder's vectors can have another length, which one Chroma collection cannot hold: they get their own folder."""
+    return CHROMA_DIR if EMBEDDER == DEFAULT else CHROMA_DIR.with_name(f"chroma-{EMBEDDER}")
+
+
 def open_store(name: str = VECTOR_STORE) -> VectorStore:
-    """The store chosen by the VECTOR_STORE setting. A memory store is new each time and lives as long as its index."""
+    """The store chosen by the VECTOR_STORE setting. A memory store is new each time and lives as long as its index. Either
+    way the vectors themselves come from the text -> vector cache in Chroma (vector_cache.py)."""
     if name == "memory":
         return MemoryStore()
     if name == "chroma":
-        # Another embedder's vectors can have another length, which one Chroma collection cannot hold: they get their own folder.
-        return chroma_store(CHROMA_DIR if EMBEDDER == DEFAULT else CHROMA_DIR.with_name(f"chroma-{EMBEDDER}"))
+        return chroma_store(chroma_folder())
     raise ValueError(f"Unknown vector store {name!r}. Choose memory or chroma")
 
 

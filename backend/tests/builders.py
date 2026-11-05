@@ -55,3 +55,17 @@ def run(atoms, table, makers=("a",), readable=None):
 def chunk_page(page: PageRecord, manufacturer: str, file: str, chunker: Chunker | None = None) -> list[Chunk]:
     """One page cut by one strategy (the default unless another is given)."""
     return (chunker or TableRows()).chunk([page], maker(manufacturer, file))
+
+
+class DictCache:
+    """A vector cache in a dict, standing in for the Chroma one (tests/vectorstore/test_vector_cache.py tests that)."""
+
+    def __init__(self):
+        self.rows, self.puts = {}, []
+
+    def get(self, keys):
+        return {k: self.rows[k] for k in keys if k in self.rows}
+
+    def put(self, vectors):
+        self.puts.append(len(vectors))
+        self.rows.update(vectors)

@@ -40,3 +40,11 @@ class MemoryStore:
     def candidates(self, where: Where) -> list[str]:
         check_where(where)
         return [chunk_id for chunk_id, f in zip(self.ids, self.fields, strict=True) if all(f[k] == v for k, v in where.items())]
+
+    def nearest(self, queries: np.ndarray, where: Where, n: int) -> list[list[tuple[str, float]]]:
+        """Exact: every matching chunk scored with NumPy, best first, ties in the order the chunks were stored."""
+        ids = self.candidates(where)
+        if not ids:
+            return [[] for _ in queries]
+        scores = self.vectors(ids) @ np.asarray(queries).T
+        return [sorted(zip(ids, map(float, scores[:, q]), strict=True), key=lambda pair: -pair[1])[:n] for q in range(len(queries))]

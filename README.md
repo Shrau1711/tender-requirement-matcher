@@ -10,7 +10,7 @@ How the parts fit together, with diagrams and the design decisions, is in [docs/
 
 - **One package per pipeline stage** (reading, chunking, embedding, vector store, retrieval, extraction, judging, reporting and more), each replaceable on its own.
 - **Six chunking strategies** behind one interface, with a router that picks one per document (`CHUNKER`). The embedder (`EMBEDDER`) and the retriever (`RETRIEVER`) are behind interfaces of their own too.
-- **A vector store interface:** Chroma on disk, the default, which reads each document once, or the original in-memory store. Chroma stores and filters; similarity is scored exactly in the code, so both give the same results.
+- **Chroma is the only store of vectors.** Every chunk and query vector is kept in Chroma. The shipped seed is imported into it once, and a document is read once. Ranking is exact in the code by default. `VECTOR_SEARCH=chroma` lets Chroma rank instead, which is measured and very close but not identical. The original in-memory store is kept for comparison.
 - **Categories are folders with a `category.json`.** The category is optional on upload, and a tender with items of several categories gets one run per category.
 - **Settings:** model, thinking level and temperature, and an exact token counter. A small knowledge graph of standards is also included, off by default.
 - **Add manufacturer documents in the web app** (Add documents): upload a PDF or give its address, and it is saved, recorded in `sources.csv` and made searchable.
@@ -122,7 +122,7 @@ KNOWLEDGE_GRAPH=on
 
 Restart the backend after a change. Two kinds of setting behave differently:
 
-- **They change the questions sent to Gemini, so saved answers no longer match and runs cost money again:** `LLM_MODEL`, `LLM_THINKING`, `LLM_TEMPERATURE`, `CHUNKER`, `EMBEDDER`, `RETRIEVER`, `OCR`, `OCR_LANGS`, `EVIDENCE_TOP_K`, and a category's `extraction_rules`. Before switching one, get the free estimate: `cd backend` then `python -m scripts.cost.estimate_cost <tender folder> ../data/categories/<category>`. It reads the saved answers and counts what would be new. With a new model or temperature even the tender's reading is new, so it stops and says so; the measured costs of whole runs are in `docs/NEEDS_PAID_RUN.md`.
+- **They change the questions sent to Gemini, so saved answers no longer match and runs cost money again:** `LLM_MODEL`, `LLM_THINKING`, `LLM_TEMPERATURE`, `CHUNKER`, `EMBEDDER`, `RETRIEVER`, `VECTOR_SEARCH`, `OCR`, `OCR_LANGS`, `EVIDENCE_TOP_K`, and a category's `extraction_rules`. Before switching one, get the free estimate: `cd backend` then `python -m scripts.cost.estimate_cost <tender folder> ../data/categories/<category>`. It reads the saved answers and counts what would be new. With a new model or temperature even the tender's reading is new, so it stops and says so; the measured costs of whole runs are in `docs/NEEDS_PAID_RUN.md`.
 - **They do not change any question:** `VECTOR_STORE` (same results either way), `TOKEN_COUNTER` (only how the estimate counts), `KNOWLEDGE_GRAPH` (only how standards are judged, in plain code), `LLM_MAX_CALLS`, `TENDER_TOKEN_BUDGET`, `LLM_WORKERS`.
 
 To check a setting for free on a labelled tender, `python -m scripts.eval.score_gold ../data/tenders/dev/GeM-Bidding-9933225 ../data/categories/valves` with `LLM_MAX_CALLS=0` scores the saved answers against the answer key, and stops instead of spending if a question is new.
@@ -143,7 +143,7 @@ Backend environment variables:
 | `TENDER_TOKEN_BUDGET` | 1500000 | input tokens of new Gemini questions one tender may use (about 150 rupees). A tender over it is read from fewer passages per question, and if still over, only its first items are evaluated; the report's notes say exactly what was cut |
 | `TOKEN_COUNTER` | `estimate` | how a question's tokens are counted for the budget and the estimate: `estimate` (characters / 4, free) or `gemini` (Gemini's own count_tokens, exact; each count is a request and counts toward `LLM_MAX_CALLS`, after which it estimates). Counting never changes a question, so saved answers still match |
 | `SEED_CACHE_DIR` | baked into the image | model answers shipped for the example tenders, so those tenders cost nothing to run |
-| `SEED_EMBEDDINGS` | baked into the image | search vectors of the manufacturers' documents and of the example tenders' questions, computed where the shipped answers were saved. Vectors computed on another machine differ in the last digits, which can change the passages a question reads and so miss a saved answer |
+| `SEED_EMBEDDINGS` | baked into the image | search vectors of the manufacturers' documents and of the example tenders' questions, computed where the shipped answers were saved. They are imported into Chroma once, the first time anything is embedded, and an older local `embeddings.sqlite` is imported once too; after that no vector is read from either. Vectors computed on another machine differ in the last digits, which can change the passages a question reads and so miss a saved answer |
 | `EVIDENCE_TOP_K` | 16 | passages read per question. 8 is an economy mode at roughly half the cost: the cited page was among the passages read 95% of the time at 16 and 82% at 8, but on my two hand-labelled tenders the accuracy was about the same |
 | `LLM_MODEL` | `gemini-3.8-flash` | Gemini model. Saved answers belong to a model and a thinking level, so changing either means asking again |
 | `LLM_THINKING` | `LOW` | `MINIMAL`, `LOW`, `MEDIUM`, `HIGH` or `DEFAULT` |
@@ -153,6 +153,7 @@ Backend environment variables:
 | `RETRIEVER` | `hybrid` | how passages are found (`backend/app/retrieval/retrievers.py`): `hybrid` (keyword and meaning rankings merged by rank; the original), `keyword` (BM25 only) or `meaning` (vectors only). Anything but `hybrid` finds other passages, so every question is new |
 | `OCR` | `model` | what reads pages that are only a picture (`backend/app/reading/ocr/readers.py`): `model` (Gemini transcribes each page; a paid call per page, saved) or `easyocr` (EasyOCR on this machine: free, no key; install it with `pip install easyocr`, which brings PyTorch, about 1 GB, so it is not in the Docker images). Another reader gives other text for those pages, so their questions are new |
 | `OCR_LANGS` | `en` | the languages on those pages, codes separated by commas: `en`, `hi` (Hindi), `mr` (Marathi). EasyOCR loads those language models; the model is told to expect them. With `en` the model's prompt is unchanged |
+| `VECTOR_SEARCH` | `exact` | how passages are ranked by meaning: `exact` (the store filters, and the code scores every candidate with NumPy; every saved question was made with it) or `chroma` (Chroma ranks them with its own nearest-neighbour search, tuned to look at every chunk). Measured on the app's own index: the 16 passages a question reads were the same in all 4,191 comparisons. On another set of 3,048 comparisons, 3 differed, where two chunks have identical text and Chroma broke the tie the other way. Deeper in the full rankings, 161 of 1,397 differ. So `chroma` can make a question new |
 | `VECTOR_STORE` | `chroma` | where chunk vectors are kept: `chroma` (on disk, so a document is read and embedded once, and again only when its content or the chunking settings change) or `memory` (everything read again at each start; the original). Both give the same results to the last digit. Chroma's folder is for one process at a time: do not run a script on it while the server runs; if it ever breaks, delete the folder, it is only a cache |
 | `CHROMA_DIR` | `<CACHE_DIR>/chroma` | where the Chroma store is kept |
 | `KNOWLEDGE_GRAPH` | `off` | `on` lets judging use the standards graph: a standard stated under another body's name ("BS EN ISO 5208" for "ISO 5208") counts as the one asked for, and one that documents only name together with it goes to a person when the tender accepts an equivalent. Build or refresh the graph with `python -m scripts.run.build_graph` (no model calls) |
@@ -163,7 +164,7 @@ Backend environment variables:
 | `MAX_UPLOAD_MB` | 60 | upload size limit |
 | `CATEGORIES_DIR` | baked into the image | folder of categories and manufacturer PDFs |
 | `RUNS_DIR` | `/data/runs` | where run history (SQLite) is stored |
-| `CACHE_DIR` | `/data/cache` | LLM and embedding caches |
+| `CACHE_DIR` | `/data/cache` | the saved model answers, and the Chroma folder (`chroma/`) holding every vector |
 
 Frontend: `API_URL`, the backend address.
 
