@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.demo import KEPT, REPLAY_ONLY, create_demo_app
@@ -64,3 +65,44 @@ def test_the_normal_app_still_deletes_and_renames(tmp_path, monkeypatch):
     assert client.patch(f"/runs/{run.id}", json={"name": "renamed"}).json()["tender"] == "renamed"
     assert client.delete(f"/runs/{run.id}").status_code == 204
     assert client.get(f"/runs/{run.id}").status_code == 404
+
+
+def samples(tmp_path, with_pdf):
+    """A demo_runs folder with two samples, and a tenders folder where only the first has its PDF."""
+    demo_runs, tenders = tmp_path / "demo_runs", tmp_path / "tenders"
+    demo_runs.mkdir()
+    listed = [{"tender": "T-1", "folder": "dev/T-1", "category": "valves", "model_calls": "0 calls"},
+              {"tender": "T-2", "folder": "holdout/T-2", "category": "valves", "model_calls": "0 calls"}]
+    (demo_runs / "runs.json").write_text(json.dumps(listed), encoding="utf-8")
+    for sample in listed:
+        (demo_runs / f"{sample['tender']}.json").write_text("{}", encoding="utf-8")
+        (tenders / sample["folder"]).mkdir(parents=True)
+    (tenders / "dev/T-1/bid.pdf").write_bytes(b"%PDF-1.4")
+    if with_pdf:
+        (tenders / "holdout/T-2/bid.pdf").write_bytes(b"%PDF-1.4")
+    return demo_runs, tenders
+
+
+def test_the_build_stops_when_a_sample_tender_folder_holds_no_pdf(tmp_path):
+    from scripts.demo.load_samples import main as load
+
+    demo_runs, tenders = samples(tmp_path, with_pdf=False)
+    with pytest.raises(SystemExit, match=r"hold no PDF: holdout/T-2\. The hold-out samples are not in git"):
+        load(str(demo_runs), str(tenders), str(tmp_path / "runs"))
+    assert not (tmp_path / "runs").exists()  # nothing was loaded
+
+
+def test_with_every_pdf_present_every_sample_is_loaded_with_its_pdfs(tmp_path):
+    from app.db.runs import RunStore
+    from scripts.demo.load_samples import main as load
+
+    demo_runs, tenders = samples(tmp_path, with_pdf=True)
+    load(str(demo_runs), str(tenders), str(tmp_path / "runs"))
+    runs = RunStore(tmp_path / "runs" / "runs.sqlite").all()
+    assert sorted(r.tender for r in runs) == ["T-1", "T-2"]
+    assert all(list((tmp_path / "runs" / r.id / "tender").glob("*.pdf")) for r in runs)
+
+
+def test_the_demo_image_runs_that_check_when_it_loads_the_samples():
+    dockerfile = (Path(__file__).resolve().parents[3] / "Dockerfile.demo").read_text(encoding="utf-8")
+    assert "python -m scripts.demo.load_samples" in dockerfile
