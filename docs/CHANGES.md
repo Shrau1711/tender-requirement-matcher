@@ -535,26 +535,39 @@ One run of the full suite had one failing test, which I did not see; it did not 
 
 **Files to read.** `Dockerfile.demo`, `Dockerfile.demo.dockerignore`, `backend/app/demo.py`, `backend/scripts/demo/replay_samples.py`, `backend/scripts/demo/load_samples.py`, `docs/HF_SPACE_README.md`.
 
-## Demo image on Docker Hub: `shravani1711/tender-matcher-demo:v4`
+## Demo image on Docker Hub: `shravani1711/tender-matcher-demo:v6`
 
 **What changed.**
-- The replay-only demo image is published on Docker Hub as `shravani1711/tender-matcher-demo:v4`. Anyone can run it with `docker run -p 7860:7860 shravani1711/tender-matcher-demo:v4` and open http://localhost:7860.
-- It was built from `Dockerfile.demo` at commit `985bdf4` on `demo-space`. Digest `sha256:af3ccbec2fa850f1a72e2a83768cf8e107081d8657ce00d22d31ee1a25b263f7`, 1.27 GB.
-- **v3 is superseded.** `v3` (commit `697ac5f`, digest `sha256:ee9955eb8b797d805985ae28b116f0569d7a07eaa4451319f56be921e30107e1`) still shows the note "This demo replays saved examples only." on the upload screen, which was removed afterwards. It stays on Docker Hub unchanged, but `v4` is the one to use.
-- Only the `v3` and `v4` tags were pushed. There is no `latest` tag for the demo, so a pull always names the exact version. The backend and frontend images on Docker Hub are unchanged.
+- The replay-only demo image is published on Docker Hub as `shravani1711/tender-matcher-demo:v6`. Anyone can run it with `docker run -p 7860:7860 shravani1711/tender-matcher-demo:v6` and open http://localhost:7860.
+- **How it was built.** From `Dockerfile.demo` at `main`'s commit `e1790a2` (the merge of PR #3), plus the three hold-out sample tender folders (`GeM-Bidding-9968695`, `GeM-Bidding-9604147` and `GeM-Bidding-10016383`) copied in from a working copy. Digest `sha256:13408dd8208f3e434c80f1c70b8d3c36d8036568fb45db32372cf2bfa8f437b1`, 1.27 GB. The image carries the commit as its `org.opencontainers.image.revision` label.
+- **v5 is broken; do not use it.** `v5` (built from `main`'s `fc652f3`, digest `sha256:0664b310b69d6b8ce4175d70c586ee43ae2f43c71d9c746d613b4baf7ddbb72f`) was built from a clean checkout. The three hold-out tenders are not in git, so their PDFs are missing from it. For those three samples:
+  - the tender page links answer 404;
+  - the Tender layout tab answered 500, with a traceback.
+
+  The reports themselves are fine. PR #3 fixed both sides: the layout now refuses plainly when a tender folder holds no PDF, and the build stops with a clear message when a sample folder is empty, so a build like v5's can no longer finish.
+- **v4 is superseded.** `v4` (commit `985bdf4` on `demo-space`, digest `sha256:af3ccbec2fa850f1a72e2a83768cf8e107081d8657ce00d22d31ee1a25b263f7`) works, but it predates the Tender layout tab, the Add documents page and the other changes merged in PR #2.
+- **v3** (commit `697ac5f`, digest `sha256:ee9955eb8b797d805985ae28b116f0569d7a07eaa4451319f56be921e30107e1`) was already superseded by v4, because it shows the old note on the upload screen.
+- **Tags.** v3, v4 and v5 stay on Docker Hub unchanged. There is no `latest` tag for the demo, so a pull always names the exact version. The backend and frontend images are unchanged.
+
+**Building it.** The three hold-out sample folders must be copied into `data/tenders/holdout/` before building, because `.gitignore` keeps them out of git (see `docs/HF_SPACE_README.md`).
+- **Without them,** the build now fails at `load_samples`: "These sample tender folders hold no PDF: holdout/GeM-Bidding-9968695, holdout/GeM-Bidding-9604147, holdout/GeM-Bidding-10016383. …". This was checked by building `e1790a2` from a clean checkout.
+- **With them copied in,** it builds and loads all 5 samples.
 
 **Why.** The demo can be tried with one command, without building it or cloning the repository, and still never calls the model or needs a key.
 
-**In an interview.** "The demo is also a public Docker image with an exact version tag and no latest, so whoever runs it knows exactly which build they get; v4 replaced v3 only to drop a note on the upload screen. I checked it from a fresh pull, not from my local build: it serves the page and the API on port 7860, the five sample reports are identical to the saved ones, and an upload is refused with the plain replay-only message. Deleting or renaming a sample is refused too."
+**Checked, free.** All checks ran on the `v6` copy pulled back from Docker Hub, after deleting the local tag; the pulled digest matches the pushed one. All 29 checks passed:
+- **Page and settings:** `/health` is ok, the page loads and calls the API on the same origin, and `/config` gives `max_model_calls: 0`.
+- **The 5 samples:** `/runs` lists them all, done. For each of the 5:
+  - the report's JSON is identical to its saved copy in `data/demo_runs`;
+  - the Excel download works;
+  - every cited tender page link answers 200;
+  - the Tender layout tab answers. Families found: ball valve (10016383), submersible pump (9604147), butterfly valve (9933225), vertical multistage pump (9935891, 29 shared rows) and gate valve (9968695).
+- **Refusals:** an upload, and adding a document, get 403 with "This demo replays saved examples only.". Deleting or renaming a sample gets 403 with "The saved examples cannot be deleted or renamed in this demo.", and the 5 runs are unchanged afterwards.
+- **Logs:** no traceback, and no line from the model client. The only 4xx answers are those four refusals.
 
-**Checked, free** (on the `v4` copy pulled back from Docker Hub, after deleting the local tag; the pulled digest matches the pushed one):
-- `/health` is ok, and `/config` gives `max_model_calls: 0`.
-- In a browser (headless Edge), the upload screen shows nothing below Advanced, and the note's text is not in the page's code.
-- `/runs` lists the 5 sample runs, all done. Each report's JSON is identical to its saved copy in `data/demo_runs`. The Markdown and Excel downloads work.
-- In the browser, the report of 10016383 renders: 7 manufacturers ranked, the best at 45.0%.
-- An upload gets 403 with "This demo replays saved examples only." Deleting a sample gets 403 with "The saved examples cannot be deleted or renamed in this demo." The log has no traceback.
+**In an interview.** "The demo is a public Docker image with exact version tags and no latest. v5 taught me something: I built it from a clean checkout, and three sample tenders that are deliberately kept out of git went missing. My check of the pulled image caught it before anyone relied on it. I fixed the app to refuse plainly, and made the build fail loudly when a sample has no PDF. Then I shipped v6 and re-ran every check on the pulled copy."
 
-**Files to read.** `Dockerfile.demo`, `docs/HF_SPACE_README.md`.
+**Files to read.** `Dockerfile.demo`, `backend/scripts/demo/load_samples.py`, `docs/HF_SPACE_README.md`.
 
 ## Embedder and retriever behind interfaces, and a semantic chunker
 
