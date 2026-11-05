@@ -213,3 +213,15 @@ def test_a_runs_layout_comes_from_its_saved_reading_and_refuses_when_there_is_no
     refused = c.get(f"/runs/{other}/layout")
     assert refused.status_code == 409 and "not saved" in refused.json()["detail"]
     assert c.get("/runs/nope/layout").status_code == 404
+
+
+def test_a_run_whose_tender_folder_holds_no_pdf_gets_the_plain_refusal_not_an_error(folders, monkeypatch):
+    from app.api import routes
+
+    monkeypatch.setattr(routes, "tender_layout", lambda *args: pytest.fail("nothing should be read"))
+    c = client(folders)
+    run_id = upload(c).json()["id"]
+    for pdf in (folders[1] / run_id / "tender").glob("*.pdf"):
+        pdf.unlink()  # as in a demo image built without the sample's PDFs
+    answer = c.get(f"/runs/{run_id}/layout")
+    assert answer.status_code == 404 and answer.json() == {"detail": "This run's tender files are not kept, so its layout cannot be shown."}

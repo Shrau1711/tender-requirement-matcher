@@ -46,6 +46,8 @@ COPY --from=frontend /build/dist /app/frontend
 # hosts may pick any user), so everything the service writes is owned by 1000 and writable by any user.
 # No file in the image may have an email address in its name (some tender attachments do; only the samples are let in).
 RUN ! find /app -type f | grep -E '[^/]*@[^/]*\.[A-Za-z]{2,}[^/]*$'
+# load_samples stops the build if any sample's tender folder holds no PDF. The hold-out samples are not in git, so copy
+# their folders into data/tenders/holdout/ before building from a clean checkout (docs/HF_SPACE_README.md).
 RUN python -m scripts.demo.load_samples /app/data/demo_runs /app/data/tenders "$RUNS_DIR" \
     && mkdir -p "$CACHE_DIR" \
     && useradd --create-home --uid 1000 user \

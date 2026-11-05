@@ -134,8 +134,8 @@ def get_layout(request: Request, run_id: str) -> Layout:
     each item's product family. Built from the saved reading only; no model is asked."""
     run = known_run(request, run_id)
     folder = request.app.state.runs_dir / run_id / "tender"
-    if not folder.is_dir():
-        raise HTTPException(404, "This run's tender files are not kept.")
+    if not folder.is_dir() or not any(folder.glob("*.[pP][dD][fF]")):
+        raise HTTPException(404, "This run's tender files are not kept, so its layout cannot be shown.")
     try:
         return tender_layout(run.tender, folder, request.app.state.categories_dir, run.category)
     except RuntimeError as error:
