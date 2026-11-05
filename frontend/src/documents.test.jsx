@@ -16,7 +16,8 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
 async function fill({ maker = "ksb", from = "Upload a PDF" } = {}) {
   render(<App />);
-  fireEvent.change(await screen.findByLabelText("Product category"), { target: { value: "valves" } });
+  await screen.findByRole("option", { name: "valves" });  // the categories have loaded, so choosing one sticks
+  fireEvent.change(screen.getByLabelText("Product category"), { target: { value: "valves" } });
   fireEvent.change(screen.getByLabelText(/^Manufacturer/), { target: { value: maker } });
   fireEvent.click(screen.getByLabelText(from));
 }
