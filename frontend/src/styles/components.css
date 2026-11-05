@@ -45,6 +45,10 @@ textarea { min-height: 72px; resize: vertical; }
 .file-list { list-style: none; padding: 0; margin: 0.6rem 0 0; display: grid; gap: 0.3rem; }
 .file-list li { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.35rem 0.6rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
 .form-grid { display: grid; gap: 1rem; max-width: 640px; }
+.choice { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.3rem 1.2rem; }
+.choice legend { padding: 0; margin-bottom: 0.3rem; }
+.layout-rows { display: grid; gap: 0.45rem; padding-left: 1.1rem; }
+.layout-rows ul { padding-left: 1.1rem; font-size: var(--text-s); color: var(--ink-soft); }
 .notice { border: 1px solid var(--line); border-left: 3px solid var(--brand); background: var(--surface-2); padding: 0.6rem 0.8rem; border-radius: var(--radius); font-size: var(--text-s); }
 .problem { border: 1px solid var(--missing); background: var(--missing-soft); color: var(--missing); padding: 0.75rem 1rem; border-radius: var(--radius); }
 .problem p + p { margin-top: 0.35rem; }

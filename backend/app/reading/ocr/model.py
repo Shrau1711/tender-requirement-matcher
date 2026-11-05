@@ -1,3 +1,5 @@
+"""The default page reader: the language model, asked to transcribe a picture of the page. Each page is a paid call
+(answers are cached by picture and prompt)."""
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -36,6 +38,13 @@ def render_page(page: pymupdf.Page) -> bytes:
     return page.get_pixmap(dpi=OCR_DPI).tobytes("png")
 
 
-def reader_for(llm: Transcriber) -> ImageReader:
-    """The page reader that scripts and jobs hand to the PDF reader: the model, asked to transcribe."""
-    return lambda png: llm.transcribe(png, PROMPT).text
+def prompt_for(names: list[str]) -> str:
+    """PROMPT, unchanged for English, so every saved transcription still matches. Other languages add one sentence."""
+    others = [n for n in names if n != "English"]
+    return PROMPT if not others else f"{PROMPT} The page may be printed in {' or '.join(others)}: write that text in its own script."
+
+
+def model_reader(llm: Transcriber, names: list[str] | None = None) -> ImageReader:
+    """The model, asked to transcribe. names are the languages to expect, e.g. ["English", "Hindi"]."""
+    prompt = prompt_for(names or ["English"])
+    return lambda png: llm.transcribe(png, prompt).text

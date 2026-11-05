@@ -2,5 +2,13 @@
   "product_words": ["valve"],
   "type_attributes": ["valve_type"],
   "filler_words": ["valve"],
-  "extraction_rules": []
+  "extraction_rules": [],
+  "attributes": ["valve_type", "nominal_size", "pressure_rating", "body_material", "end_connection", "end_connection_standard", "end_to_end_dimensions_standard", "design_standard", "testing_standard"],
+  "families": {
+    "butterfly valve": {"words": ["butterfly"], "attributes": ["nominal_pressure", "face_to_face_dimension", "handle_type"]},
+    "gate valve": {"words": ["gate", "sluice"], "attributes": ["actuator", "bypass_arrangement", "packing", "trim_type"]},
+    "globe valve": {"words": ["globe"]},
+    "check valve": {"words": ["check", "non return", "non-return", "nrv"]},
+    "ball valve": {"words": ["ball"], "attributes": ["lining_material", "flange_to_flange_distance"]}
+  }
 }

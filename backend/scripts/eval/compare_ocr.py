@@ -21,7 +21,7 @@ import pymupdf
 from app.llm.llm import Reply
 from app.llm.llm_factory import make_llm
 from app.reading.ocr import PROMPT, render_page
-from app.reading.ocr_compare import (
+from app.reading.ocr.compare import (
     confident_pages,
     mean,
     number_hits,

@@ -191,3 +191,25 @@ def test_a_tender_that_cannot_be_routed_fails_with_the_reason(folders):
     c = routed_client(folders, None, [])
     info = c.get(f"/runs/{upload(c, category='').json()['id']}").json()
     assert info["status"] == "failed" and "could not be read" in info["error"]
+
+
+def test_a_runs_layout_comes_from_its_saved_reading_and_refuses_when_there_is_none(folders, monkeypatch):
+    from app.api import routes
+    from app.graph.layout import Layout
+
+    seen = []
+
+    def fake_layout(tender, folder, root, category):
+        seen.append((tender, folder.name, category))
+        if tender == "unsaved":
+            raise RuntimeError("Stopped after 0 real model calls (limit 0).")
+        return Layout(tender=tender, items=[], standards=[], shared_rows=0, requirements=0)
+
+    monkeypatch.setattr(routes, "tender_layout", fake_layout)
+    c = client(folders)
+    run_id = upload(c).json()["id"]
+    assert c.get(f"/runs/{run_id}/layout").json()["tender"] == "bid" and seen == [("bid", "tender", "pumps")]
+    other = upload(c, name="unsaved.pdf").json()["id"]
+    refused = c.get(f"/runs/{other}/layout")
+    assert refused.status_code == 409 and "not saved" in refused.json()["detail"]
+    assert c.get("/runs/nope/layout").status_code == 404

@@ -4,5 +4,13 @@
   "filler_words": [],
   "extraction_rules": [
     "A duty point the pump must deliver (head, flow) is also at_least, even when the row is called min or max: a pump that cannot reach the upper figure does not meet it. For example \"Head 100 - 110 m\" gives two requirements, 100 and 110, both at_least."
-  ]
+  ],
+  "attributes": ["pump_type", "operating_duty_flow", "operating_duty_head", "efficiency", "impeller_material", "shaft_material", "mechanical_seal_type", "liquid_to_be_handled", "service_temperature", "pump_testing_standard", "motor_power_rating", "motor_voltage", "motor_frequency", "motor_phases", "motor_efficiency_class", "motor_enclosure_type", "motor_insulation_class", "ingress_protection_rating"],
+  "families": {
+    "submersible pump": {"words": ["submersible"], "attributes": ["number_of_pump_stages", "discharge_capacity", "discharge_head", "bee_star_rating", "control_panel_provided"]},
+    "horizontal centrifugal pump": {"words": ["horizontal centrifugal"], "attributes": ["npshr", "coupling_type", "wear_ring_material", "stuffing_box_material", "base_frame_material"]},
+    "vertical multistage pump": {"words": ["multistage", "multi-stage", "multi stage"]},
+    "end suction pump": {"words": ["end suction", "volute casing", "back pull-out"]},
+    "process pump": {"words": ["api 610", "process pump"]}
+  }
 }

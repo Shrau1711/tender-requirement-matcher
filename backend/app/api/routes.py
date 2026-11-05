@@ -11,6 +11,7 @@ from app.api.categories import Category, list_categories
 from app.api.uploads import MAX_UPLOAD_MB, save_tender
 from app.cost.approval import APPROVALS
 from app.db.runs import RunInfo, RunStore
+from app.graph.layout import Layout, tender_layout
 from app.llm.llm_cache import MAX_CALLS
 from app.pipeline.runner import Runner, execute, execute_routed
 from app.reporting.report import Report
@@ -125,6 +126,20 @@ def cancel(request: Request, run_id: str) -> RunInfo:
 def get_report(request: Request, run_id: str) -> Response:
     """The report as JSON, for programs."""
     return Response(finished_report(request, run_id), media_type="application/json")
+
+
+@router.get("/runs/{run_id}/layout")
+def get_layout(request: Request, run_id: str) -> Layout:
+    """The tender as it was read: items, requirement rows (shared rows once), atomic requirements, cited standards, and
+    each item's product family. Built from the saved reading only; no model is asked."""
+    run = known_run(request, run_id)
+    folder = request.app.state.runs_dir / run_id / "tender"
+    if not folder.is_dir():
+        raise HTTPException(404, "This run's tender files are not kept.")
+    try:
+        return tender_layout(run.tender, folder, request.app.state.categories_dir, run.category)
+    except RuntimeError as error:
+        raise HTTPException(409, "This tender's reading is not saved yet, so its layout cannot be shown without asking the model.") from error
 
 
 @router.get("/runs/{run_id}/report.md")

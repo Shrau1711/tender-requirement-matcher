@@ -1,5 +1,5 @@
 import axe from "axe-core";
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { api } from "./api";
 import App from "./App";
@@ -136,11 +136,17 @@ describe("the other pages", () => {
     expect(within(advanced).getByRole("option", { name: /Find it in the tender/ })).toBeInTheDocument();
   });
 
-  it("says the demo only replays saved examples when the call limit is 0", async () => {
-    vi.spyOn(api, "config").mockResolvedValue({ max_model_calls: 0, max_upload_mb: 60 });
+  it("shows no note when the call limit is 0, and the server's plain refusal after an upload", async () => {
+    const config = vi.spyOn(api, "config").mockResolvedValue({ max_model_calls: 0, max_upload_mb: 60 });
+    vi.spyOn(api, "start").mockRejectedValue(new Error("This demo replays saved examples only."));
     open("#/new");
-    expect(await screen.findByText("This demo replays saved examples only.")).toBeInTheDocument();
-    expect(screen.queryByText(/per run/)).not.toBeInTheDocument();
+    await waitFor(() => expect(config).toHaveBeenCalled());
+    await act(async () => {});  // let the limits arrive
+    expect(document.querySelector(".notice")).toBeNull();
+    expect(screen.queryByText(/replays saved examples|per run/)).not.toBeInTheDocument();
+    fireEvent.change(document.querySelector("input[type=file]"), { target: { files: [new File(["%PDF"], "bid.pdf", { type: "application/pdf" })] } });
+    fireEvent.click(screen.getByRole("button", { name: "Start matching" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(/^This demo replays saved examples only\.$/);
   });
 
   it("starts a run with a chosen category, or without one so the server finds it", async () => {
@@ -152,6 +158,15 @@ describe("the other pages", () => {
     await waitFor(() => expect(start).toHaveBeenCalledWith(expect.objectContaining({ category: "" })));
   });
 
+  it("shows the server's refusal of an upload as plain text", async () => {
+    vi.spyOn(api, "start").mockRejectedValue(new Error("This demo replays saved examples only."));
+    open("#/new");
+    await screen.findByText(/at most 300 per run/);
+    fireEvent.change(document.querySelector("input[type=file]"), { target: { files: [new File(["%PDF"], "bid.pdf", { type: "application/pdf" })] } });
+    fireEvent.click(screen.getByRole("button", { name: "Start matching" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent(/^This demo replays saved examples only\.$/);
+  });
+
   it("starts a run with the category chosen under Advanced", async () => {
     const start = vi.spyOn(api, "start").mockResolvedValue(run);
     open("#/new");
@@ -161,6 +176,24 @@ describe("the other pages", () => {
     fireEvent.change(screen.getByLabelText("Product category (optional)"), { target: { value: "valves" } });
     fireEvent.click(screen.getByRole("button", { name: "Start matching" }));
     await waitFor(() => expect(start).toHaveBeenCalledWith(expect.objectContaining({ category: "valves" })));
+  });
+
+  it("says why a run could not be deleted or renamed, from the list and from the report", async () => {
+    const kept = "The saved examples cannot be deleted or renamed in this demo.";
+    vi.spyOn(api, "remove").mockRejectedValue(new Error(kept));
+    vi.spyOn(api, "rename").mockRejectedValue(new Error(kept));
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    open("#/runs");
+    fireEvent.click(await screen.findByRole("button", { name: "Delete GeM-Bidding-DEMO" }));
+    expect(await screen.findByText(`Could not delete: ${kept}`)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Rename GeM-Bidding-DEMO" }));
+    fireEvent.submit(document.querySelector("form"));
+    expect(await screen.findByText(`Could not rename: ${kept}`)).toBeInTheDocument();
+    cleanup();
+    open("#/runs/abc");
+    fireEvent.click(await screen.findByRole("button", { name: "Delete" }));
+    expect(await screen.findByText(`Could not delete: ${kept}`)).toBeInTheDocument();
+    expect(window.location.hash).toBe("#/runs/abc");  // still on the report
   });
 
   it("lists, searches and compares runs", async () => {
@@ -214,6 +247,47 @@ describe("accessibility (axe, without colour contrast, which tokens.test.js chec
   it("has no violations with the details panel open", async () => {
     const { container } = open("#/runs/abc/requirements/alpha");
     fireEvent.click(await screen.findByRole("button", { name: /Open body material/ }));
+    expect(await violations(container)).toEqual([]);
+  });
+});
+
+describe("the tender layout tab", () => {
+  const layout = {
+    tender: "GeM-Bidding-DEMO", requirements: 3, shared_rows: 1,
+    items: [
+      { title: "BUTTERFLY VALVE DN 200", category: "valves", family: "butterfly valve", family_from: "title", not_named: ["face_to_face_dimension"],
+        rows: [{ name: "Standard", value: "IS 13095", file: "bid.pdf", page: 2, requirements: ["design_standard equals IS 13095"], shared_with: ["GATE VALVE"], standards: ["IS13095"] }] },
+      { title: "VALVE MOTORISED 300", category: "valves", family: null, family_from: null, not_named: [], rows: [] },
+    ],
+    standards: [{ name: "API598", also_written: ["API 598"], named_together: ["API600"] }],
+  };
+
+  it("shows items, their family, shared rows with a link to the tender page, and the standards", async () => {
+    vi.spyOn(api, "layout").mockResolvedValue(layout);
+    open("#/runs/abc/layout");
+    const item = await screen.findByRole("region", { name: "BUTTERFLY VALVE DN 200" });
+    expect(api.layout).toHaveBeenCalledWith("abc");
+    expect(within(item).getByText(/Family: butterfly valve \(named in the item's title\)/)).toBeInTheDocument();
+    expect(within(item).getByText(/also for GATE VALVE/)).toBeInTheDocument();
+    expect(within(item).getByRole("link", { name: "page 2" })).toHaveAttribute("href", expect.stringContaining("/runs/abc/tender/bid.pdf#page=2"));
+    expect(within(item).getByText("1 attributes of this kind of product the reading does not name")).toBeInTheDocument();
+    expect(screen.getByText(/Family: not named/)).toBeInTheDocument();
+    expect(screen.getByText(/named together with API600 \(not necessarily equivalent\)/)).toBeInTheDocument();
+  });
+
+  it("is only fetched when the tab is opened, and says plainly when the reading is not saved", async () => {
+    const spy = vi.spyOn(api, "layout").mockRejectedValue(new Error("This tender's reading is not saved yet, so its layout cannot be shown without asking the model."));
+    open("#/runs/abc/overview");
+    await screen.findByRole("heading", { name: "GeM-Bidding-DEMO" });
+    expect(spy).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("tab", { name: /Tender layout/ }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("not saved yet");
+  });
+
+  it("has no accessibility problems axe can find", async () => {
+    vi.spyOn(api, "layout").mockResolvedValue(layout);
+    const { container } = open("#/runs/abc/layout");
+    await screen.findByRole("region", { name: "BUTTERFLY VALVE DN 200" });
     expect(await violations(container)).toEqual([]);
   });
 });

@@ -4,10 +4,13 @@
       "product_words": ["pump"],            # a tender item whose title says one of these belongs here
       "type_attributes": ["pump_type"],     # attribute names that say which kind of product it is
       "filler_words": [],                   # words that say nothing about which kind it is ("valve" in "gate valve")
-      "extraction_rules": ["A duty point ..."]  # extra rules for reading a tender's rows, added to the shared ones
+      "extraction_rules": ["A duty point ..."],  # extra rules for reading a tender's rows, added to the shared ones
+      "attributes": ["pump_type", ...],      # what any product of the category is described by
+      "families": {"submersible pump": {"words": ["submersible"], "attributes": ["number_of_pump_stages"]}}
     }
 
-Every field may be left out. The vocabulary is the union over all categories, so a tender that holds pumps and valves is
+attributes and families feed only the knowledge graph (app.graph.products): product -> family -> attribute. No prompt
+reads them, so they can be edited without making any saved answer new. Every field may be left out. The vocabulary is the union over all categories, so a tender that holds pumps and valves is
 read with both, and the result does not depend on which category an item was sent to.
 """
 from __future__ import annotations
@@ -24,12 +27,19 @@ CATEGORIES_DIR = path_setting("CATEGORIES_DIR", Path(__file__).resolve().parents
 CONFIG_FILE = "category.json"
 
 
+class Family(BaseModel):
+    words: list[str] = []       # words in an item's title (or its type value) that name the family, e.g. "butterfly"
+    attributes: list[str] = []  # attributes a product of this family has on top of the category's own
+
+
 class CategoryConfig(BaseModel):
     name: str
     product_words: list[str] = []
     type_attributes: list[str] = []
     filler_words: list[str] = []
     extraction_rules: list[str] = []
+    attributes: list[str] = []
+    families: dict[str, Family] = {}
 
 
 def category_dirs(root: Path) -> list[Path]:

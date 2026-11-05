@@ -32,6 +32,13 @@ def temperature_setting() -> tuple[float | None, str]:
     return (number, "") if number == float(DEFAULT_TEMPERATURE) else (number, f";temperature={number}")
 
 
+def cache_settings() -> tuple[str, str]:
+    """(model, settings): the part of every cache key that says which model answered and how. GeminiLLM and the
+    saved-answers-only stand-in (llm_factory) both use it, so they find the same saved answers."""
+    model, level = model_and_level()
+    return model, f"thinking={level}{temperature_setting()[1]}"
+
+
 class GeminiLLM:
     def __init__(self) -> None:
         key_name, key = gemini_key()
@@ -39,7 +46,7 @@ class GeminiLLM:
         self.model, level = model_and_level()
         self.temperature, temperature_key = temperature_setting()
         self.thinking = None if level == "DEFAULT" else types.ThinkingConfig(thinking_level=level)
-        self.settings = f"thinking={level}{temperature_key}"
+        self.settings = cache_settings()[1]
         print(f"[llm] key={key_name} model={self.model} thinking={level}{temperature_key}", file=sys.stderr)
 
     def generate(self, system: str, user: str) -> Reply:

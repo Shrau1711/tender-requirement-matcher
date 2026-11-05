@@ -3,6 +3,13 @@ import numpy as np
 from app.embedding.embed_cache import embed_cached
 
 
+class Fake:
+    """An embedder made of a plain function."""
+
+    def __init__(self, embed, name="fake-model"):
+        self.embed, self.name = embed, name
+
+
 def counting_embed():
     asked: list[str] = []
 
@@ -10,7 +17,7 @@ def counting_embed():
         asked.extend(texts)
         return np.array([[float(len(t)), 1.0] for t in texts])
 
-    return embed, asked
+    return Fake(embed), asked
 
 
 def test_text_seen_before_is_not_embedded_again(tmp_path):
@@ -35,9 +42,9 @@ def test_new_text_is_embedded_in_small_batches_and_saved_as_it_goes(tmp_path, mo
         sizes.append(len(texts))
         return np.ones((len(texts), 3))
 
-    embed_cached(["a", "b", "c", "d", "e"], tmp_path / "e.sqlite", fake)
+    embed_cached(["a", "b", "c", "d", "e"], tmp_path / "e.sqlite", Fake(fake))
     assert sizes == [2, 2, 1]
-    embed_cached(["a", "e"], tmp_path / "e.sqlite", fake)
+    embed_cached(["a", "e"], tmp_path / "e.sqlite", Fake(fake))
     assert sizes == [2, 2, 1]  # nothing new, nothing embedded
 
 

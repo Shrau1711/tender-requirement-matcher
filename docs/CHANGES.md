@@ -496,3 +496,315 @@ One run of the full suite had one failing test, which I did not see; it did not 
 - CI after the version change: backend, frontend and images all passed on the push run and the pull request run. The only warning left is GitHub's general notice that `ubuntu-latest` is moving to Ubuntu 26.
 
 **Files to read.** `frontend/src/pages/UploadPage.jsx`, the upload tests in `frontend/src/app.test.jsx`, `.github/workflows/ci.yml`.
+
+## Replay-only demo for a Hugging Face Space (branch `demo-space`)
+
+**What changed.**
+- **`Dockerfile.demo`** at the repository root builds one image that serves the backend and the built frontend on port 7860.
+  - It holds no API key and sets `LLM_MAX_CALLS=0`.
+  - Its own ignore file, `Dockerfile.demo.dockerignore`, lets in only the five sample tenders' folders (and `sources.csv`), which the other images leave out, and keeps every `.env` out. A test checks that these folders are exactly the samples in `data/demo_runs/runs.json`.
+  - The build fails if any file in the image has an email address in its name. One tender attachment does (in 9789486, not a sample, so not in the image). It is not renamed in the repository: tender file names are part of the model prompts, so renaming it would make that tender's saved answers miss.
+- **`app/demo.py`** wraps the usual service:
+  - an upload (`POST /runs`) is refused with 403 and "This demo replays saved examples only." before anything is read, so no run starts;
+  - deleting or renaming a run is refused with 403 and "The saved examples cannot be deleted or renamed in this demo.", because every visitor shares the samples. Reports, downloads and documents open as usual, and review decisions can still be saved;
+  - the built page is served from `/`, after every API route, and calls the API at relative addresses.
+- **Sample runs.** `scripts/demo/replay_samples.py` replays each tender in `data/tenders/sources.csv` from the shipped answers alone (an empty `CACHE_DIR`, a model that refuses every call, `LLM_MAX_CALLS=0`) and saves the reports in `data/demo_runs`. When the image is built, `scripts/demo/load_samples.py` stores them as finished runs, with the tender PDFs beside them.
+- **Permissions.** Everything the service writes is in `/srv/demo`, owned by user 1000 (the user Hugging Face runs) and writable by any user. It is not under `/data`, where a Space mounts its persistent storage.
+- **`docs/HF_SPACE_README.md`** is the Space's README, with its settings block (`sdk: docker`, `app_port: 7860`) and what the Space repository needs. The main README is unchanged.
+
+**Why.** A free demo that anyone can open, which can never spend money and needs no key.
+
+**In an interview.** "The demo is one container that serves the interface and the API together, with the model call limit at 0, no key, and uploads refused with a plain message. Its sample reports were replayed beforehand from the answers shipped in the repository, with a model that refuses every call, so they are exactly what the real pipeline produces and cost nothing. Five of the eleven recorded tenders replay completely; the other six need answers that were never saved, so they are left out rather than shown half done."
+
+**Measured, free.**
+- **Replay:** 5 of the 11 tenders in `sources.csv` replay with 0 model calls: 9933225 (64 saved answers), 9935891 (214), 9968695 (97), 9604147 (50), 10016383 (121). The other 6 (10010349, 9789486, 9840129, 9918524, 9995708, 9987635) each need at least one answer that is not shipped, so they are left out. No report has a budget note.
+- **The six, with the local saved answers** (a copy of this machine's cache, still no model call): only 10010349 completes, needing 3 answers that are not shipped, and in its report neither of its two items has requirements, so nothing is scored. It is left out. The other five stop at an answer that was never saved: 9789486 after 306 saved answers, 9840129 after 141, 9918524 after 12, 9995708 after none, 9987635 after 88.
+- **Image:** 1.27 GB. It runs as user 1000, with `LLM_MAX_CALLS=0`, no `.env` file and no key variable. Its tenders are the 9 PDFs of the 5 samples (1.1 MB), and no file name in it contains `@`.
+- **In the running container (`docker run -p 7860:7860`):**
+  - The page, its `config.js` and its assets load.
+  - `/config` gives `max_model_calls: 0`. `/runs` lists the 5 sample runs, all done with 0 model calls.
+  - Each report's JSON is identical to the saved one. Its Markdown and Excel downloads work.
+  - Each run's tender PDFs open, and all 27 manufacturer documents open.
+  - An upload gets 403 with the plain message, and no run is added. The log has no traceback.
+- **In a browser** (headless Edge): the runs list, the report of 9933225 (7 manufacturers ranked) and the upload page with the replay-only note render.
+- **Chroma and permissions:** as user 1000 and as an unrelated user (1234), a Chroma store opens and creates its collections in the cache folder, the runs database is writable, and saving review decisions works. With a read-only filesystem the app does not start, because it writes its runs database at start; Hugging Face's filesystem is writable.
+- **Delete and rename, in the container:** for each of the 5 runs, delete and rename get 403 with the plain message, and the run list is unchanged afterwards. The report, its Markdown and Excel downloads and the review decisions still answer 200, and saving decisions works.
+- **Upload screen, later change:** with the call limit at 0 the upload screen shows no note at all (it used to say "This demo replays saved examples only."). A visitor who tries an upload still gets the server's plain refusal, "This demo replays saved examples only.", shown as the error. With any other limit the cost note is unchanged.
+- **Frontend:** the report page's Delete button now shows a refusal as a notice ("Could not delete: ..."), as the runs list already did, instead of doing nothing.
+- **Tests:** backend 446 passed (441 before; `tests/api/test_demo.py` checks the upload refusal, the delete and rename refusal, that the normal app still deletes and renames, the page sharing the port with the API, and the sample folders let into the image). Frontend 78 passed (76 before; refusals show as plain text, on the upload page, the runs list and the report).
+
+**Files to read.** `Dockerfile.demo`, `Dockerfile.demo.dockerignore`, `backend/app/demo.py`, `backend/scripts/demo/replay_samples.py`, `backend/scripts/demo/load_samples.py`, `docs/HF_SPACE_README.md`.
+
+## Demo image on Docker Hub: `shravani1711/tender-matcher-demo:v4`
+
+**What changed.**
+- The replay-only demo image is published on Docker Hub as `shravani1711/tender-matcher-demo:v4`. Anyone can run it with `docker run -p 7860:7860 shravani1711/tender-matcher-demo:v4` and open http://localhost:7860.
+- It was built from `Dockerfile.demo` at commit `985bdf4` on `demo-space`. Digest `sha256:af3ccbec2fa850f1a72e2a83768cf8e107081d8657ce00d22d31ee1a25b263f7`, 1.27 GB.
+- **v3 is superseded.** `v3` (commit `697ac5f`, digest `sha256:ee9955eb8b797d805985ae28b116f0569d7a07eaa4451319f56be921e30107e1`) still shows the note "This demo replays saved examples only." on the upload screen, which was removed afterwards. It stays on Docker Hub unchanged, but `v4` is the one to use.
+- Only the `v3` and `v4` tags were pushed. There is no `latest` tag for the demo, so a pull always names the exact version. The backend and frontend images on Docker Hub are unchanged.
+
+**Why.** The demo can be tried with one command, without building it or cloning the repository, and still never calls the model or needs a key.
+
+**In an interview.** "The demo is also a public Docker image with an exact version tag and no latest, so whoever runs it knows exactly which build they get; v4 replaced v3 only to drop a note on the upload screen. I checked it from a fresh pull, not from my local build: it serves the page and the API on port 7860, the five sample reports are identical to the saved ones, and an upload is refused with the plain replay-only message. Deleting or renaming a sample is refused too."
+
+**Checked, free** (on the `v4` copy pulled back from Docker Hub, after deleting the local tag; the pulled digest matches the pushed one):
+- `/health` is ok, and `/config` gives `max_model_calls: 0`.
+- In a browser (headless Edge), the upload screen shows nothing below Advanced, and the note's text is not in the page's code.
+- `/runs` lists the 5 sample runs, all done. Each report's JSON is identical to its saved copy in `data/demo_runs`. The Markdown and Excel downloads work.
+- In the browser, the report of 10016383 renders: 7 manufacturers ranked, the best at 45.0%.
+- An upload gets 403 with "This demo replays saved examples only." Deleting a sample gets 403 with "The saved examples cannot be deleted or renamed in this demo." The log has no traceback.
+
+**Files to read.** `Dockerfile.demo`, `docs/HF_SPACE_README.md`.
+
+## Embedder and retriever behind interfaces, and a semantic chunker
+
+**What changed.**
+- **Embedding** (`backend/app/embedding/`):
+  - `base.py` (new) holds the `Embedder` interface: a `name` and an `embed(texts)` method.
+  - `embedder.py` now lists the embedders by name (`EMBEDDERS`) and picks one with the `EMBEDDER` setting. The default is `bge-small`, the same fastembed model as before (`BAAI/bge-small-en-v1.5`), loaded only on first use.
+  - `embed_cache.py` keys each saved vector by the chosen embedder's name and the text. For the default this is the key every vector was always saved under, so the shipped `data/seed_embeddings.sqlite` still matches.
+  - Another embedder's Chroma store goes in its own folder (`chroma-<name>`), because its vectors can have another length. The embedder's name is also part of the settings a stored file is checked against.
+- **Retrieval** (`backend/app/retrieval/`):
+  - `base.py` (new) holds the `Retriever` interface (`name`, `chunks`, `vectors`, `search`, `search_many`), with `Hit` and `Mode` moved there.
+  - `retrievers.py` (new) lists the retrievers by name and picks one with the `RETRIEVER` setting: `hybrid` (the default, the search as before), `keyword` or `meaning`. All three are the existing `Index` with a fixed way of searching. A search can still ask for another mode, as `eval_retrieval` does.
+  - `open_index` returns the chosen retriever. The pipeline, the budget, evidence and routing are typed against the interface, not the class.
+- **A semantic chunker**, `backend/app/chunking/strategies/semantic.py`, is a sixth strategy, chosen only with `CHUNKER=semantic`:
+  - Each page is split into its text blocks, or into paragraphs for a page read from a picture. Every block of a document is embedded in one go, through the embedding cache.
+  - Neighbouring blocks on a page stay in one chunk while they are alike. A cut is made at the document's least alike quarter of neighbours, and before a chunk passes 1,000 characters.
+  - A chunk never spans two pages, so it always has one page to cite. The router (`auto`) never picks it.
+- The README settings table and `docker-compose.yml` list `EMBEDDER` and `RETRIEVER`. `docs/architecture.md` describes the interfaces.
+- `docs/NEEDS_PAID_RUN.md` no longer opens with "Nothing here has been run": it says checks 1 and 2 were run (≈ ₹59.78) and check 10 was answered for free.
+
+**Why.** The review found two gaps (`docs/FEEDBACK_STATUS.md`):
+- embedding and retrieval could not be swapped the way chunking and the vector store could;
+- the reviewers' list of chunking approaches included semantic chunking, which did not exist.
+
+**The defaults did not change, measured free.** These were taken before the change and again after it, with `LLM_MAX_CALLS=0`:
+- **Fingerprint:** every chunk, every vector and every ranked result through `open_index`, the app's own path, for both categories (1,714 valve and 2,099 pump chunks). That is 127 queries (the 7 retrieval cases and 120 catalogue headings), for every manufacturer, in each search mode and with the mode left to the default. Every hash is identical.
+- **`estimate_cost` output, byte for byte identical:**
+  - 9933225: 56 of 56 questions already answered.
+  - 9935891: 204 of 204.
+  - 9840129: 133 questions, 10 answered, 123 new, about 606,094 input tokens, the same as in phase 5.
+- **A one-time re-read.** The chunking code changed, so a Chroma store made before re-reads every catalogue once, as designed. It is only a cache, the chunks come out the same, and nothing is asked of the model.
+
+**Measured, free: `eval_retrieval` for every strategy.** All were run again after the change, one after another on the same Chroma folder. The six older ones give the same top-5 figures as recorded in phase 2 and its follow-up.
+
+Valve catalogues, 7 cases:
+
+| strategy | top 5 (keyword, meaning, hybrid) | first result (keyword, meaning, hybrid) |
+|---|---|---|
+| `table_rows` (default) | 6/7, 4/7, 6/7 | 4/7, 3/7, 4/7 |
+| `recursive` | 7/7, 5/7, 5/7 | 5/7, 3/7, 5/7 |
+| `sections` | 6/7, 3/7, 3/7 | 4/7, 2/7, 3/7 |
+| `parent_child` | 7/7, 5/7, 6/7 | 5/7, 4/7, 3/7 |
+| `structure` | 6/7, 4/7, 6/7 | 4/7, 3/7, 4/7 |
+| `auto` | 7/7, 5/7, 6/7 | 4/7, 3/7, 4/7 |
+| `semantic` (new) | 7/7, 6/7, 6/7 | 6/7, 5/7, 6/7 |
+
+The invented documents (`data/eval/samples`), 10 cases:
+
+| strategy | top 5 (keyword, meaning, hybrid) | first result (keyword, meaning, hybrid) |
+|---|---|---|
+| `table_rows` (default) | 10/10, 10/10, 10/10 | 9/10, 7/10, 8/10 |
+| `recursive` | 10/10, 10/10, 10/10 | 9/10, 7/10, 8/10 |
+| `sections` | 10/10, 10/10, 10/10 | 9/10, 8/10, 9/10 |
+| `parent_child` | 10/10, 10/10, 10/10 | 9/10, 7/10, 8/10 |
+| `structure` | 10/10, 10/10, 10/10 | 9/10, 9/10, 10/10 |
+| `auto` | 10/10, 10/10, 10/10 | 9/10, 9/10, 10/10 |
+| `semantic` (new) | 10/10, 9/10, 10/10 | 9/10, 7/10, 9/10 |
+
+How to read this:
+- **The valve gain is real but small.** On the valve catalogues, `semantic` puts a right page first more often than any other strategy: hybrid 6 of 7 against 4 of 7 for the default. It finds "nominal pressure PN 16" at KSB first instead of fourth, and Duncan's "pressure rating PN 16" first where the default's hybrid search missed it. But it loses KSB's "can the valve be used at 16 bar", which the default found in fifth place. Seven cases are too few to call one strategy better.
+- **Its chunks are very short:** the valve catalogues give 2,361 chunks with a median of 42 characters, against 1,714 with a median of 329 for the default. Short chunks match a short query sharply, which helps these checks, but the model would read 16 short passages per question, far less text around each fact. Whether that gives better or worse final answers is what a paid run would show.
+- **It was not tuned.** The one setting, cutting a quarter of the neighbours, was chosen once before measuring.
+- **On the invented documents it does no better than `structure`.** Those documents were written for `structure`.
+
+**What did not change.** No default, prompt, chunk, search result or saved answer. `CHUNKER` is still `table_rows`, `EMBEDDER` is `bge-small` and `RETRIEVER` is `hybrid`.
+
+**Not measured.** Final answers with `semantic`, another embedder or another retriever: every question would be new, so these need paid runs. The free estimate for `semantic` on 9933225 is 56 new questions of 56, about 219,527 input tokens by characters / 4, so ≈ ₹33 with the scaling used in `docs/NEEDS_PAID_RUN.md` (added there as check 11). No second embedder is listed, because adding one means downloading a model and making every saved vector and question new.
+
+**Tests.** 465 passed (446 before):
+- `tests/chunking/test_semantic.py`, 8 tests: blocks on one topic kept together and a change of topic cut, never across pages, the cut judged against the document, the size limit, pages read from a picture, one embedding call per document, an empty document, and never the default nor picked by the router.
+- `tests/embedding/test_embedders.py`, 6 tests:
+  - the default's name and the old key of a vector;
+  - a shipped vector found under the default embedder;
+  - the model not loaded when an embedder is chosen;
+  - an unknown embedder refused;
+  - a new embedder as one line, with vectors of its own;
+  - its own Chroma folder.
+- `tests/retrieval/test_retrievers.py`, 5 tests: the default is the hybrid search with the same ranking, the one-ranking retrievers, an unknown one refused, and a new retriever as one line.
+- `tests/embedding/test_embed_cache.py` now passes an embedder object instead of a function, and the strategy registry test lists `semantic`.
+
+**In an interview.** "Chunking and the vector store already sat behind interfaces, so I gave embedding and retrieval the same shape: an interface, a list of implementations by name, and a setting whose default is the original. I proved nothing moved by hashing every chunk, vector and ranked result, and the cost estimates, before and after, and all were identical. I also added a semantic chunker that cuts where neighbouring blocks stop being alike. It ranked a right page first more often on my seven valve cases, but its chunks are tiny, so I kept the default and wrote down the paid check that would settle it."
+
+**Files to read.** `backend/app/embedding/base.py` and `embedder.py`, `backend/app/retrieval/base.py` and `retrievers.py`, `backend/app/chunking/strategies/semantic.py`, `backend/tests/chunking/test_semantic.py`.
+
+## Add documents in the web app, and OCR in more languages
+
+**What changed.**
+- **The page reader is a setting** (`backend/app/reading/ocr/`, which replaces `ocr.py` and `ocr_compare.py`):
+  - `model.py` is the old reader: the model transcribes the page, with the same prompt. `prompt_for` adds one sentence ("The page may be printed in Hindi or Marathi: write that text in its own script.") only when other languages are asked for.
+  - `local.py` is new: EasyOCR on this computer, loaded on the first page, one page at a time. Devanagari digits (१६) are written as 0 to 9.
+  - `readers.py` lists the readers by name and picks one with `OCR` (`model`, the default, or `easyocr`), in the languages of `OCR_LANGS` (`en`, the default; `hi` Hindi; `mr` Marathi; codes separated by commas). Every script and job still calls `reader_for(llm)`, so the setting reaches them all.
+  - A reader other than the default is added to the settings a stored file is checked against (`;ocr=easyocr:en,hi`), so a store never mixes two readers' chunks. For the default nothing is added.
+  - `compare.py` is the old `ocr_compare.py`.
+- **Add documents, a page in the web app** (`frontend/src/pages/DocumentsPage.jsx`, in the side bar):
+  - choose the category and the manufacturer (from the list, or a new name), then upload a PDF, with the web address it came from if known, or give the address of a PDF;
+  - the page says what was added, the date recorded and how many passages are now searchable.
+- **Its route**, `POST /categories/{category}/documents` (`backend/app/api/documents.py`), uses the collector's own code (`backend/app/collecting/add.py`):
+  - a download goes through the crawler's polite fetcher (`robots.txt`, a pause);
+  - the file is saved by `save_pdf`, which now takes a name, so the same content is never saved twice, even under another name;
+  - a line goes into `data/categories/sources.csv` (`record_by_hand` in `sources.py`) with the source and date, or "source not given".
+  - Refused, with nothing saved: an unknown category (404); a manufacturer name that is not lower-case letters, digits, `-` and `_` (400); not a PDF (400); both or neither of a file and an address (400); a source that is not a web address (400); a site that does not answer or forbids it (502); the same content again (409).
+- **One ingest.** After saving, the route calls `add_to_search` (`backend/app/pipeline/runner.py`), which runs the existing `ingest` with the page reader a run uses. So the store already holds the file, under the same settings, when the next run opens the category. The model is only made if a page is a picture and `OCR=model`. If reading fails, the file stays saved and recorded, the page says why, and the next run tries again.
+- **The replay-only demo refuses it** with the same plain message as an upload (`backend/app/demo.py`).
+- README: two settings rows, a paragraph on adding documents, two lines in "What's new". `docs/architecture.md`: the overview, the ingest path, the package table and two design decisions.
+
+**Why.** The reviewers' point 9 asked for a tool to collect manufacturer documents from the web, and an OCR path that works for more languages. `docs/FEEDBACK_STATUS.md` had marked the first partly done (it was only a script) and the second not done.
+
+**Does the current OCR use the model?** Yes. Pages that are only a picture were, and by default still are, transcribed by Gemini, one paid call per page, with the transcription saved. It stays the default because every saved answer was made from those transcriptions.
+
+**The defaults did not change, measured free.** These were taken with `LLM_MAX_CALLS=0` against the files saved before this batch:
+- **Fingerprint:** every chunk, vector and ranked result through `open_index` for both categories. Every hash is identical.
+- **`estimate_cost` output, byte for byte identical:** 9933225, 56 of 56 answered; 9935891, 204 of 204; 9840129, 133 questions, 123 new, about 606,094 input tokens. These estimates read the scanned pages through `reader_for` and the saved transcriptions, so the model's prompt is unchanged.
+- **A one-time re-read.** The reading code moved into `reading/ocr/`, so a Chroma store made before re-reads every catalogue once. The chunks come out the same, and no model is asked.
+
+**Measured, free.**
+- **Generated pictures** (in `backend/tests/ocr/test_ocr_languages.py`): EasyOCR reads one line each of Hindi ("दबाव रेटिंग 16 बार"), Marathi ("पाण्याचा पंप 50 मिमी") and English word for word, and a scanned PDF page with all three through `read_pdf`.
+- **Real bilingual scans.** Tender 9918524 has a BHEL specification whose 6 scanned pages mix Hindi and English. Against the model's saved transcriptions of those pages:
+
+  | EasyOCR languages | Hindi words found | numbers found | English words found (mean) |
+  |---|---|---|---|
+  | `en,hi` | 25 of 89 (28%) | 148 of 254 (58%) | 76% |
+  | `en` | 0 of 89 | 167 of 254 (66%) | 76% |
+
+  EasyOCR misses most of the Hindi on real scans, and asking for Hindi loses numbers. The model's transcription is the reference, not a checked truth. 70 other scanned tender pages have no Devanagari in their saved reading.
+- **A real download through the route.** Intervalve's portfolio, from the address recorded in `sources.csv`, was fetched into a scratch folder with the real fetcher, ingest, embedder and an empty scratch cache. It arrived byte for byte identical to the shipped copy (1,919,055 bytes), was recorded with its source and date, and gave 20 searchable passages. Its pages that are only a picture were read from the shipped saved transcriptions, so no model call was made.
+- **Uploads through the route,** with the real ingest: a text PDF was the first result of a search for its words, and a scanned Hindi page with `OCR=easyocr` was read and stored with no key and no model call.
+
+**Not measured.**
+- **EasyOCR end to end.** The free estimate of what `OCR=easyocr` would make new on 9933225 was stopped by Claude Code before it finished, because the computer ran low on memory. It was not run again. The command to price it is in `docs/NEEDS_PAID_RUN.md` (check 13).
+- **The language hint on the model.** It needs new transcriptions: check 12, 6 calls, about ₹1.13.
+- **Hindi or Marathi beyond reading.** Keyword search drops Devanagari words, the embedder is English, and judging knows only English words and units.
+
+**What did not change.** No default, prompt, chunk, search result or saved answer. `OCR` is `model` and `OCR_LANGS` is `en`. EasyOCR is optional and not in `requirements.txt` or the Docker images, because it brings PyTorch (about 1 GB). No Docker image was rebuilt.
+
+**Tests.** Backend 498 passed (465 before); frontend 83 passed (78 before).
+- `backend/tests/ocr/test_ocr_readers.py`, 7 tests:
+  - the default prompt unchanged;
+  - the language sentence;
+  - unknown readers and languages refused;
+  - EasyOCR not loaded before a page, with plain digits;
+  - a clear message when EasyOCR is missing;
+  - the store key;
+  - a new reader as one line.
+- `backend/tests/ocr/test_ocr_languages.py`, 4 tests: real EasyOCR on generated Hindi, Marathi and English pictures and a scanned page. These are skipped unless EasyOCR and its Devanagari model are installed.
+- `backend/tests/collecting/test_add.py`, 11 tests:
+  - saved and recorded with source and date;
+  - no source;
+  - a new manufacturer;
+  - the same content twice;
+  - what is refused;
+  - downloads through the fetcher;
+  - names ending in `.pdf`;
+  - found by a search after the one ingest;
+  - a scanned page read by the run's reader.
+- `backend/tests/api/test_add_documents.py`, 10 tests (upload, address, six refusals, a second copy, a reading that fails), and one more in `test_demo.py`.
+- `frontend/src/documents.test.jsx`, 5 tests: the side-bar link, upload with source, an address for a new manufacturer, the server's refusal and a failed reading, and no axe violations.
+- `test_ocr_compare.py` moved to `backend/tests/ocr/`.
+
+**In an interview.** "The scanned-page reader was the model, so I made it a setting and added EasyOCR as a free local reader that reads Hindi and Marathi. It passes on pictures I generated, but on six real bilingual scans it found only 28% of the Hindi words the model did, so the model stays the default. I also added a page that adds a manufacturer document by upload or address. It uses the crawler's own fetcher and saver, records the source in `sources.csv`, and calls the same ingest as everything else. A real download came out byte for byte identical to the shipped copy."
+
+**Files to read.** `backend/app/reading/ocr/readers.py` and `local.py`, `backend/app/collecting/add.py`, the add route at the end of `backend/app/api/documents.py`, `add_to_search` in `backend/app/pipeline/runner.py`, `frontend/src/pages/DocumentsPage.jsx`.
+
+## Paid check 12: the model told to expect Hindi, and the optional OCR packages
+
+**OCR packages are optional, checked.**
+- `backend/requirements.txt`, used by `backend/Dockerfile` and `Dockerfile.demo`, names no OCR package.
+- A dry-run install of it in a fresh scratch venv resolves 106 packages, with no PyTorch, EasyOCR, RapidOCR or OpenCV among them.
+- With those imports blocked, the app and the demo app start and answer, and `OCR=model` reads a picture page with the prompt unchanged. `OCR=easyocr` only fails, on first use, with "OCR=easyocr needs EasyOCR: pip install easyocr".
+- Nothing had to move. No image was rebuilt.
+
+**Check 12 was run, with the owner's approval.**
+- The six commands written in `docs/NEEDS_PAID_RUN.md` were run for pages 1, 3, 4, 5, 6 and 7 of tender 9918524's BHEL specification, with `OCR_LANGS=en,hi` and the call cap at 7 for that run only. The cap in effect afterwards is 0.
+- **Actual cost:** 6 calls, no retries. 7,350 input and 4,541 output tokens, ≈ ₹1.19 at the app's rate (estimated ≈ ₹1.13), about $0.023 at Google's listed prices.
+
+**Result.**
+- With the hint, the model wrote the Hindi much more fully: on page 7, a sideways form, the whole form instead of four names.
+- Judged against the scans, the new reading is closer to the print on 4 of 6 pages, about even on 1, and worse on 1, where it added labels that are not printed.
+- The English and numbers stayed: 241 of 254 numbers.
+- The page-by-page table is in `docs/NEEDS_PAID_RUN.md`.
+
+**Nothing in the app changed.** `OCR_LANGS` stays `en`, and the new readings sit only in the local answer cache. The Hindi on these pages is labels and sign-offs, not requirements.
+
+**In an interview.** "I spent about one rupee to check one thing: does telling the model to expect Hindi change its reading of real bilingual scans? It did. The Hindi came out far more complete and closer to the print on four of six pages, with the English and numbers kept. It also showed the model sometimes adds labels that are not printed. Since that Hindi was form labels, not requirements, I kept the default."
+
+## Product families and the tender layout in the app; the token counter checked against Google's documentation
+
+**The token counter: stopped, as asked.** Before wiring anything, Google's documentation was checked for whether `countTokens` is free on the Gemini Developer API, the one this app uses with an API key. It does not say so:
+- **The token-counting page** (`aistudio.google.com/docs/tokens`, where `ai.google.dev/gemini-api/docs/tokens` now leads) has only "When billing is enabled, the cost of a call to the Gemini API is determined in part by the number of input and output tokens".
+- **The billing page** (`aistudio.google.com/docs/billing`) has "Requests to the `GetTokens` API are not billed, and they don't count against inference quota". It does not say that `GetTokens` is `countTokens`.
+- **The pricing page** does not mention token counting.
+- **Only the Vertex AI documentation**, a different product with other keys and endpoints, says "There is no charge or quota restriction for using the `CountTokens` API".
+
+So nothing was wired or tested, no request was sent, and `TOKEN_COUNTER` stays `estimate` (characters / 4). The known gap stays as measured before: the estimate is 74% (valves) and 69% (pumps) of the real input tokens in the saved answers.
+
+**What changed.**
+- **Product → family → attribute links** (`backend/app/graph/products.py`):
+  - **New fields.** Each `category.json` has two new optional fields: `attributes`, what any product of the category is described by, and `families`, each with the words that name it and its own attributes.
+  - **Valves:** butterfly, gate (also "sluice"), globe, check ("non return", "NRV") and ball.
+  - **Pumps:** submersible, horizontal centrifugal, vertical multistage, end suction and process.
+  - **Where they came from.** The families are the shipped catalogues' product ranges, as listed in `sources.csv`. The attributes are names the saved tender readings use: a scan of the 9 saved readings, made with `LLM_MAX_CALLS=0`, answered 142 from the cache and made 0 calls.
+  - **Finding an item's family:** from a whole word in its title, or else in the value of its type attribute ("valve_type: gate").
+- **The tender layout in the app** (`backend/app/graph/layout.py`, `GET /runs/{id}/layout`, and the report's new **Tender layout** tab, `frontend/src/components/report/TenderLayout.jsx`):
+  - it shows each item, its family and how it was found, its printed rows with links to the tender page, the other items that share each row, the requirements each row splits into, and the standards cited, with their other names and the standards named with them;
+  - it lists, folded away, the attributes `category.json` lists for that kind of product that the reading does not name;
+  - the tab loads only when opened.
+- **It cannot ask the model.** The layout is built from the run's tender files and saved answers only, through `saved_answers_only()` (`backend/app/llm/llm_factory.py`):
+  - it stands in for Gemini with the same model and settings, so the same cache keys, but with no key and a call limit of 0;
+  - Gemini and the stand-in now take those settings from one function, `cache_settings()` in `gemini.py`, and the key text is unchanged;
+  - a tender whose reading is not saved gets "This tender's reading is not saved yet, so its layout cannot be shown without asking the model."
+- README: the two new fields, the tab and "What's new". `docs/architecture.md`: the graph row, the overview diagram, a design decision, and the token-counter finding.
+
+**Why.** The reviewers' point 9 named "product to family to attribute links" and the "tender hierarchy". `docs/FEEDBACK_STATUS.md` had recorded that the first did not exist and the second was only a script.
+
+**Defaults and saved answers did not change, measured free.**
+- **No prompt reads the new fields.** Only `extraction_rules` reaches a prompt, and the pump rule is byte for byte the same; a test checks that no family name or attribute list reaches the prompt.
+- **`estimate_cost` output is byte for byte identical** for 9933225, 9935891 and 9840129, against the files saved before.
+- **No reading or chunking code changed,** so no store is re-read.
+- **`KNOWLEDGE_GRAPH` is still `off`, and judging is untouched.**
+
+**Measured, free.**
+- **Every demo sample has a layout.** All 5 were loaded as the demo image loads them, with an empty local cache, so only the shipped saved answers were used, and each answered 200:
+
+  | Sample | Items | Requirements | Shared rows | Family (found by) |
+  |---|---|---|---|---|
+  | 9933225 | 1 | 11 | 0 | butterfly valve (title) |
+  | 9935891 | 2 | 82 | 29 | vertical multistage pump (type value), both items |
+  | 9604147 | 2 | 13 | 0 | submersible pump (title), both items |
+  | 9968695 | 1 | 15 | 0 | gate valve (title) |
+  | 10016383 | 1 | 21 | 0 | ball valve (title) |
+
+- **9840129:** 4 gate valves, one named in its title and three ("VALVE MOTORISE …") by their type value. 15 rows are shared, and 4 standards are cited, with their other names (API 598 also written "API-598").
+- **9918524** has no saved reading, so it gets the refusal, with no call.
+
+**Not done, honestly.**
+- **"Not named" compares names exactly,** and the model names attributes freely. On 9933225 it lists `pressure_rating` while the tender asks `nominal_pressure`, so it is a pointer for a person, not a finding.
+- **Families seen only in catalogues have no attributes of their own:** globe, check, vertical multistage, end suction and process.
+- **No score uses families or attributes.**
+
+**Tests.** Backend 509 passed (498 before); frontend 86 passed (83 before).
+- `backend/tests/graph/test_products.py`, 6 tests:
+  - links and where they were seen;
+  - title first, then type value;
+  - whole words only;
+  - the shipped categories;
+  - no prompt reads the new fields;
+  - a tender with no saved reading is refused, and the stand-in is never called.
+- `backend/tests/graph/test_tender_layout.py`, 4 tests: items and shared rows, each item showing only its own requirements; families and names not used; standards; the stand-in's cache key equals Gemini's.
+- `backend/tests/api/test_api.py`: the layout route, its refusal (409) and an unknown run (404).
+- `frontend/src/app.test.jsx`, 3 tests: the tab's content and links, fetched only when opened with the refusal shown plainly, and no axe violations.
+
+**In an interview.** "I checked Google's documentation before touching the token counter. It says counting is free only for Vertex AI, not for the API key this app uses, so I stopped there, as agreed. For the knowledge graph, I put product families and their attributes in each category's config and linked them. The tender's structure is now a report tab, built from saved answers through a stand-in that has Gemini's cache keys but cannot call it. It even works in the replay-only demo."
+
+**Files to read.** `backend/app/graph/products.py` and `layout.py`, `saved_answers_only` in `backend/app/llm/llm_factory.py`, `data/categories/*/category.json`, `frontend/src/components/report/TenderLayout.jsx`.

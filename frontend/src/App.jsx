@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "./api";
-import { NotifyProvider } from "./components/shell/Notifier";
+import { NotifyProvider, useNotify } from "./components/shell/Notifier";
 import { Sidebar, Topbar } from "./components/shell/Shell";
 import { go, useRoute } from "./hooks/useRoute";
 import { useRun } from "./hooks/useRun";
 import { useTheme } from "./hooks/useTheme";
 import ComparePage from "./pages/ComparePage";
+import DocumentsPage from "./pages/DocumentsPage";
 import ReportPage from "./pages/ReportPage";
 import RunStatus from "./pages/RunStatus";
 import RunsPage from "./pages/RunsPage";
@@ -14,8 +15,11 @@ import { links } from "./lib/route";
 
 function RunPage({ route, onChange }) {
   const { run, report, error } = useRun(route.id, onChange);
+  const notify = useNotify();
   if (report && run) {
-    const remove = async () => { await api.remove(route.id); onChange(); go(links.runs); };
+    const remove = async () => {
+      try { await api.remove(route.id); onChange(); go(links.runs); } catch (e) { notify(`Could not delete: ${e.message}`); }
+    };
     return <ReportPage run={run} report={report} tab={route.tab} makerName={route.maker} onDelete={remove} />;
   }
   return <RunStatus run={run} error={error} />;
@@ -32,7 +36,7 @@ export default function App() {
 
   const name = (id) => runs.find((r) => r.id === id)?.tender ?? "Run";
   const crumbs = {
-    new: ["New run"], runs: ["Runs"], run: ["Runs", name(route.id)], compare: ["Runs", "Compare"],
+    new: ["New run"], runs: ["Runs"], run: ["Runs", name(route.id)], compare: ["Runs", "Compare"], documents: ["Documents"],
   }[route.page];
 
   return (
@@ -46,6 +50,7 @@ export default function App() {
           {route.page === "runs" && <RunsPage runs={runs} refresh={refresh} />}
           {route.page === "run" && <RunPage key={route.id} route={route} onChange={refresh} />}
           {route.page === "compare" && <ComparePage a={route.a} b={route.b} runs={runs} />}
+          {route.page === "documents" && <DocumentsPage />}
         </main>
       </div>
     </NotifyProvider>

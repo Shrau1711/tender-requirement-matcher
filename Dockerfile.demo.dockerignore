@@ -1,0 +1,22 @@
+# For Dockerfile.demo only. Like .dockerignore, but the sample tenders are let in: the demo shows their pages.
+.git
+**/node_modules
+**/.venv
+**/__pycache__
+**/*.pyc
+**/.pytest_cache
+**/.ruff_cache
+**/dist
+**/.env
+backend/.cache
+backend/runs
+backend/reports
+data/eval
+data/reference
+# Of the tenders, only the samples in data/demo_runs/runs.json (the ones that replay in full) and sources.csv.
+data/tenders/*/*
+!data/tenders/dev/GeM-Bidding-9933225
+!data/tenders/dev/GeM-Bidding-9935891
+!data/tenders/holdout/GeM-Bidding-9968695
+!data/tenders/holdout/GeM-Bidding-9604147
+!data/tenders/holdout/GeM-Bidding-10016383

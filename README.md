@@ -9,10 +9,13 @@ How the parts fit together, with diagrams and the design decisions, is in [docs/
 ## What's new in v3
 
 - **One package per pipeline stage** (reading, chunking, embedding, vector store, retrieval, extraction, judging, reporting and more), each replaceable on its own.
-- **Five chunking strategies** behind one interface, with a router that picks one per document (`CHUNKER`).
+- **Six chunking strategies** behind one interface, with a router that picks one per document (`CHUNKER`). The embedder (`EMBEDDER`) and the retriever (`RETRIEVER`) are behind interfaces of their own too.
 - **A vector store interface:** Chroma on disk, the default, which reads each document once, or the original in-memory store. Chroma stores and filters; similarity is scored exactly in the code, so both give the same results.
 - **Categories are folders with a `category.json`.** The category is optional on upload, and a tender with items of several categories gets one run per category.
 - **Settings:** model, thinking level and temperature, and an exact token counter. A small knowledge graph of standards is also included, off by default.
+- **Add manufacturer documents in the web app** (Add documents): upload a PDF or give its address, and it is saved, recorded in `sources.csv` and made searchable.
+- **Tender layout in the report:** a tab showing the tender as it was read (items, printed rows shared by several items, the requirements each row splits into, the standards cited) and each item's product family from `category.json`. It is built from the saved reading, with no model call.
+- **A free local page reader for scans:** `OCR=easyocr` reads English, Hindi and Marathi (`OCR_LANGS`) on this machine. The model stays the default.
 
 Every default is what the saved answers were made with, so they all still match. Measured without paid calls:
 - with Chroma, every question the pipeline would ask for the five cached dev tenders (1,273) is byte-identical to the original store's;
@@ -33,12 +36,12 @@ How the parts fit together: the manufacturers' documents are read, chunked and e
 
 ```mermaid
 flowchart LR
-    UI["frontend (React)<br/>upload, report, review"] -->|HTTP| API["api<br/>FastAPI routes"]
+    UI["frontend (React)<br/>upload, report, review,<br/>add documents"] -->|HTTP| API["api<br/>FastAPI routes"]
     API --> DB[("db<br/>runs and reviews (SQLite)")]
     API --> RUN["pipeline<br/>one job per tender and category"]
 
     subgraph Documents["manufacturer documents (once per file)"]
-        READ["reading<br/>PDF text, tables, boxes, OCR"] --> CHUNK["chunking<br/>strategies + router"]
+        READ["reading<br/>PDF text, tables, boxes,<br/>OCR (model or EasyOCR)"] --> CHUNK["chunking<br/>strategies + router"]
         CHUNK --> EMB["embedding<br/>local model + cache"]
         EMB --> VS[("vectorstore<br/>Chroma or memory")]
     end
@@ -59,9 +62,11 @@ flowchart LR
     TEN & ATOM & EVID -.-> LLM["llm<br/>Gemini + answer cache"]
     READ -.->|picture-only pages| LLM
     VOC["vocabulary<br/>words, units, roles"] -.-> JUDGE
-    GRAPH["graph (off by default)<br/>standards, tender layout"] -.-> JUDGE
+    GRAPH["graph (off by default for judging)<br/>standards, product families,<br/>tender layout"] -.-> JUDGE
+    API -->|tender layout| GRAPH
     CFG["data/categories/*/category.json"] -.-> CAT & VOC & ATOM
-    COL["collecting<br/>crawler + source records"] -.->|PDFs| READ
+    COL["collecting<br/>crawler, add a document,<br/>source records"] -.->|PDFs| READ
+    API -->|add a document| COL
 ```
 
 ## Run it (Docker, no build needed)
@@ -117,7 +122,7 @@ KNOWLEDGE_GRAPH=on
 
 Restart the backend after a change. Two kinds of setting behave differently:
 
-- **They change the questions sent to Gemini, so saved answers no longer match and runs cost money again:** `LLM_MODEL`, `LLM_THINKING`, `LLM_TEMPERATURE`, `CHUNKER`, `EVIDENCE_TOP_K`, and a category's `extraction_rules`. Before switching one, get the free estimate: `cd backend` then `python -m scripts.cost.estimate_cost <tender folder> ../data/categories/<category>`. It reads the saved answers and counts what would be new. With a new model or temperature even the tender's reading is new, so it stops and says so; the measured costs of whole runs are in `docs/NEEDS_PAID_RUN.md`.
+- **They change the questions sent to Gemini, so saved answers no longer match and runs cost money again:** `LLM_MODEL`, `LLM_THINKING`, `LLM_TEMPERATURE`, `CHUNKER`, `EMBEDDER`, `RETRIEVER`, `OCR`, `OCR_LANGS`, `EVIDENCE_TOP_K`, and a category's `extraction_rules`. Before switching one, get the free estimate: `cd backend` then `python -m scripts.cost.estimate_cost <tender folder> ../data/categories/<category>`. It reads the saved answers and counts what would be new. With a new model or temperature even the tender's reading is new, so it stops and says so; the measured costs of whole runs are in `docs/NEEDS_PAID_RUN.md`.
 - **They do not change any question:** `VECTOR_STORE` (same results either way), `TOKEN_COUNTER` (only how the estimate counts), `KNOWLEDGE_GRAPH` (only how standards are judged, in plain code), `LLM_MAX_CALLS`, `TENDER_TOKEN_BUDGET`, `LLM_WORKERS`.
 
 To check a setting for free on a labelled tender, `python -m scripts.eval.score_gold ../data/tenders/dev/GeM-Bidding-9933225 ../data/categories/valves` with `LLM_MAX_CALLS=0` scores the saved answers against the answer key, and stops instead of spending if a question is new.
@@ -143,7 +148,11 @@ Backend environment variables:
 | `LLM_MODEL` | `gemini-3.8-flash` | Gemini model. Saved answers belong to a model and a thinking level, so changing either means asking again |
 | `LLM_THINKING` | `LOW` | `MINIMAL`, `LOW`, `MEDIUM`, `HIGH` or `DEFAULT` |
 | `LLM_TEMPERATURE` | `0` | a number, or `DEFAULT` for the model's own (1.0). Google advises leaving Gemini 3 models at their default because lower values can cause looping; 0 stays the default because every saved answer was made with it, and any other value means asking again |
-| `CHUNKER` | `table_rows` | how manufacturer documents are cut into passages: `table_rows` (one chunk per table row, then sections or packed text; the original), `recursive` (fixed size with overlap), `sections` (whole tables and headed sections), `parent_child` (small chunks searched, the larger passage read), `structure` (numbered clauses and flowchart boxes), or `auto` (picked per document from what it looks like). Saved answers belong to the passages, so anything but `table_rows` means asking again |
+| `CHUNKER` | `table_rows` | how manufacturer documents are cut into passages: `table_rows` (one chunk per table row, then sections or packed text; the original), `recursive` (fixed size with overlap), `sections` (whole tables and headed sections), `parent_child` (small chunks searched, the larger passage read), `structure` (numbered clauses and flowchart boxes), `semantic` (cut where the meaning of neighbouring blocks changes, judged with the embeddings), or `auto` (picked per document from what it looks like; it never picks `semantic`). Saved answers belong to the passages, so anything but `table_rows` means asking again |
+| `EMBEDDER` | `bge-small` | which model turns text into vectors (`backend/app/embedding/embedder.py`). `bge-small` is fastembed's `BAAI/bge-small-en-v1.5`, run on this machine; it is the only one listed, and a new one is a class with a `name` and an `embed` method plus one line in `EMBEDDERS`. Another embedder finds other passages, so every question is new, and its Chroma store is kept in its own folder |
+| `RETRIEVER` | `hybrid` | how passages are found (`backend/app/retrieval/retrievers.py`): `hybrid` (keyword and meaning rankings merged by rank; the original), `keyword` (BM25 only) or `meaning` (vectors only). Anything but `hybrid` finds other passages, so every question is new |
+| `OCR` | `model` | what reads pages that are only a picture (`backend/app/reading/ocr/readers.py`): `model` (Gemini transcribes each page; a paid call per page, saved) or `easyocr` (EasyOCR on this machine: free, no key; install it with `pip install easyocr`, which brings PyTorch, about 1 GB, so it is not in the Docker images). Another reader gives other text for those pages, so their questions are new |
+| `OCR_LANGS` | `en` | the languages on those pages, codes separated by commas: `en`, `hi` (Hindi), `mr` (Marathi). EasyOCR loads those language models; the model is told to expect them. With `en` the model's prompt is unchanged |
 | `VECTOR_STORE` | `chroma` | where chunk vectors are kept: `chroma` (on disk, so a document is read and embedded once, and again only when its content or the chunking settings change) or `memory` (everything read again at each start; the original). Both give the same results to the last digit. Chroma's folder is for one process at a time: do not run a script on it while the server runs; if it ever breaks, delete the folder, it is only a cache |
 | `CHROMA_DIR` | `<CACHE_DIR>/chroma` | where the Chroma store is kept |
 | `KNOWLEDGE_GRAPH` | `off` | `on` lets judging use the standards graph: a standard stated under another body's name ("BS EN ISO 5208" for "ISO 5208") counts as the one asked for, and one that documents only name together with it goes to a person when the tender accepts an equivalent. Build or refresh the graph with `python -m scripts.run.build_graph` (no model calls) |
@@ -183,7 +192,9 @@ Categories live in `data/categories/<category>/manufacturers/<maker>/` as PDFs p
   "product_words": ["pump"],
   "type_attributes": ["pump_type"],
   "filler_words": [],
-  "extraction_rules": ["A duty point the pump must deliver (head, flow) is also at_least, ..."]
+  "extraction_rules": ["A duty point the pump must deliver (head, flow) is also at_least, ..."],
+  "attributes": ["pump_type", "operating_duty_flow", "operating_duty_head", "..."],
+  "families": {"submersible pump": {"words": ["submersible"], "attributes": ["number_of_pump_stages", "..."]}}
 }
 ```
 
@@ -191,6 +202,7 @@ Categories live in `data/categories/<category>/manufacturers/<maker>/` as PDFs p
 - `type_attributes`: requirement names that say which kind of product it is; a product that fails one is the wrong kind.
 - `filler_words`: words that say nothing about which kind it is ("valve" in "gate valve").
 - `extraction_rules`: extra rules for reading the tender's rows, added to the shared ones. Every category's rules are in every prompt, so adding a rule changes the questions for all tenders and their saved answers no longer match.
+- `attributes` and `families`: the knowledge graph's product → family → attribute links (`backend/app/graph/products.py`). A family is named by a word in an item's title, or in the value of its type attribute ("valve_type: gate"). The report's **Tender layout** tab shows each item's family, and the attributes listed here that the tender's reading does not name. No prompt reads these two fields, so editing them changes no saved answer. The shipped families are the product ranges of the shipped catalogues. The attributes are names the saved tender readings use, so the model's own names, not a fixed list.
 
 Every field may be left out. Units, abbreviations and other shared vocabulary stay in `backend/config/`.
 
@@ -201,7 +213,9 @@ cd backend
 python -m scripts.run.crawl_catalogues --category pumps --maker grundfos --start <page listing the catalogues> --include databooklet --exclude price
 ```
 
-Scanned catalogue pages are read once by the model and the transcription is saved. `python -m scripts.eval.compare_ocr <category folder>` measures, without any model call, how closely a free local reader (`pip install rapidocr onnxruntime`) matches those saved transcriptions on the numbers in each page. It is an experiment to decide whether a cheaper reader is good enough for new catalogues; the matching pipeline does not use it.
+One document at a time can be added in the web app, on the **Add documents** page (or `POST /categories/<category>/documents`): choose the category and the manufacturer (or type a new one), then upload a PDF or give the address of one. A download uses the crawler's polite fetcher. The file is saved with the crawler's own code (the same content is never saved twice), a line with its source and date goes into `data/categories/sources.csv`, and it is read, chunked and stored by the same `ingest` as every other document, so the next run can search it. A page that is only a picture is read by the `OCR` reader, which with the default model is a paid call per page. The replay-only demo refuses it.
+
+Scanned catalogue pages are read once by the model and the transcription is saved. `python -m scripts.eval.compare_ocr <category folder>` measures, without any model call, how closely a free local reader (`pip install rapidocr onnxruntime`) matches those saved transcriptions on the numbers in each page. It is an experiment to decide whether a cheaper reader is good enough for new catalogues. The pipeline uses a local reader only with `OCR=easyocr`.
 
 Included: `pumps` (CRI, Grundfos, Kirloskar, KSB) and `valves` (Delval, Duncan, Intervalve, King, KSB, L&T, Leader).
 

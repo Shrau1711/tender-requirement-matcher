@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 from app.chunking.router import CHUNKER
-from app.retrieval.search import Index, Mode
+from app.retrieval.base import Mode, Retriever
 from app.vectorstore.ingest import open_index
 
 MODES: list[Mode] = ["keyword", "meaning", "hybrid"]
@@ -19,7 +19,7 @@ TOP_K = 5
 
 
 # How far down the results the first right page is (1 is first), or None if it is not in the top TOP_K.
-def rank(index: Index, case: dict, mode: Mode) -> int | None:
+def rank(index: Retriever, case: dict, mode: Mode) -> int | None:
     hits = index.search(case["query"], case["manufacturer"], TOP_K, mode)
     return next((i for i, h in enumerate(hits, start=1) if h.chunk.pdf_page in case["pages"]), None)
 

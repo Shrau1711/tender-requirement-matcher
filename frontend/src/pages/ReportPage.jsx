@@ -7,6 +7,7 @@ import Overview from "../components/report/Overview";
 import PagesToCheck from "../components/review/PagesToCheck";
 import { PrintContext } from "../components/common/PrintContext";
 import Requirements from "../components/report/Requirements";
+import TenderLayout from "../components/report/TenderLayout";
 import { TabPanel, Tabs } from "../components/common/Tabs";
 import ToConfirm from "../components/review/ToConfirm";
 import { useReviews } from "../hooks/useReviews";
@@ -36,6 +37,7 @@ export default function ReportPage({ run, report, tab, makerName, onDelete }) {
     { id: "compare", label: "Compare" },
     { id: "pages", label: "Pages to check", count: `${reviewed}/${flagged}` },
     { id: "confirm", label: "To confirm", count: report.unsupported.length },
+    { id: "layout", label: "Tender layout" },
     { id: "method", label: "Method" },
   ];
   const selected = tabs.some((t) => t.id === tab) ? tab : "overview";
@@ -63,6 +65,7 @@ export default function ReportPage({ run, report, tab, makerName, onDelete }) {
       <TabPanel id="compare" label="Compare manufacturers" selected={selected} printing={printing}><CompareMakers report={report} /></TabPanel>
       <TabPanel id="pages" label="Pages to check" selected={selected} printing={printing}><PagesToCheck {...shared} /></TabPanel>
       <TabPanel id="confirm" label="To confirm with the manufacturer" selected={selected} printing={printing}><ToConfirm report={report} run={run} /></TabPanel>
+      <TabPanel id="layout" label="Tender layout" selected={selected} printing={false}><TenderLayout run={run} /></TabPanel>
       <TabPanel id="method" label="Method" selected={selected} printing={printing}><MethodTab report={report} /></TabPanel>
     </PrintContext.Provider>
   );

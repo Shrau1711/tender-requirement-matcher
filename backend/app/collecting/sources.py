@@ -1,7 +1,7 @@
 """Where each manufacturer document came from, so every cited page can be traced back to the manufacturer's own site.
 
 A document is recorded in one of two places:
-- data/categories/sources.csv, written by hand for documents collected by hand (category, manufacturer, file, address, ...);
+- data/categories/sources.csv, for documents collected by hand or added in the web app (category, manufacturer, file, address, ...);
 - crawl_sources.csv in the manufacturer's folder, one line written by the crawler for each file it saves (address, the page it
   was found on, date, size and SHA-256).
 unrecorded() lists the PDFs found in neither, and a test runs it over the shipped documents.
@@ -39,6 +39,22 @@ def record_source(maker_folder: Path, saved: Saved) -> None:
         if new:
             writer.writerow(Saved._fields)
         writer.writerow(saved)
+
+
+def record_by_hand(root: Path, row: dict[str, str]) -> None:
+    """Add a line to sources.csv in the categories folder, in the order of its own header (written the first time)."""
+    log = root / HAND_RECORDS
+    new = not log.exists() or not log.stat().st_size
+    if new:
+        fields = list(row)
+    else:
+        with log.open(newline="", encoding="utf-8") as f:
+            fields = next(csv.reader(f))
+    with log.open("a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fields, extrasaction="ignore")
+        if new:
+            writer.writeheader()
+        writer.writerow(row)
 
 
 def unrecorded(root: Path) -> list[Path]:

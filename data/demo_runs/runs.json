@@ -1,0 +1,32 @@
+[
+  {
+    "tender": "GeM-Bidding-9933225",
+    "folder": "dev/GeM-Bidding-9933225",
+    "category": "valves",
+    "model_calls": "model calls 0, from cache 64, tokens in 0 / out 0"
+  },
+  {
+    "tender": "GeM-Bidding-9935891",
+    "folder": "dev/GeM-Bidding-9935891",
+    "category": "pumps",
+    "model_calls": "model calls 0, from cache 214, tokens in 0 / out 0"
+  },
+  {
+    "tender": "GeM-Bidding-9968695",
+    "folder": "holdout/GeM-Bidding-9968695",
+    "category": "valves",
+    "model_calls": "model calls 0, from cache 97, tokens in 0 / out 0"
+  },
+  {
+    "tender": "GeM-Bidding-9604147",
+    "folder": "holdout/GeM-Bidding-9604147",
+    "category": "pumps",
+    "model_calls": "model calls 0, from cache 50, tokens in 0 / out 0"
+  },
+  {
+    "tender": "GeM-Bidding-10016383",
+    "folder": "holdout/GeM-Bidding-10016383",
+    "category": "valves",
+    "model_calls": "model calls 0, from cache 121, tokens in 0 / out 0"
+  }
+]

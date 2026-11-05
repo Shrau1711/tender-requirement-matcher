@@ -9,8 +9,9 @@ from app.config import number_setting
 from app.extraction.atomize import AtomicRequirement
 from app.llm.llm import LLM, ask
 from app.llm.parallel import run_parallel
+from app.retrieval.base import Hit, Retriever
 from app.retrieval.queries import queries_for
-from app.retrieval.search import Hit, Index, tokenize
+from app.retrieval.search import tokenize
 from app.vocabulary.terms import candidates
 
 TOP_K = number_setting("EVIDENCE_TOP_K", 16)  # passages read per requirement and manufacturer: fewer is cheaper, more is thorough
@@ -166,7 +167,7 @@ def find_evidence(llm: LLM, req: AtomicRequirement, hits: list[Hit]) -> list[Evi
 
 
 def retrieve(
-    index: Index, req: AtomicRequirement, manufacturer: str, views: dict[str, list[dict]], rescue: bool = True, depth: int = TOP_K
+    index: Retriever, req: AtomicRequirement, manufacturer: str, views: dict[str, list[dict]], rescue: bool = True, depth: int = TOP_K
 ) -> list[Hit]:
     """The chunks of one manufacturer most likely to state the requirement.
 
@@ -197,7 +198,7 @@ def question_jobs(atoms: list[AtomicRequirement], makers: list[str]) -> tuple[li
 
 
 def evidence_table(
-    llm: LLM, index: Index, atoms: list[AtomicRequirement], makers: list[str], views: dict[str, list[dict]], depth: int = TOP_K
+    llm: LLM, index: Retriever, atoms: list[AtomicRequirement], makers: list[str], views: dict[str, list[dict]], depth: int = TOP_K
 ) -> dict[tuple[int, str], list[Evidence]]:
     """Evidence for every product requirement and manufacturer, keyed by (position of the requirement, manufacturer).
 

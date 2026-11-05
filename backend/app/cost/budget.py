@@ -23,7 +23,7 @@ from app.extraction.evidence import (
 )
 from app.llm.llm import LLM, request_system
 from app.llm.llm_cache import MAX_CALLS
-from app.retrieval.search import Index
+from app.retrieval.base import Retriever
 from app.tender.items import distinct_items
 
 TOKEN_BUDGET = number_setting("TENDER_TOKEN_BUDGET", 1_500_000)  # input tokens of new questions one tender may use (about 150 rupees at the current price)
@@ -57,7 +57,7 @@ def price(llm: LLM, req: AtomicRequirement, hits: list) -> int:
     return count_tokens(SYSTEM if TOKEN_COUNTER == "estimate" else sent, user)
 
 
-def prices(llm: LLM, index: Index, atoms: list[AtomicRequirement], makers: list[str], views: dict, depth: int) -> Prices:
+def prices(llm: LLM, index: Retriever, atoms: list[AtomicRequirement], makers: list[str], views: dict, depth: int) -> Prices:
     _, first = question_jobs(atoms, makers)
     return {key: price(llm, atoms[i], retrieve(index, atoms[i], key[1], views, depth=depth)) for key, i in first.items()}
 
@@ -97,7 +97,7 @@ def atoms_within(atoms: list[AtomicRequirement], makers: list[str], priced: Pric
 
 
 def plan(
-    llm: LLM, index: Index, atoms: list[AtomicRequirement], makers: list[str], views: dict,
+    llm: LLM, index: Retriever, atoms: list[AtomicRequirement], makers: list[str], views: dict,
     token_budget: int = TOKEN_BUDGET, depths: tuple[int, ...] = (TOP_K, max(1, TOP_K // 2)),
 ) -> Plan:
     """What can be evaluated within the budget: everything at full depth if it fits, else everything shallower, else the first requirements of the tender shallower."""
