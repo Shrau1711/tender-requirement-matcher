@@ -12,6 +12,7 @@ from app.embedding.base import EmbedFn
 from app.embedding.embed_cache import embed_cached
 from app.retrieval.base import Hit, Mode
 from app.retrieval.fusion import rrf
+from app.retrieval.rerankers import RERANKER, rerank, reranker
 from app.vectorstore.base import StoredDoc, VectorStore, chunk_ids
 from app.vectorstore.memory import MemoryStore
 
@@ -31,6 +32,12 @@ def tokenize(text: str) -> list[str]:
     return TOKEN.findall(text.lower())
 
 
+def by_score(scores: dict[int, float]) -> list[int]:
+    """Chunk positions, best score first; an exact tie keeps the chunks' original order. Both VECTOR_SEARCH paths rank
+    with it, so two chunks with the same vector (a table row printed on two pages) come out in the same order either way."""
+    return sorted(scores, key=lambda i: (-scores[i], i))
+
+
 class Index:
     """Keyword search (BM25) over the chunks, and meaning search through a vector store, merged by rank. A Retriever
     (app/retrieval/base.py): `mode` is how it searches unless a search asks otherwise, hybrid by default.
@@ -40,11 +47,12 @@ class Index:
     in one matrix, in the chunks' order, and scores the chunks the store's filter returns exactly."""
 
     def __init__(self, chunks: list[Chunk], embed: EmbedFn = embed_cached, store: VectorStore | None = None, category: str = "",
-                 mode: Mode = "hybrid", scoring: str = VECTOR_SEARCH) -> None:
+                 mode: Mode = "hybrid", scoring: str = VECTOR_SEARCH, rerank_with: str = RERANKER) -> None:
         if scoring not in SCORINGS:
             raise ValueError(f"Unknown VECTOR_SEARCH {scoring!r}. Choose one of: {', '.join(SCORINGS)}")
         self.name = self.mode = mode
         self.scoring = scoring
+        self.reranker = reranker(rerank_with)  # None unless RERANKER names one
         self.chunks = chunks
         self.embed = embed
         self.bm25 = BM25Okapi([tokenize(c.text) for c in chunks])
@@ -66,7 +74,7 @@ class Index:
         where = {"category": self.category} | ({"manufacturer": manufacturer} if manufacturer else {})
         asked = self.embed(queries)
         candidates = self.store.candidates(where)
-        if self.scoring == "chroma":  # the store's own ranking, kept in its order (dicts keep insertion order)
+        if self.scoring == "chroma":  # the store chooses and scores the candidates; by_score orders them, ties included
             return [{self.position[c]: score for c, score in ranked} for ranked in self.store.nearest(asked, where, len(candidates))]
         exact = self.vectors @ asked.T  # one column per query
         return [{self.position[c]: float(exact[self.position[c], q]) for c in candidates} for q in range(len(queries))]
@@ -94,14 +102,16 @@ class Index:
             scores = self.bm25.get_scores(tokenize(query))
             keyword = np.maximum(keyword, scores)
             by_keyword = [i for i in sorted(allowed, key=lambda i: -scores[i]) if scores[i] > 0]
-            by_meaning = (list(meanings[q]) if self.scoring == "chroma"  # the store's order, as it ranked them
-                          else sorted(meanings[q], key=lambda i: (-meanings[q][i], i)))  # ties keep the chunks' order
+            by_meaning = by_score(meanings[q])  # the same tie-break for both VECTOR_SEARCH paths
             rankings += {"keyword": [by_keyword], "meaning": [by_meaning], "hybrid": [by_keyword, by_meaning]}[mode]
         rankings = [self.spread(ranking) for ranking in rankings]
         files = {self.chunks[i].file for i in allowed}
+        ranked = rrf(rankings)
+        if self.reranker:  # RERANKER: the top passages put in a cross-encoder's order, before each file gets its share
+            ranked = rerank(self.reranker, queries, ranked, lambda i: self.chunks[i].text)
         return [
             Hit(score=score, keyword=float(keyword[i]), meaning=max((m.get(i, 0.0) for m in meanings), default=0.0), chunk=self.chunks[i])
-            for i, score in self.share_between_files(rrf(rankings), top_k, max(1, len(files)) if manufacturer else 1)
+            for i, score in self.share_between_files(ranked, top_k, max(1, len(files)) if manufacturer else 1)
         ]
 
     # Stops one file taking all the places in the results.

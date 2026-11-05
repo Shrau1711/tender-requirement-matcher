@@ -870,3 +870,53 @@ So nothing was wired or tested, no request was sent, and `TOKEN_COUNTER` stays `
 **In an interview.** "I made Chroma the only place vectors live: the shipped seed is imported once, and the old SQLite cache is gone. I proved nothing moved by hashing every chunk, vector and ranking, and the cost estimates, before and after. I also let Chroma do the ranking, tuned to look at every chunk. It agreed on 4,191 of 4,191 top-16 results on the app's index, but on another set two chunks with identical text tied and Chroma cited the other page, and the full rankings differ in near-ties. So it is an option, and exact scoring stays the default."
 
 **Files to read.** `backend/app/vectorstore/vector_cache.py` and `chroma.py`, `backend/app/embedding/embed_cache.py`, `meanings` in `backend/app/retrieval/search.py`, `backend/scripts/diagnose/compare_vector_search.py`.
+
+## A shared tie-break, and a reranker stage
+
+**What changed.**
+- **A shared tie-break.** `by_score` (`backend/app/retrieval/search.py`) orders the meaning ranking, best score first, an exact tie by the chunks' original order. Both `VECTOR_SEARCH=exact` and `VECTOR_SEARCH=chroma` use it. Before, the Chroma path kept Chroma's own order.
+- **A reranker stage, `RERANKER`, default `none`** (`backend/app/retrieval/rerankers.py`, behind `Reranker` in `backend/app/retrieval/base.py`).
+  - `minilm` has fastembed's `Xenova/ms-marco-MiniLM-L-6-v2` cross-encoder (about 80 MB, Apache-2.0) score the top `RERANK_TOP` passages (40) after the fusion, against each phrasing of the query, keeping the best score.
+  - Those passages are put in its order, ties keeping the search's; then each file gets its share of the places as before.
+  - fastembed was already installed for the embedder, so nothing new is installed. The model file downloads on first use, and is in no requirements file, Dockerfile or image (a test checks).
+  - Of the cross-encoders fastembed offers (MiniLM-L-6 0.08 GB, MiniLM-L-12 0.12 GB, Jina tiny 0.13 GB, Jina turbo 0.15 GB, BGE base 1.04 GB, Jina v2 multilingual 1.11 GB), the smallest was chosen.
+- `scripts/diagnose/compare_vector_search.py` can compare without the pictures of pages (the fingerprint's index) as well as with them.
+- `RERANKER` is in the README settings table and `docker-compose.yml`.
+
+**Measured, free: the tie-break does not make `chroma` identical, so `exact` stays the default.**
+- **The 127 queries × every manufacturer × keyword, meaning and hybrid:**
+  - **The app's own index:** the 16 passages a question reads are the same in all 4,191 comparisons, and 161 of 1,397 whole rankings differ.
+  - **The fingerprint's index:** the same 3 of 3,048 still differ, all Grundfos: "Dimensional sketch" (meaning), and "Example: WS_25_LS" (meaning and hybrid). 203 of 1,016 whole rankings differ.
+- **Why the tie-break cannot help there.** The two chunks (`cr-databooklet-50hz.pdf` pages 75 and 79, the same table row) have byte-identical vectors, and Chroma scores them identically, so the tie-break now puts page 75 first. But the exact path never sees a tie. NumPy's matrix product gives the two rows different last digits, 0.58814674 against 0.58814680 for "Dimensional sketch", depending on where each row sits in the matrix, so page 79 wins by one rounding step. Making the two agree would mean changing the exact path's arithmetic, and that path made every saved question.
+- **The free cost estimates:**
+  - **The default, `exact`:** byte-identical to before for 9933225, 9935891 and 9840129.
+  - **`chroma`:** byte-identical for 9933225 and 9840129. On 9935891, 1 of the 204 questions is new: "Service: Continuous Duty" for Type-1 pump reads the same 16 passages, but two passages from the same catalogue page 10 swap places 9 and 10, so the question's text changes and its saved answer is missed.
+- **`eval_retrieval`** gives the same output both ways, and the same as before, on both case sets.
+
+**Measured, free: the reranker, `eval_retrieval` only.**
+
+| | Right page in top 5 (keyword, meaning, hybrid) | Right page first (keyword, meaning, hybrid) |
+|---|---|---|
+| Valves, 7 cases, default | 6/7, 4/7, 6/7 | 4/7, 3/7, 4/7 |
+| Valves, `RERANKER=minilm` | 7/7, 7/7, 7/7 | 7/7, 7/7, 7/7 |
+| Invented documents, 10 cases, default | 10/10, 10/10, 10/10 | 9/10, 7/10, 8/10 |
+| Invented documents, `RERANKER=minilm` | 10/10, 10/10, 10/10 | 8/10, 8/10, 8/10 |
+
+- **Valves:** every case that changed moved the right page to first place. KSB "can the valve be used at 16 bar" went from not in the top 5 in any mode to first in all three. Duncan "pressure rating PN 16" (hybrid) went from not in the top 5 to first.
+- **Invented documents, mixed:** "performance test standard ISO 9906" (meaning 2 → 1) got better. "booster pump impeller material" (hybrid 3 → 4) and "booster pump motor efficiency class" (keyword 1 → 3) got worse.
+- **With the default, `none`,** the output is byte-identical to before.
+- **Seven valve cases are few.** Whether final answers improve needs paid check 14 in `docs/NEEDS_PAID_RUN.md`: on 9933225, 55 of 56 questions would be new, about ₹38. The estimate for 9935891 was stopped by Claude Code when the computer ran low on memory, so it is not priced.
+
+**What did not change.** No default, prompt, chunk, search result or saved answer. `VECTOR_SEARCH` stays `exact`, `RERANKER` is `none`.
+
+**Tests.** Backend 526 passed (520 before). `backend/tests/retrieval/test_rerankers.py`, 6 tests:
+- the default is none, and an unknown reranker is refused;
+- choosing the cross-encoder does not load it;
+- only the top passages are rescored, with the best phrasing, ties keeping the search's order;
+- the index takes the reranker's order;
+- exact ties are ordered by the chunks' original order in both paths;
+- the model is in no requirements file or image.
+
+**In an interview.** "I added a shared tie-break hoping Chroma's ranking would then match exactly. It didn't, and the reason was in NumPy: two identical vectors get scores a rounding apart in a matrix product, so the exact path never sees a tie. On real questions one of 204 changed order, so exact stays. I also added a cross-encoder reranker as an optional stage. It found the right page first in all seven valve checks against four, but only a paid run can say whether answers improve, and that is priced at about ₹38."
+
+**Files to read.** `backend/app/retrieval/rerankers.py`, `by_score` and `search_many` in `backend/app/retrieval/search.py`, `backend/tests/retrieval/test_rerankers.py`.

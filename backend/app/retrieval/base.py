@@ -1,4 +1,5 @@
-"""What every retriever offers: the passages of a category that best answer a query, for one manufacturer or all."""
+"""What every retriever offers: the passages of a category that best answer a query, for one manufacturer or all; and
+what a reranker offers: scoring the top passages again against the query (app/retrieval/rerankers.py)."""
 from __future__ import annotations
 
 from typing import Literal, Protocol
@@ -12,7 +13,7 @@ Mode = Literal["keyword", "meaning", "hybrid"]
 
 
 class Hit(BaseModel):
-    score: float      # fused rank score, only good for ordering
+    score: float      # fused rank score (or the reranker's score), only good for ordering
     keyword: float    # raw BM25 score, 0 means no query word appears
     meaning: float    # raw cosine similarity
     chunk: Chunk
@@ -29,4 +30,12 @@ class Retriever(Protocol):
 
     def search_many(self, queries: list[str], manufacturer: str | None = None, top_k: int = 5, mode: Mode | None = None) -> list[Hit]:
         """The best passages for several phrasings of one need."""
+        ...
+
+
+class Reranker(Protocol):
+    name: str
+
+    def score(self, query: str, passages: list[str]) -> list[float]:
+        """How well each passage answers the query, higher is better: one score per passage, in the order given."""
         ...

@@ -1,9 +1,9 @@
 """Compare Chroma's own ranking (VECTOR_SEARCH=chroma) with the exact NumPy ranking (exact, the default). No model calls.
 
-Usage: python -m scripts.diagnose.compare_vector_search [report.json]
+Usage: python -m scripts.diagnose.compare_vector_search [report.json] [with|without]
 
 The catalogues are read as a run reads them, pictures of pages included, but only from saved transcriptions (no model
-can be asked). For both categories, the same 127 queries as the default-results fingerprint (the 7 retrieval cases and the first 120
+can be asked); "without" reads them without their pictures, as the default-results fingerprint does. For both categories, the same 127 queries as the default-results fingerprint (the 7 retrieval cases and the first 120
 catalogue headings), for every manufacturer, in each search mode (keyword, meaning, hybrid): the 16 passages a question
 reads (EVIDENCE_TOP_K) are compared, and so is the whole meaning ranking of the manufacturer's chunks. Every query whose
 results differ is listed, with the first place they differ and the passage each search put there.
@@ -15,7 +15,7 @@ from pathlib import Path
 from app.categories.config import CATEGORIES_DIR
 from app.llm.llm_factory import saved_answers_only
 from app.reading.ocr import reader_for
-from app.retrieval.search import Index
+from app.retrieval.search import Index, by_score
 from app.vectorstore.ingest import ingest, open_store
 
 CASES = json.loads((CATEGORIES_DIR.parent / "eval" / "retrieval_cases.json").read_text(encoding="utf-8"))
@@ -27,9 +27,9 @@ def queries_for(chunks) -> list[str]:
     return [c["query"] for c in CASES] + sorted({h for c in chunks for h in c.page_headings})[:120]
 
 
-def main(out: str = "reports/vector_search_comparison.json") -> None:
+def main(out: str = "reports/vector_search_comparison.json", pictures: str = "with") -> None:
     store = open_store("chroma")
-    read_image = reader_for(saved_answers_only())
+    read_image = reader_for(saved_answers_only()) if pictures == "with" else None
     report = {"compared": 0, "differ": [], "full_rankings_compared": 0, "full_rankings_differ": 0, "missing_from_chroma": {}}
     for category in ("valves", "pumps"):
         chunks = ingest(CATEGORIES_DIR / category, store, read_image)
@@ -38,9 +38,8 @@ def main(out: str = "reports/vector_search_comparison.json") -> None:
         for q in queries_for(chunks):
             for maker in makers:
                 a, b = exact.meanings([q], maker)[0], native.meanings([q], maker)[0]
-                ranked_a = sorted(a, key=lambda i: (-a[i], i))
                 report["full_rankings_compared"] += 1
-                if list(b) != ranked_a:
+                if by_score(b) != by_score(a):
                     report["full_rankings_differ"] += 1
                 missing = set(a) - set(b)
                 if missing:
@@ -65,4 +64,4 @@ def main(out: str = "reports/vector_search_comparison.json") -> None:
 
 
 if __name__ == "__main__":
-    main(*sys.argv[1:2])
+    main(*sys.argv[1:3])

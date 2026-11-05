@@ -51,7 +51,7 @@ flowchart LR
 | `chunking` | cuts documents into passages: six strategies behind one interface (`Chunker`), chosen by `CHUNKER` or per document by the router |
 | `embedding` | turns text into vectors: embedders behind one interface (`Embedder`), chosen by `EMBEDDER` (default `bge-small`, fastembed's `bge-small-en-v1.5`, run locally); a text seen before is not embedded again (`embed_cache.py` keys it by model and text; the vector itself is kept in Chroma) |
 | `vectorstore` | where chunks and vectors are kept: Chroma (on disk) or memory, behind one interface; `ingest` reads each file once. Chroma is the only place vectors are kept: chunk vectors, and every text's vector by key (`vector_cache.py`), with the shipped seed imported once |
-| `retrieval` | search queries for a requirement, and retrievers behind one interface (`Retriever`), chosen by `RETRIEVER`: the default `hybrid` merges BM25 keyword search and meaning search through the store by rank (RRF); `keyword` and `meaning` use one ranking |
+| `retrieval` | search queries for a requirement, and retrievers behind one interface (`Retriever`), chosen by `RETRIEVER`: the default `hybrid` merges BM25 keyword search and meaning search through the store by rank (RRF); `keyword` and `meaning` use one ranking. An optional reranker (`Reranker`, `RERANKER`, off by default) can score the top passages again with a cross-encoder |
 | `extraction` | the model calls: tender rows to atomic requirements, passages to evidence, product names grouped |
 | `judging` | plain code: units (Pint), comparisons, the match status and score per requirement |
 | `cost` | token counting, the per-tender budget, the estimate a person approves before money is spent |
@@ -98,7 +98,7 @@ flowchart TD
     JOB --> TR["read the tender: items and rows (Gemini)"]
     TR --> AT["atomic requirements (Gemini)"]
     AT --> Q["search queries per requirement"]
-    Q --> S["for each requirement and maker:<br/>BM25 ranking + the maker's stored vectors scored exactly<br/>(or ranked by Chroma, VECTOR_SEARCH=chroma),<br/>merged by RRF, plus a plain term scan"]
+    Q --> S["for each requirement and maker:<br/>BM25 ranking + the maker's stored vectors scored exactly<br/>(or ranked by Chroma, VECTOR_SEARCH=chroma),<br/>merged by RRF (then, with RERANKER, the top 40 rescored by a cross-encoder),<br/>plus a plain term scan"]
     S --> B["budget: count each new question's tokens,<br/>read fewer passages or fewer items if over"]
     B --> E{"person approves<br/>the estimate?"}
     E -->|no| STOP["cancelled, nothing spent"]
@@ -125,8 +125,11 @@ flowchart TD
 - **The app's own index** (11 manufacturers, 127 queries, 3 modes): the 16 passages a question reads were the same in all 4,191 comparisons.
 - **The fingerprint's index** (the catalogues without their scanned pages): they differed in 3 of 3,048. Each time, Grundfos prints the same table row on two pages, the two chunks tie exactly, and Chroma cites the other page.
 - **Further down the whole ranking,** 161 of 1,397 orders differ, in near-ties a float rounding apart.
+- **The real questions:** the free estimates of 9933225 and 9840129 are byte-identical with `chroma`. On 9935891, 1 of 204 questions is new: "Service: Continuous Duty" for Type-1 pump reads the same 16 passages, but two from the same catalogue page swap places 9 and 10.
 
-A different cited page changes the question and misses its saved answer, so `exact` stays the default. `eval_retrieval` gives the same output both ways, on the valve cases and on the invented documents.
+Both paths break an exact tie the same way: by the chunks' original order (`by_score` in `retrieval/search.py`). That does not make them agree, because two chunks with byte-identical vectors do not tie in the exact path. NumPy's matrix product scores each row with slightly different rounding depending on where it sits in the matrix (0.58814674 against 0.58814680 for the Grundfos twins), while Chroma scores them the same. Changing the exact path's arithmetic would change the passages every saved question was made with. A different cited page, or order, changes the question and misses its saved answer, so `exact` stays the default. `eval_retrieval` gives the same output both ways, on the valve cases and on the invented documents.
+
+**A reranker is a stage, off by default.** With `RERANKER=minilm`, after the fusion, the top `RERANK_TOP` (40) passages are scored again by a cross-encoder, fastembed's `Xenova/ms-marco-MiniLM-L-6-v2`, against each phrasing of the query, keeping the best score. They are put in its order, ties keeping the search's; then each file gets its share of the 16 places as before. It sits behind a small interface (`Reranker` in `retrieval/base.py`, the list in `retrieval/rerankers.py`). Nothing new is installed, and the model downloads on first use. On the free retrieval checks it put the right page first in all 7 valve cases (4 of 7 without it). On the invented documents it was mixed: hybrid 8 of 10 first either way, keyword one worse and meaning one better. It changes the passages, so every question is new, and whether answers get better is a paid check (`docs/NEEDS_PAID_RUN.md`).
 
 **Chroma sometimes cannot read a store it has just written to.** Right after writes it can fail with "Error creating hnsw segment reader: Nothing found on disk". This happens with a nearest-neighbour query, and also when only the stored vectors are read, which the app does on every start. So not using the nearest-neighbour search did not remove it. What has been measured (with `scripts/diagnose/chroma_repro.py`, which uses Chroma alone):
 - **Only on Windows so far.** With Chroma 1.5.9 on Windows 11 it failed within 5 to 175 attempts in every folder tried: the temp folder, the home folder and the project folder, none of them synced by OneDrive. On Linux (in the app's Docker image on the same machine, and on the owner's Linux machine) there was no error in 600 attempts each.

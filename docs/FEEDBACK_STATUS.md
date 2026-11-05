@@ -13,6 +13,8 @@ Checked on branch `demo-space`, 4 November 2026, by reading the code and the mea
 
 *Updated after "Chroma as the only store of vectors, and Chroma's own ranking as an option": point 4 is now done.*
 
+*Updated after "A shared tie-break, and a reranker stage": points 2 and 4 changed; their status did not.*
+
 *Updated after "Product families and the tender layout in the app": point 9b changed and is still partly done. Point 6 records that `countTokens` is not documented as free for the Gemini Developer API.*
 
 | # | Feedback | Status |
@@ -63,7 +65,7 @@ Done: 5. Partly done: 6. Not done: 0.
 **What is missing.**
 - **Only one embedder exists.** `EMBEDDER` has one choice, `bge-small`. A second is a class and one line in `EMBEDDERS`, and gets its own saved vectors and Chroma folder, but none is listed, so the setting has nothing to switch to. A new model would also make the shipped `data/seed_embeddings.sqlite` useless and every question new.
 - **Extraction is Gemini only.** `make_llm()` in `backend/app/llm/llm_factory.py` always builds `GeminiLLM`. The `LLM` interface would allow another provider, but there is none and no setting to choose one.
-- **The other retrievers are the same search.** `RETRIEVER` offers `hybrid` (the default), `keyword` and `meaning`, but all three are the one `Index` with a fixed mode. No retriever of another kind (for example re-ranking) exists, and neither alternative has been checked against final answers.
+- **The other retrievers are the same search.** `RETRIEVER` offers `hybrid` (the default), `keyword` and `meaning`, but all three are the one `Index` with a fixed mode, and neither alternative has been checked against final answers. A stage of another kind now exists: a reranker (`RERANKER`, `backend/app/retrieval/rerankers.py`, behind `Reranker` in `backend/app/retrieval/base.py`). It is off by default, and only checked on retrieval (7 of 7 valve cases first, against 4 of 7), not on final answers (paid check 14, ≈ ₹38).
 
 ## 3. `architecture.md`: done
 
@@ -95,7 +97,10 @@ All three diagrams were checked with Mermaid's own parser, and it describes the 
   - On the fingerprint's index, 3 of 3,048 differed: two chunks with identical text tie, and Chroma cites the other page.
   - Deeper in the whole ranking, 161 of 1,397 orders differ, in near-ties.
 
-  A different cited page makes a question new, so by default the app ranks exactly in NumPy, over vectors fetched from Chroma.
+  - On the real questions, 9933225 and 9840129 are byte-identical with Chroma ranking, but 1 of 204 questions on 9935891 is new (two passages from one page swap places 9 and 10).
+  - A shared tie-break (exact ties by the chunks' original order) does not close the gap. NumPy scores two byte-identical chunk vectors a rounding apart, so in the exact path they never tie.
+
+  A different cited page, or order, makes a question new, so by default the app ranks exactly in NumPy, over vectors fetched from Chroma.
 - **The vectors still come from one machine.** The seed only stays useful while the embedder is the default. Another model would make every vector, and so every question, new.
 
 ## 5. New categories and mixed tenders: done
@@ -248,6 +253,7 @@ These are expected costs, not limits. Google doubles Gemini 3.8 Flash's price on
 | 11 | Chunker `semantic` | 1 | 9933225 (valves) | 56 | ≈ ₹33 (free estimate 219,527 input tokens × 1.36, plus output) |
 | 12 | The model told to expect Hindi, on the real bilingual scans | 9c | 9918524 (6 pages) | 6 | **run 4 November 2026: ≈ ₹1.19** (estimated ≈ ₹1.13) |
 | 13 | EasyOCR as the page reader, end to end | 9c | 9933225 | not priced | not priced: the free estimate was stopped when the computer ran low on memory |
+| 14 | Reranker `RERANKER=minilm` | 2 | 9933225 (valves) | 55 | ≈ ₹38 (free estimate 262,640 input tokens × 1.36, plus output) |
 
 The numbers are those in `docs/NEEDS_PAID_RUN.md`. Checks 1 and 2 there were run (≈ ₹19.24 and ≈ ₹40.54, ≈ ₹59.78 in all), check 12 was run (≈ ₹1.19), and check 10 was answered for free.
 

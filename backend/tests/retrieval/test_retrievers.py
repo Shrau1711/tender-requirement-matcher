@@ -46,7 +46,7 @@ def test_a_new_retriever_is_one_line(monkeypatch):
     class FirstChunks:
         name = "first"
 
-        def __init__(self, chunks, embed, store, category, scoring):
+        def __init__(self, chunks, embed, store, category, **options):
             self.chunks, self.vectors = chunks, None
 
         def search(self, query, manufacturer=None, top_k=5, mode=None):
