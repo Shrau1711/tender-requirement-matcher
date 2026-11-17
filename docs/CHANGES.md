@@ -535,11 +535,13 @@ One run of the full suite had one failing test, which I did not see; it did not 
 
 **Files to read.** `Dockerfile.demo`, `Dockerfile.demo.dockerignore`, `backend/app/demo.py`, `backend/scripts/demo/replay_samples.py`, `backend/scripts/demo/load_samples.py`, `docs/HF_SPACE_README.md`.
 
-## Demo image on Docker Hub: `shravani1711/tender-matcher-demo:v6`
+## Demo image on Docker Hub: `shravani1711/tender-matcher-demo:v7`
 
 **What changed.**
-- The replay-only demo image is published on Docker Hub as `shravani1711/tender-matcher-demo:v6`. Anyone can run it with `docker run -p 7860:7860 shravani1711/tender-matcher-demo:v6` and open http://localhost:7860.
-- **How it was built.** From `Dockerfile.demo` at `main`'s commit `e1790a2` (the merge of PR #3), plus the three hold-out sample tender folders (`GeM-Bidding-9968695`, `GeM-Bidding-9604147` and `GeM-Bidding-10016383`) copied in from a working copy. Digest `sha256:13408dd8208f3e434c80f1c70b8d3c36d8036568fb45db32372cf2bfa8f437b1`, 1.27 GB. The image carries the commit as its `org.opencontainers.image.revision` label.
+- The replay-only demo image is published on Docker Hub as `shravani1711/tender-matcher-demo:v7`. Anyone can run it with `docker run -p 7860:7860 shravani1711/tender-matcher-demo:v7` and open http://localhost:7860.
+- **How it was built.** From `Dockerfile.demo` at `main`'s commit `c4f99d4` (the merge of PR #7), plus the three hold-out sample tender folders (`GeM-Bidding-9968695`, `GeM-Bidding-9604147` and `GeM-Bidding-10016383`) copied in from a working copy. Digest `sha256:59d463413673048b62d1fb392b8c1c4fe81b21a6af848559706f4f717a7f90fd`, 1.27 GB. The image carries the commit as its `org.opencontainers.image.revision` label.
+- **What is new in it since v6:** Chroma as the only store of vectors (PR #6), and the shared tie-break and the optional reranker (PR #7). The defaults are unchanged (`VECTOR_SEARCH=exact`, `RERANKER=none`), and the replay demo never searches, so a visitor sees the same reports.
+- **v6 is superseded.** `v6` (commit `e1790a2`, digest `sha256:13408dd8208f3e434c80f1c70b8d3c36d8036568fb45db32372cf2bfa8f437b1`) works and passed the same checks, but it predates PRs #6 and #7.
 - **v5 is broken; do not use it.** `v5` (built from `main`'s `fc652f3`, digest `sha256:0664b310b69d6b8ce4175d70c586ee43ae2f43c71d9c746d613b4baf7ddbb72f`) was built from a clean checkout. The three hold-out tenders are not in git, so their PDFs are missing from it. For those three samples:
   - the tender page links answer 404;
   - the Tender layout tab answered 500, with a traceback.
@@ -547,15 +549,15 @@ One run of the full suite had one failing test, which I did not see; it did not 
   The reports themselves are fine. PR #3 fixed both sides: the layout now refuses plainly when a tender folder holds no PDF, and the build stops with a clear message when a sample folder is empty, so a build like v5's can no longer finish.
 - **v4 is superseded.** `v4` (commit `985bdf4` on `demo-space`, digest `sha256:af3ccbec2fa850f1a72e2a83768cf8e107081d8657ce00d22d31ee1a25b263f7`) works, but it predates the Tender layout tab, the Add documents page and the other changes merged in PR #2.
 - **v3** (commit `697ac5f`, digest `sha256:ee9955eb8b797d805985ae28b116f0569d7a07eaa4451319f56be921e30107e1`) was already superseded by v4, because it shows the old note on the upload screen.
-- **Tags.** v3, v4 and v5 stay on Docker Hub unchanged. There is no `latest` tag for the demo, so a pull always names the exact version. The backend and frontend images are unchanged.
+- **Tags.** v3, v4, v5 and v6 stay on Docker Hub unchanged. There is no `latest` tag for the demo, so a pull always names the exact version. The backend and frontend images are unchanged.
 
 **Building it.** The three hold-out sample folders must be copied into `data/tenders/holdout/` before building, because `.gitignore` keeps them out of git (see `docs/HF_SPACE_README.md`).
-- **Without them,** the build now fails at `load_samples`: "These sample tender folders hold no PDF: holdout/GeM-Bidding-9968695, holdout/GeM-Bidding-9604147, holdout/GeM-Bidding-10016383. …". This was checked by building `e1790a2` from a clean checkout.
+- **Without them,** the build fails at `load_samples`: "These sample tender folders hold no PDF: holdout/GeM-Bidding-9968695, holdout/GeM-Bidding-9604147, holdout/GeM-Bidding-10016383. …". This was checked by building `e1790a2` from a clean checkout.
 - **With them copied in,** it builds and loads all 5 samples.
 
 **Why.** The demo can be tried with one command, without building it or cloning the repository, and still never calls the model or needs a key.
 
-**Checked, free.** All checks ran on the `v6` copy pulled back from Docker Hub, after deleting the local tag; the pulled digest matches the pushed one. All 29 checks passed:
+**Checked, free.** All checks ran on the `v7` copy pulled back from Docker Hub, after deleting the local tag; the pulled digest matches the pushed one. All 29 checks passed, the same checks as for v6:
 - **Page and settings:** `/health` is ok, the page loads and calls the API on the same origin, and `/config` gives `max_model_calls: 0`.
 - **The 5 samples:** `/runs` lists them all, done. For each of the 5:
   - the report's JSON is identical to its saved copy in `data/demo_runs`;
@@ -563,9 +565,21 @@ One run of the full suite had one failing test, which I did not see; it did not 
   - every cited tender page link answers 200;
   - the Tender layout tab answers. Families found: ball valve (10016383), submersible pump (9604147), butterfly valve (9933225), vertical multistage pump (9935891, 29 shared rows) and gate valve (9968695).
 - **Refusals:** an upload, and adding a document, get 403 with "This demo replays saved examples only.". Deleting or renaming a sample gets 403 with "The saved examples cannot be deleted or renamed in this demo.", and the 5 runs are unchanged afterwards.
-- **Logs:** no traceback, and no line from the model client. The only 4xx answers are those four refusals.
+- **Logs:** no traceback, no line from the model client, and no line from the Chroma vector cache: the replay never embeds. The only 4xx answers are those four refusals.
 
-**In an interview.** "The demo is a public Docker image with exact version tags and no latest. v5 taught me something: I built it from a clean checkout, and three sample tenders that are deliberately kept out of git went missing. My check of the pulled image caught it before anyone relied on it. I fixed the app to refuse plainly, and made the build fail loudly when a sample has no PDF. Then I shipped v6 and re-ran every check on the pulled copy."
+**Start-up and memory, measured on the pulled `v7`** (Docker Desktop on Windows, 7.65 GiB available to containers):
+
+| | First start (cold) | Second start |
+|---|---|---|
+| From `docker run` to `/health` answering | 6.2 s | 3.4 s |
+| Memory at idle (20 s after start) | 137 MiB | 125 MiB |
+| After opening the largest report (9935891, 82 requirements) | 138 MiB | 127 MiB |
+| After its Tender layout tab (answered in 1.6 s) | 153 MiB | 145 MiB |
+| Peak (the container's own `memory.peak`) | 362 MiB, 384 MiB after all 29 checks | 150 MiB |
+
+The cold first start's peak probably includes the file cache of reading the image for the first time; only a cold start shows it. After all 29 checks the first container used 168 MiB.
+
+**In an interview.** "The demo is a public Docker image with exact version tags and no latest; v7 starts in a few seconds and idles at about 130 MiB. v5 taught me something: I built it from a clean checkout, and three sample tenders that are deliberately kept out of git went missing. My check of the pulled image caught it before anyone relied on it. I fixed the app to refuse plainly, and made the build fail loudly when a sample has no PDF. Then I shipped v6, and later v7, re-running every check on the pulled copy each time."
 
 **Files to read.** `Dockerfile.demo`, `backend/scripts/demo/load_samples.py`, `docs/HF_SPACE_README.md`.
 
